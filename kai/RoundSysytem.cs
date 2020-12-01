@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,80 +19,82 @@ public class RoundSysytem
 
     }
 
-    //GameObject[] Humans;
-    //GameObject[] Aliens;
     public bool EndSignal = false;
-    List<(GameObject Cha, int Speed)> Sequence;
-    public void RoundPrepare(GameObject[] humans,GameObject[] aliens) 
+    LinkedList<(AI Cha, int Speed)> Sequence;
+    //Dictionary<AI ,int> ChaSpeed;
+    //List<(AI Cha, int Speed)> Order;
+
+
+    public void RoundPrepare(AI[] humans,AI[] aliens) 
     {
-        
-        //Humans = humans;
-        //Aliens = aliens;
-        foreach (GameObject human in humans)
+        Sequence = new LinkedList<(AI, int)>();
+        Sequence.AddFirst((null, 99));
+        foreach (AI human in humans)
         {
-            int Count = 0;
-            (GameObject Chr,int speed)obj = (human, human.GetComponent<Character>().Speed);
-            if (Sequence == null)
-            {
-                Sequence = new List<(GameObject, int)>();
-                Sequence.Add(obj);
-                continue;
-            }
-            foreach((_ ,int LSpeed) in Sequence)
-            {
-                if (obj.Item2 > LSpeed)
-                {
-                    Sequence.Insert(Count,obj);
-                }
-                ++Count;
-            }
+            
+            (AI Cha,int speed) obj = (human, human.GetComponent<Character>().Speed);
 
+            InsertCha(obj);
         }
-        foreach (GameObject alien in aliens)
+        foreach (AI alien in aliens)
         {
-            int Count = 0;
-            (GameObject Chr, int speed) obj = (alien, alien.GetComponent<Character>().Speed);
-            if (Sequence == null)
-            {
-                Sequence = new List<(GameObject, int)>();
-                Sequence.Add(obj);
-                continue;
-            }
-            foreach ((_, int LSpeed) in Sequence)
-            {
-                if (obj.Item2 > LSpeed)
-                {
-                    Sequence.Insert(Count, obj);
-                }
-                ++Count;
-            }
+            (AI Cha, int speed) obj = (alien, alien.GetComponent<Character>().Speed);
 
+            InsertCha(obj);
         }
     }
     public void RoundStart()
     {
+        LinkedListNode<(AI Cha, int Speed)> Current = Sequence.First.Next;
         while (true)
         {
-            GameObject[] ChaSeq= new GameObject[Sequence.Count];
-            //右邊順序動畫
-            for (int Count = 0; Count < Sequence.Count; ++Count)//載入角色順序
-            {
-                ChaSeq[Count] = Sequence[Count].Cha;
-            }
-            for(int Count =0; Count< ChaSeq.Length; ++Count)//開始行動
-            {
-                //ChaSeq[Count].searchenemy();
-                //ChaSeq[Count].CalMove();
-                ChaSeq[Count].GetComponent<Character>().AP = 2;
-                while (EndSignal != true)
-                {
-                    System.Threading.Thread.Sleep(1);
-                }
-                //while(動畫還沒結束)
-                //System.Threading.Thread.Sleep(1);
-            }
-            //事件?增援?newcome
+            //wait UI 右邊順序動畫 
+            Current.Value.Cha.Turn = true;
+            Current.Value.Cha.AP = 2;
 
+            while (Current.Value.Cha.Turn!= false)
+            {
+                System.Threading.Thread.Sleep(1);
+            }
+            Current = Current.Next;
+            if (Current == null) //回合結束
+            {
+                Current = Sequence.First.Next;
+                //事件?增援?newcome
+            }
+
+        }
+    }
+
+    void InsertCha((AI Chr, int speed) obj)
+    {
+        LinkedListNode<(AI Cha, int Speed)> current = Sequence.Last;
+
+        for (int Count = Sequence.Count; Count > 0; --Count)
+        {
+            if (obj.speed < current.Value.Speed)
+            {
+                Sequence.AddAfter(current, obj);
+                break;
+            }
+            else
+                current = current.Previous;
+        }
+    }
+    private void DeathKick(AI cha)
+    {
+        LinkedListNode<(AI Cha, int Speed)> current = Sequence.Last;
+        lock (Sequence)
+        {
+            while (true)
+            {
+                if (current.Value.Cha == cha)
+                {
+                    Sequence.Remove(current);
+                    break;
+                }
+                current = current.Previous;
+            }
         }
     }
     private void NewCome()
