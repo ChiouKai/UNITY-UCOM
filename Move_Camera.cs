@@ -15,9 +15,11 @@ public class Move_Camera : MonoBehaviour
     List<GameObject> target_list;
     float move_speed = 5f;
     float y =0; //旋轉45度
+    float gg;
     int tr = 0 ; //列表索引值
     bool move_tr = true; //為true時攝影機移動到目標身上
-    bool rot_cam = false; //旋轉攝影機
+    //bool rot_cam = false; //旋轉攝影機
+    bool i = false;
     Transform mc; //mc變數為目標的transform
 
     private void Start()
@@ -39,23 +41,22 @@ public class Move_Camera : MonoBehaviour
         }
         Debug.Log("----------\n"+target_list[4].transform.position);
         Debug.Log("----------\n" + target_list[1].transform.localEulerAngles);
-        //mc.parent = target_list[tr].transform;
-        //mc.parent.rotation = Quaternion.Euler(0,0, 0);
-        //Debug.Log(scene_camera.transform.position);
+
     }
     void Update()
     {
-        Debug.Log(y);
+        
         if (Input.GetKeyDown(KeyCode.Space))
         {
+             //目前問題 -> 當球看向目標後，角度會變成看項目標所需的角度 而使用qe旋轉時又會歸0重轉
+            Debug.Log("tr : " + tr);
             if (tr >= target_list.Count -1 )
             {
                 tr = 0;
             }
-            //mc.localEulerAngles = new Vector3(0, 0, 0);
             tr++;
-            //mc.parent = target_list[tr].transform;
-            //mc.rotation = Quaternion.Euler(0, 0, 0);
+            //rot_cam = false;
+            y = 0;
             move_tr = true;
         }
         //move(scene_camera,target);
@@ -70,15 +71,18 @@ public class Move_Camera : MonoBehaviour
             if (move_tr == true)
             {
 
-                mc.position = target_list[tr].transform.position; //一開始為true時將位置轉換到目標位置
-                
-                if (target_list[tr].transform.tag == "enemys") //如果tag為敵人時繼續為true 代表持續鎖定目標位置
-                    move_tr = true; //為true時不可移動
-                else move_tr = false; //為false則表示一開始移動到目標後就不進行動作
+                //Vector3 div = (target_list[tr].transform.position - mc.position).normalized;
+                //mc.position = mc.position + div * Time.deltaTime * 10; //此方法為朝目標方向移動 but 太僵硬
+                mc.position =Vector3.Lerp(mc.position, target_list[tr].transform.position,  5 * Time.deltaTime); //目前位置 要前往的位置 移動速度
+                gg = Vector3.Distance(mc.position, target_list[tr].transform.position);
+                if (gg < 0.001f)
+                {
+                    mc.position = target_list[tr].transform.position;
+                    if (target_list[tr].transform.tag == "enemys") //如果tag為敵人時繼續為true 代表持續鎖定目標位置
+                        move_tr = true; //為true時不可移動
+                    else move_tr = false; //為false則表示一開始移動到目標後就不進行動作
+                }
             }
-            
-            //scene_camera.transform.LookAt(mc); //攝影機看向目標
-
             if (fH != 0 || fV != 0) //wsad移動
             {
                 if (move_tr == false)
@@ -90,32 +94,17 @@ public class Move_Camera : MonoBehaviour
                     mc.position = mc.position + (mc_MoveForward + mc_MoveRight) * move_speed * Time.deltaTime;
                 }
             }
-            if (Input.GetKeyUp(KeyCode.Q))
-            {
-                y -= 45;
-                rot_cam = true;
-            }
-            if (Input.GetKeyUp(KeyCode.E))
-            {
-                y += 45;
-                rot_cam = true;
-            }
-            if (rot_cam == true)
-            {
-                //Debug.Log(mc.localEulerAngles.y + "-------------" + Mathf.Round(mc.localEulerAngles.y) % 45);
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    y += 45;
+                }
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    y -= 45;
+                }
                 Quaternion avc = Quaternion.Euler(0, y, 0);
                 mc.rotation = Quaternion.Slerp(mc.rotation, avc, Time.deltaTime * 5.0f);
-                /*if (Mathf.Round(mc.localEulerAngles.y) % 45  ==0 )
-                {  
-                    mc.rotation = Quaternion.Euler(0, y, 0);
-                    rot_cam = false;
-                }*/
-            }
         }
-    }
-    void OnDrawGizmos()
-    {
-            Gizmos.DrawLine(scene_camera.transform.position, target.transform.position);
     }
 }
 
