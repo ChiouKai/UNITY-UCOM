@@ -18,7 +18,7 @@ public class HumanAI : AI
         EnemyLayer = 1 << 10;
         Gun = GetComponent<Weapon>();
         TileCount = FindDirection(transform.forward);
-        Idel = NoCover;
+        Idle = NoCover;
         UI = UISystem.getInstance();
         Enemies = RoundSysytem.GetInstance().Aliens;
     }
@@ -30,7 +30,7 @@ public class HumanAI : AI
         stateinfo = Am.GetCurrentAnimatorStateInfo(0);
         if (!Turn)
         {
-            Idel();
+            Idle();
         }
         else if (!Moving)
         {
@@ -125,22 +125,5 @@ public class HumanAI : AI
         else
             yield return BackTurn();
     }
-    void FaceTarget()
-    {
-        TargetDir.y = 0;
-        if (Vector3.Dot(transform.forward, TargetDir.normalized) > 0.97f)
-        {
-            transform.forward = TargetDir;
-            ChangeTarget = false;
-            Am.SetBool("Right", false);
-            Am.SetBool("Left", false);
-            Am.SetBool("Aim", true);
-        }
-
-        if (stateinfo.IsName("RightTurn") || stateinfo.IsName("LeftTurn"))
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.01f);
-        }
-       
-    }
+    
 }

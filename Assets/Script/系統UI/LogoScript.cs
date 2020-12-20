@@ -25,6 +25,7 @@ public class LogoScript : MonoBehaviour
         }
         else
         {
+            TimeLine.Instance.Moved = true;
             RT.anchoredPosition = InsertLocation;
             LeaveLocation = RT.anchoredPosition + new Vector2(120, 0);
             LogoUpdate = null;

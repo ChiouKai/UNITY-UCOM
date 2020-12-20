@@ -8,8 +8,10 @@ public class TimeLine : MonoBehaviour
     Dictionary<AI, LogoScript> LogoDic;
     public LinkedList<LogoScript> LogoList;
     public static TimeLine Instance;
+    public bool Moved;
     private void Start()
     {
+        Moved = false;
         Instance = this;
         LogoDic = new Dictionary<AI, LogoScript>();
         LogoList = new LinkedList<LogoScript>();

@@ -85,16 +85,24 @@ public class RoundSysytem
             UI.Count = InsertCha(Current);
             UI.TurnRun = UI.ChaTurnEnd;
             UI.RunUI = UI.CloseActionUI;
-            System.Threading.Thread.Sleep(500);
+            TimeLine.Instance.Moved = false;
+            while (TimeLine.Instance.Moved != true)
+            {
+                System.Threading.Thread.Sleep(1);
+            }
             Current = Sequence.First;
             if (Current.Value.Speed == 99) //回合結束
             {
-                System.Threading.Thread.Sleep(1500);
                 Sequence.RemoveFirst();
                 Sequence.AddLast(Current);
                 Current = Sequence.First;
                 UI.TurnRun = UI.TurnEnd;
-                System.Threading.Thread.Sleep(1500);
+                TimeLine.Instance.Moved = false;
+                while (TimeLine.Instance.Moved != true)
+                {
+                    System.Threading.Thread.Sleep(1);
+                }
+                TimeLine.Instance.Moved = false;
                 //事件?增援?newcome
             }
 
