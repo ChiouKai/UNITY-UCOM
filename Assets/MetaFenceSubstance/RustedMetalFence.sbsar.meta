@@ -1,0 +1,279 @@
+fileFormatVersion: 2
+guid: 8849a404ce70e9b4fb3e83239c0f1b80
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 232528478, guid: 43a8bbf65be290d44ba52b94476242b9, type: 3}
+  version: 29
+  projectContext: 0
+  mGraphInstanceData:
+  - graphLabel: RustedMetalFence
+    prototypeName: RustedMetalFence
+    graphDescIndex: 0
+    generateAllOutputs: 0
+    generateMipMaps: 1
+    preset: " <sbspreset pkgurl=\"pkg://RustedMetalFence\" label=\"\" >\n  <presetinput
+      identifier=\"$outputsize\" uid=\"2858173669\" type=\"8\" value=\"9,9\" />\n 
+      <presetinput identifier=\"FenceType\" uid=\"3656118671\" type=\"4\" value=\"4\"
+      />\n  <presetinput identifier=\"FenceDensity\" uid=\"3656117609\" type=\"4\"
+      value=\"10\" />\n  <presetinput identifier=\"FenceDensity2\" uid=\"3656117958\"
+      type=\"4\" value=\"10\" />\n  <presetinput identifier=\"Distance\" uid=\"3656116818\"
+      type=\"0\" value=\"-1\" />\n  <presetinput identifier=\"Smoothing\" uid=\"3656115755\"
+      type=\"0\" value=\"0\" />\n  <presetinput identifier=\"FenceMaterial\" uid=\"3656114028\"
+      type=\"4\" value=\"5\" />\n  <presetinput identifier=\"Roughness\" uid=\"3656108293\"
+      type=\"0\" value=\"0\" />\n  <presetinput identifier=\"Grunge\" uid=\"3656104374\"
+      type=\"0\" value=\"0\" />\n  <presetinput identifier=\"rust_spreading\" uid=\"3656085798\"
+      type=\"0\" value=\"0.109\" />\n  <presetinput identifier=\"spreading_smoothness\"
+      uid=\"3656082756\" type=\"0\" value=\"0.084\" />\n  <presetinput identifier=\"Normal_Intensity\"
+      uid=\"3656066908\" type=\"0\" value=\"20.2\" />\n  <presetinput identifier=\"metal_wear\"
+      uid=\"3655613444\" type=\"0\" value=\"0\" />\n  <presetinput identifier=\"metal_wear_contrast\"
+      uid=\"3655612073\" type=\"0\" value=\"0\" />\n  <presetinput identifier=\"paint_wear\"
+      uid=\"3655611125\" type=\"0\" value=\"0\" />\n </sbspreset>\n"
+    shaderName: Standard
+    materialProperties:
+      shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+      shaderKeywords: _MAINTEX _METALLICGLOSSMAP _NORMALMAP _OCCLUSIONMAP _PARALLAXMAP
+      lightmapFlags: 4
+      enableInstancingVariants: 0
+      doubleSidedGI: 0
+      customRenderQueue: -1
+      texEnvs:
+      - name: _BumpMap
+        texture: {fileID: 1740708617928151898, guid: 8849a404ce70e9b4fb3e83239c0f1b80,
+          type: 3}
+        scale: {x: 1, y: 5}
+        offset: {x: 0, y: 0}
+      - name: _DetailAlbedoMap
+        texture: {instanceID: 0}
+        scale: {x: 1, y: 1}
+        offset: {x: 0, y: 0}
+      - name: _DetailMask
+        texture: {instanceID: 0}
+        scale: {x: 1, y: 1}
+        offset: {x: 0, y: 0}
+      - name: _DetailNormalMap
+        texture: {instanceID: 0}
+        scale: {x: 1, y: 1}
+        offset: {x: 0, y: 0}
+      - name: _EmissionMap
+        texture: {instanceID: 0}
+        scale: {x: 1, y: 0.63}
+        offset: {x: 0, y: 0}
+      - name: _MainTex
+        texture: {fileID: -5777625297801279091, guid: 8849a404ce70e9b4fb3e83239c0f1b80,
+          type: 3}
+        scale: {x: 1, y: 0.63}
+        offset: {x: 0, y: 0}
+      - name: _MetallicGlossMap
+        texture: {fileID: -596440984359383536, guid: 8849a404ce70e9b4fb3e83239c0f1b80,
+          type: 3}
+        scale: {x: 1, y: 5}
+        offset: {x: 0, y: 0}
+      - name: _OcclusionMap
+        texture: {fileID: 6023357039310476431, guid: 8849a404ce70e9b4fb3e83239c0f1b80,
+          type: 3}
+        scale: {x: 1, y: 5}
+        offset: {x: 0, y: 0}
+      - name: _ParallaxMap
+        texture: {fileID: 8730572738785582823, guid: 8849a404ce70e9b4fb3e83239c0f1b80,
+          type: 3}
+        scale: {x: 1, y: 5}
+        offset: {x: 0, y: 0}
+      floats:
+      - name: _BumpScale
+        float: 1
+      - name: _Cutoff
+        float: 0.5
+      - name: _DetailNormalMapScale
+        float: 1
+      - name: _DstBlend
+        float: 0
+      - name: _GlossMapScale
+        float: 1
+      - name: _Glossiness
+        float: 0.5
+      - name: _GlossyReflections
+        float: 1
+      - name: _Metallic
+        float: 0
+      - name: _Mode
+        float: 0
+      - name: _OcclusionStrength
+        float: 1
+      - name: _Parallax
+        float: 0.02
+      - name: _SmoothnessTextureChannel
+        float: 0
+      - name: _SpecularHighlights
+        float: 1
+      - name: _SrcBlend
+        float: 1
+      - name: _UVSec
+        float: 0
+      - name: _ZWrite
+        float: 1
+      colors:
+      - name: _Color
+        color: {r: 1, g: 1, b: 1, a: 1}
+      - name: _EmissionColor
+        color: {r: 0, g: 0, b: 0, a: 1}
+    outputDescList:
+    - outputName: baseColor
+      identifier: basecolor_1
+      usageName: baseColor
+      channelStr: baseColor
+      label: Base Color
+      usage: 1
+      bImage: 1
+      bNumerical: 0
+      bLinear: 0
+    - outputName: normal
+      identifier: normal_1
+      usageName: normal
+      channelStr: normal
+      label: Normal
+      usage: 7
+      bImage: 1
+      bNumerical: 0
+      bLinear: 1
+    - outputName: roughness
+      identifier: roughness_1
+      usageName: roughness
+      channelStr: roughness
+      label: Roughness
+      usage: 15
+      bImage: 1
+      bNumerical: 0
+      bLinear: 1
+    - outputName: metallic
+      identifier: metallic_1
+      usageName: metallic
+      channelStr: metallic
+      label: Metallic
+      usage: 34
+      bImage: 1
+      bNumerical: 0
+      bLinear: 1
+    - outputName: ambientOcclusion
+      identifier: ambientOcclusion
+      usageName: ambientOcclusion
+      channelStr: ambientOcclusion
+      label: AmbientOcclusion
+      usage: 5
+      bImage: 1
+      bNumerical: 0
+      bLinear: 1
+    - outputName: height
+      identifier: height
+      usageName: height
+      channelStr: height
+      label: Height
+      usage: 9
+      bImage: 1
+      bNumerical: 0
+      bLinear: 1
+    - outputName: curvature
+      identifier: Curvature
+      usageName: UNKNOWN
+      channelStr: curvature
+      label: Curvature
+      usage: 36
+      bImage: 1
+      bNumerical: 0
+      bLinear: 1
+    texturePackingList:
+    - targetName: baseColor
+      components:
+      - sourceName: baseColor
+        from: 0
+        to: 3
+    - targetName: normal
+      components:
+      - sourceName: normal
+        from: 0
+        to: 3
+    - targetName: roughness
+      components:
+      - sourceName: roughness
+        from: 0
+        to: 3
+    - targetName: metallic
+      components:
+      - sourceName: smoothness
+        from: 0
+        to: 3
+    - targetName: ambientOcclusion
+      components:
+      - sourceName: source
+        from: 0
+        to: 3
+    - targetName: height
+      components:
+      - sourceName: source
+        from: 0
+        to: 3
+    - targetName: curvature
+      components:
+      - sourceName: curvature
+        from: 0
+        to: 3
+    textureParameters:
+    - textureName: RustedMetalFence - baseColor
+      wrapMode: 0
+      filterMode: 1
+      aniso: 1
+    - textureName: RustedMetalFence - normal
+      wrapMode: 0
+      filterMode: 1
+      aniso: 1
+    - textureName: RustedMetalFence - roughness
+      wrapMode: 0
+      filterMode: 1
+      aniso: 1
+    - textureName: RustedMetalFence - metallic
+      wrapMode: 0
+      filterMode: 1
+      aniso: 1
+    - textureName: RustedMetalFence - ambientOcclusion
+      wrapMode: 0
+      filterMode: 1
+      aniso: 1
+    - textureName: RustedMetalFence - height
+      wrapMode: 0
+      filterMode: 1
+      aniso: 1
+    - textureName: RustedMetalFence - curvature
+      wrapMode: 0
+      filterMode: 1
+      aniso: 1
+    colorSpaceList: []
+    inputTextureMap: []
+    targetSettingList:
+    - label: Default
+      bOverride: 0
+      bLockRatio: 1
+      textureWidth: 512
+      textureHeight: 512
+      textureFormatMode: 0
+      normalCompressed: 0
+      bGenerateOnLoad: 1
+    - label: Default
+      bOverride: 0
+      bLockRatio: 1
+      textureWidth: 512
+      textureHeight: 512
+      textureFormatMode: 0
+      normalCompressed: 0
+      bGenerateOnLoad: 0
+    material: {fileID: 4177298781113668987, guid: 8849a404ce70e9b4fb3e83239c0f1b80,
+      type: 3}
+    generatedTextures:
+    - {fileID: -5777625297801279091, guid: 8849a404ce70e9b4fb3e83239c0f1b80, type: 3}
+    - {fileID: 1740708617928151898, guid: 8849a404ce70e9b4fb3e83239c0f1b80, type: 3}
+    - {fileID: -596440984359383536, guid: 8849a404ce70e9b4fb3e83239c0f1b80, type: 3}
+    - {fileID: 6023357039310476431, guid: 8849a404ce70e9b4fb3e83239c0f1b80, type: 3}
+    - {fileID: 8730572738785582823, guid: 8849a404ce70e9b4fb3e83239c0f1b80, type: 3}
