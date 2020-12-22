@@ -102,7 +102,6 @@ public class RoundSysytem
                 {
                     System.Threading.Thread.Sleep(1);
                 }
-                TimeLine.Instance.Moved = false;
                 //事件?增援?newcome
             }
 
