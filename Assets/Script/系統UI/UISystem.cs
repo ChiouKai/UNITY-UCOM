@@ -295,12 +295,17 @@ public class UISystem : MonoBehaviour
         Target = TurnCha.AttakeAbleList.First; 
         TurnCha.PreAttack = true;
         TurnCha.ChaChangeTarget(Target.Value.Item1);
-        RT.anchoredPosition3D = new Vector3(0, 5, 0);
+        RT.anchoredPosition3D = new Vector3(0, 45, 0);       
         ButtonText.text = "開火";
         DescribeText.text = "朝向目標開火。";
         LeftText.text = "傷害:" + TurnCha.Gun.Damage[0]+"~"+TurnCha.Gun.Damage[1];
         RightText.text = "命中率:" + Target.Value.Item3 + "%";
         RunUI = ChangeAttakeTarget;
+    }
+
+    private void FixedUpdate()
+    {
+        Debug.Log(RT.anchoredPosition3D);
     }
     public void Attack()//button
     {

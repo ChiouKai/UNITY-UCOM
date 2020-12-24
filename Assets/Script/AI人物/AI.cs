@@ -78,7 +78,6 @@ public class AI : MonoBehaviour
             else if (FoB < -1 / Mathf.Sqrt(2))
             {
                 Am.SetBool("Back", true);
-                Am.SetTrigger("Turn");
                 MV = BackTurn;
                 TileCount = (TileCount + 2) % 4;
             }
@@ -88,14 +87,12 @@ public class AI : MonoBehaviour
                 if (LoR.y > 0.0f)
                 {
                     Am.SetBool("Right", true);
-                    Am.SetTrigger("Turn");
                     MV = RightTurn;
                     TileCount = (TileCount + 3) % 4;
                 }
                 else
                 {
                     Am.SetBool("Left", true);
-                    Am.SetTrigger("Turn");
                     MV = LeftTurn;
                     TileCount = (TileCount + 1) % 4;
                 }
@@ -180,7 +177,6 @@ public class AI : MonoBehaviour
             else if (FoB < -1 / Mathf.Sqrt(2))
             {
                 Am.SetBool("Back", true);
-                Am.SetTrigger("Turn");
                 MV = BackTurn;
             }
             else
@@ -189,13 +185,11 @@ public class AI : MonoBehaviour
                 if (LoR.y > 0.0f)
                 {
                     Am.SetBool("Right", true);
-                    Am.SetTrigger("Turn");
                     MV = RightTurn;
                 }
                 else
                 {
                     Am.SetBool("Left", true);
-                    Am.SetTrigger("Turn");
                     MV = LeftTurn;
                 }
 
@@ -281,7 +275,7 @@ public class AI : MonoBehaviour
 
     public IEnumerator Skip()//跳過回合
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
         AP = 0;
         Turn = false;
         MV = null;
@@ -834,12 +828,10 @@ public class AI : MonoBehaviour
         if (LoR.y > 0)
         {
             Am.SetBool("Right", true);
-            Am.SetTrigger("Turn");
         }
         else
         {
             Am.SetBool("Left", true);
-            Am.SetTrigger("Turn");
         }
     }
     protected void FaceTarget()
@@ -882,7 +874,7 @@ public class AI : MonoBehaviour
 
     public IEnumerator FireWait()
     {
-        yield return new WaitForSeconds(2f);//todo殺人可能要別的方式判斷回合結束
+        yield return new WaitForSeconds(1.5f);
         Turn = false;
         ResetBool();
     }
