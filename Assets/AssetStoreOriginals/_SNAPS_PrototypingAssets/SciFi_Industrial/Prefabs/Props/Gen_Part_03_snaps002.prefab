@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 33247552828751230}
   - component: {fileID: 23981744234885834}
   - component: {fileID: 8760740590877971715}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Gen_Part_03_snaps002
-  m_TagString: Untagged
+  m_TagString: En
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 8
@@ -55,6 +55,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -66,6 +67,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -89,5 +91,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.0253906, y: 1.0253937, z: 1.2500873}
-  m_Center: {x: 0.0000002682209, y: -0.00000011920929, z: -0.24995622}
+  m_Size: {x: 0.86279106, y: 1.0253937, z: 1.1879544}
+  m_Center: {x: 0.005178213, y: -0.00000011920929, z: -0.34650326}

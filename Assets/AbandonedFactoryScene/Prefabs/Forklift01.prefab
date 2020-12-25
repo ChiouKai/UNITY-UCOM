@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 33699587564571786}
   - component: {fileID: 23576789463978156}
   - component: {fileID: 64733752775173160}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Lift2
-  m_TagString: Untagged
+  m_TagString: En
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1003121441836038}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.055, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4160935838873186}
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 33719273881144394}
   - component: {fileID: 23827208111184588}
   - component: {fileID: 65944241512377998}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Lift1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -197,9 +197,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4131257357792688}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Forklift01
-  m_TagString: Untagged
+  m_TagString: En
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -213,7 +213,7 @@ Transform:
   m_GameObject: {fileID: 1466773504272084}
   m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_Children:
   - {fileID: 4044286515513410}
   - {fileID: 4160935838873186}
@@ -231,10 +231,10 @@ GameObject:
   - component: {fileID: 4044286515513410}
   - component: {fileID: 33015701842696126}
   - component: {fileID: 23970297780593000}
-  - component: {fileID: 64343288126709828}
-  m_Layer: 0
+  - component: {fileID: 2710693284477139460}
+  m_Layer: 9
   m_Name: FolkLift01
-  m_TagString: Untagged
+  m_TagString: En
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -247,7 +247,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1539922494461268}
   m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.008, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4131257357792688}
@@ -300,8 +300,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &64343288126709828
-MeshCollider:
+--- !u!65 &2710693284477139460
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -310,7 +310,6 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: f4f1e595553791f4fa0e6680b15fb949, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 2.67033, y: 2.3708103, z: 1.0543872}
+  m_Center: {x: -0.07276356, y: 1.1854051, z: -0.037697732}

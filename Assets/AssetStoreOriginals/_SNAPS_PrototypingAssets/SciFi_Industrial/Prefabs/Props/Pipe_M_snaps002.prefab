@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 4238871909904612}
   - component: {fileID: 33222298950565538}
   - component: {fileID: 23428897077881996}
-  - component: {fileID: 64429655646330596}
-  m_Layer: 9
+  - component: {fileID: 4090091455708184501}
+  m_Layer: 0
   m_Name: Pipe_M_snaps002
-  m_TagString: En
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 8
@@ -80,8 +80,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &64429655646330596
-MeshCollider:
+--- !u!65 &4090091455708184501
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -90,7 +90,6 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: dec801b251362a24e832ae5ecc9e640d, type: 2}
+  serializedVersion: 2
+  m_Size: {x: 2.0000002, y: 1.0000005, z: 1}
+  m_Center: {x: 1.0000001, y: 0.00000014901161, z: 0}
