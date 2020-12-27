@@ -20,7 +20,7 @@ public class UISystem : MonoBehaviour
     public Text DescribeText;
     public Text LeftText;
     public Text RightText;
-    LinkedListNode<(AI, Vector3, int)> Target;
+    LinkedListNode<(AI, int, int)> Target;
     public GameObject MouseOnTile;
 
     static public UISystem getInstance()
@@ -54,14 +54,13 @@ public class UISystem : MonoBehaviour
        
         RT = BelowButtonAndText.GetComponent<RectTransform>();
         Round = new System.Threading.Thread(m_Roundsystem.RoundStart);
-        
     }
 
 
     private void Update()
     {
-        TurnRun?.Invoke();
-        RunUI?.Invoke();
+        TurnRun?.Invoke();//控制角色UI
+        RunUI?.Invoke();//控制UI
     }
     private void LateUpdate()
     {
@@ -82,13 +81,13 @@ public class UISystem : MonoBehaviour
 
     public void ShowActionUI()
     {
-        BelowButtonAndText.SetActive(true);
+       // BelowButtonAndText.SetActive(true);
     }
 
     public void CloseActionUI()
     {
-        RT.anchoredPosition3D = new Vector3(0, -45, 0);
-        BelowButtonAndText.SetActive(false);
+        //RT.anchoredPosition3D = new Vector3(0, -45, 0);
+        //BelowButtonAndText.SetActive(false);
         RunUI = null;
     }
 
@@ -107,11 +106,11 @@ public class UISystem : MonoBehaviour
             MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.06f;
             MouseOnTile.GetComponent<Renderer>().enabled = true;
         }
-        if (T.selectable)
+        if (T.selectable && TurnCha.Moving != true)
         {
             var path = TurnCha.MoveToTile(T);
             DrawHeadingLine(path);
-            TurnCha.Prepera = true;
+            Prepera = true;
         }
 
     }
@@ -121,7 +120,7 @@ public class UISystem : MonoBehaviour
         if (T.selectable)
         {
             Destroy(GLR);
-            TurnCha.Prepera = false;
+            Prepera = false;
         }
     }
 
@@ -138,15 +137,22 @@ public class UISystem : MonoBehaviour
     public GameObject Yellow;
     public List<GameObject> LRList;
     private GameObject GLR;
+    public bool Prepera = false;
 
-    public void ChaStartTurn()
+    public void PlayerStartTurn()
     {
         TurnCha.MoveRange();
         TurnCha.AttakeableDetect();
         TurnRun = null;
     }
+    public void EnemyStartTurn()
+    {
+        TurnCha.FindSelectableTiles();
+        TurnCha.ConfirmAction();
+        TurnRun = null;
+    }
 
-    public void DrawMRLine(Queue<Tile> Process, GameObject LR,float ap)
+    public void DrawMRLine(Queue<Tile> Process, GameObject LR,float ap)//畫移動範圍線
     {
         int Count = Process.Count;
         for (int i = 0; i < Count; ++i)
@@ -247,7 +253,7 @@ public class UISystem : MonoBehaviour
         }
     }
 
-    public void DrawHeadingLine(Stack<(Tile, AI.MoveWay)> path)
+    public void DrawHeadingLine(Stack<(Tile, AI.MoveWay)> path)//畫移動路徑線
     {
         GLR = Instantiate(Blue);
         LineRenderer LR = GLR.GetComponent<LineRenderer>();
@@ -262,7 +268,7 @@ public class UISystem : MonoBehaviour
     }
 
 
-    public void LRDestory(GameObject LR)
+    public void LRDestory(GameObject LR)//把線都清光
     {
          Destroy(LR);
     }
@@ -288,24 +294,19 @@ public class UISystem : MonoBehaviour
 
     public void PerAttatk()//button
     {
-        if (TurnCha.AttakeAbleList.Count == 0)
+        if (TurnCha.AttakeableList.Count == 0)
         {
             return;
         }
-        Target = TurnCha.AttakeAbleList.First; 
-        TurnCha.PreAttack = true;
+        Target = TurnCha.AttakeableList.First;
+        TurnCha.ChangePreAttakeIdle();
         TurnCha.ChaChangeTarget(Target.Value.Item1);
-        RT.anchoredPosition3D = new Vector3(0, 45, 0);       
+        //RT.anchoredPosition3D = new Vector3(0, 45, 0);
         ButtonText.text = "開火";
         DescribeText.text = "朝向目標開火。";
         LeftText.text = "傷害:" + TurnCha.Gun.Damage[0]+"~"+TurnCha.Gun.Damage[1];
         RightText.text = "命中率:" + Target.Value.Item3 + "%";
         RunUI = ChangeAttakeTarget;
-    }
-
-    private void FixedUpdate()
-    {
-        Debug.Log(RT.anchoredPosition3D);
     }
     public void Attack()//button
     {
@@ -320,7 +321,7 @@ public class UISystem : MonoBehaviour
             Target = Target.Next;
             if (Target == null)
             {
-                Target = TurnCha.AttakeAbleList.First;
+                Target = TurnCha.AttakeableList.First;
             }
             TurnCha.ChaChangeTarget(Target.Value.Item1);
 
@@ -368,7 +369,6 @@ public class UISystem : MonoBehaviour
         TLine.TEndLogo(TurnCha, Count);
         TurnRun = null;
     }
-
     public void TurnEnd()
     {
         TLine.TEndLogo(GetComponent<AI>(), Sequence.Count - 1);

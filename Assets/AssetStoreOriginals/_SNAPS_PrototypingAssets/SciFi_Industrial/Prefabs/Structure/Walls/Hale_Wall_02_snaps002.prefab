@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3131439783141856405}
   m_Layer: 9
   m_Name: Hale_Wall_02_snaps002
-  m_TagString: Untagged
+  m_TagString: En
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 8
@@ -92,5 +92,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 6, z: 3}
-  m_Center: {x: 0, y: 3, z: 1.5}
+  m_Size: {x: 0.9121209, y: 6, z: 3}
+  m_Center: {x: 0.01744935, y: 3, z: 1.5}

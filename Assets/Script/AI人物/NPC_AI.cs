@@ -8,16 +8,19 @@ public class NPC_AI : AI
 
     // Start is called before the first frame update
     void Start()
-    {
+    { 
         CurrentTile.walkable = false;
         Vector3 CTP = CurrentTile.transform.position;
         ChaHeight = transform.position.y - CTP.y;
         CTP.y = transform.position.y;
         transform.position = CTP;
-        //Cha = GetComponent<Character>();
+        Cha = GetComponent<Character>();
         Am = GetComponent<Animator>();
         EnemyLayer = 1 << 11;
-        UI = UISystem.getInstance();
+        Gun = GetComponent<Weapon>();
+        TileCount = FindDirection(transform.forward);
+        Idle = NoCover;
+        Enemies = RoundSysytem.GetInstance().Humans;
     }
 
     // Update is called once per frame
@@ -27,25 +30,35 @@ public class NPC_AI : AI
 
         if (!Turn)
         {
-            NoCover();
-        }
-        else if (!Moving)
-        {
-            if(MV != null)
-                StartCoroutine(MV());
-            //AttakeableDetect();
-            //FindSelectableTiles();
-            //CheckMouse();
+            Idle();
         }
         else if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
         {
-            Move();
+            Move2();
 
+        }
+        else if (NPCPreaera)
+        {
+            DoActing?.Invoke();
+        }
+        else if (PreAttack)
+        {
+            PreAttakeIdle();
         }
 
     }
     private void FixedUpdate()
     {
+        float MinDis = 99f;
+        foreach (AI EnCha in Enemies)
+        {
+            float dis = (EnCha.transform.position - transform.position).magnitude;
+            if (dis < MinDis)
+            {
+                MinDis = dis;
+                enemy = EnCha.transform;
+            }
+        }
         Ediv = (enemy.position - transform.position).normalized;
     }
     private void LateUpdate()
@@ -58,7 +71,17 @@ public class NPC_AI : AI
         {
             Am.Play("Run");
         }
-
+        //else if (PreAttack)
+        //{
+        //    if (ChangeTarget)
+        //    {
+        //        FaceTarget();
+        //    }
+        //    else
+        //    {
+        //        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.01f);
+        //    }
+        //}
     }
 
 

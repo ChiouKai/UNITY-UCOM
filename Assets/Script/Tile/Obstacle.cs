@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    public int Hp;
+    public int Hp=10;
     public Tile CurrentTile;
-    public void TakeDamage()
+    public void TakeDamage(int damage)
     {
-
+        Hp -= damage;
     }
     
 }

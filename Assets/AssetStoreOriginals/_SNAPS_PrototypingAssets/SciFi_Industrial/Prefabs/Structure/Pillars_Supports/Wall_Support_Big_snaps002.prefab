@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 4951343261086952}
   - component: {fileID: 33040700654805710}
   - component: {fileID: 23892896761645040}
-  - component: {fileID: 64333683885339614}
+  - component: {fileID: 1884273520958987232}
   m_Layer: 0
   m_Name: Wall_Support_Big_snaps002
-  m_TagString: En
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 8
@@ -82,8 +82,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &64333683885339614
-MeshCollider:
+--- !u!65 &1884273520958987232
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -92,7 +92,6 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 655c4609913f8994ba8f29e41f3a6268, type: 2}
+  serializedVersion: 2
+  m_Size: {x: 3.1405485, y: 1.7727275, z: 2.0001411}
+  m_Center: {x: 1.5702742, y: 0.88636374, z: 0}

@@ -16,7 +16,8 @@ public class Tile : MonoBehaviour
     public Tile Parent;
     public float distance = 0;
     float Grid = 0.67f;
-    List<GameObject> HeadLine;
+
+
     public enum Cover
     {
         None=0,
@@ -29,6 +30,7 @@ public class Tile : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        //WalkableTest();
         AdjCoverList = new List<Cover>();
         //FindNeighbors();
         UpdateCover();
@@ -45,10 +47,10 @@ public class Tile : MonoBehaviour
         target = true;
         GetComponent<Renderer>().material = Resources.Load<Material>("targetTile");
     }
-    public void SelectableChange1()
+    public void WalkableTest()
     {
-        selectable = true;
-        GetComponent<Renderer>().material = Resources.Load<Material>("selectable1");
+        if(walkable)
+            GetComponent<Renderer>().material = Resources.Load<Material>("selectable1");
     }
     public void SelectableChange2()
     {
@@ -71,6 +73,7 @@ public class Tile : MonoBehaviour
         if (other.gameObject.CompareTag("En"))
         {
             walkable = false;
+            GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
             //GetComponent<Renderer>().enabled = false;
         }
     }

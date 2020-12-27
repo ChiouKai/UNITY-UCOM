@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8707447123285606955}
   m_Layer: 0
   m_Name: Pipe_M_Corner_01_snaps002
-  m_TagString: Untagged
+  m_TagString: En
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 8

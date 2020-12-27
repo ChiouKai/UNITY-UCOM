@@ -19,7 +19,7 @@ public class LogoScript : MonoBehaviour
 
     public void LogoInsert()
     {
-        if ((RT.anchoredPosition- InsertLocation).magnitude > 0.01f)
+        if ((RT.anchoredPosition- InsertLocation).magnitude > 0.5f)
         {
             RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 0.05f);
         }
@@ -35,7 +35,7 @@ public class LogoScript : MonoBehaviour
 
     public void LogoUP()
     {
-        if ((RT.anchoredPosition - InsertLocation).magnitude > 0.01f)
+        if ((RT.anchoredPosition - InsertLocation).magnitude > 0.5f)
         {
             RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 0.03f);
         }
@@ -49,9 +49,9 @@ public class LogoScript : MonoBehaviour
 
     public void LogoLeave()
     {
-        if ((RT.anchoredPosition - LeaveLocation).magnitude > 0.01f)
+        if ((RT.anchoredPosition - LeaveLocation).magnitude > 0.5f)
         {
-            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.1f);
+            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.05f);
         }
         else
         {
@@ -61,12 +61,13 @@ public class LogoScript : MonoBehaviour
     }
     public void LogoDeath()
     {
-        if ((RT.anchoredPosition - LeaveLocation).magnitude > 0.1f)
+        if ((RT.anchoredPosition - LeaveLocation).magnitude > 0.5f)
         {
             RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.05f);
         }
         else
         {
+            RoundSysytem.GetInstance().DeathChecked = true;
             TimeLine.Instance.LogoList.Remove(this);
             Destroy(gameObject);
         }

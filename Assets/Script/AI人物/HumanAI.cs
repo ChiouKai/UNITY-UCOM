@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.ProBuilder;
+using UnityEngine.Playables;
 
 public class HumanAI : AI
 {
@@ -13,7 +15,7 @@ public class HumanAI : AI
         ChaHeight = transform.position.y - CTP.y;
         CTP.y = transform.position.y;
         transform.position = CTP;
-        //Cha = GetComponent<Character>();
+        Cha = GetComponent<Character>();
         Am = GetComponent<Animator>();
         EnemyLayer = 1 << 10;
         Gun = GetComponent<Weapon>();
@@ -21,33 +23,23 @@ public class HumanAI : AI
         Idle = NoCover;
         UI = UISystem.getInstance();
         Enemies = RoundSysytem.GetInstance().Aliens;
+        playableDirector = GetComponent<PlayableDirector>();
     }
 
     // Update is called once per frame
     void Update()
-    {    
-        
+    {
         stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-        if (!Turn)
-        {
-            Idle();
-        }
-        else if (!Moving)
-        {
-            if (PreAttack)
-            {
 
-            }
-            else
-            {
-                if(Prepera)
-                    CheckMouse();
-            }
-        }
-        else if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
+        if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
         {
             Move();
         }
+        else if (!PreAttack&&!Am.GetBool("Run"))
+        {
+            Idle();
+        }
+       
     }
     private void LateUpdate()
     {
@@ -58,19 +50,19 @@ public class HumanAI : AI
         if (Moving)
         {
             Am.Play("Run");
-        }else if (PreAttack)
+        }
+        else if (!Moving)
         {
-            if (ChangeTarget)
+            if (PreAttack)
             {
-                FaceTarget();
+                PreAttakeIdle();
             }
             else
             {
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.01f);
+                if (UI.Prepera)
+                    CheckMouse();
             }
- 
         }
-
     }
     private void FixedUpdate()
     {
@@ -86,6 +78,8 @@ public class HumanAI : AI
         }
         Ediv = (enemy.position - transform.position).normalized;
     }
+
+
     public override IEnumerator LeftTurn()
     {
         yield return null;
@@ -94,6 +88,7 @@ public class HumanAI : AI
         {
             
             Am.SetBool("Left", false);
+            Am.SetBool("Turn", false);
             MV = null;
         }
         else
@@ -107,6 +102,7 @@ public class HumanAI : AI
         {
             
             Am.SetBool("Right", false);
+            Am.SetBool("Turn", false);
             MV = null;
         }
         else
@@ -120,10 +116,15 @@ public class HumanAI : AI
         {
             
             Am.SetBool("Back", false);
+            Am.SetBool("Turn", false);
             MV = null;
         }
         else
             yield return BackTurn();
     }
+
+
+
     
+
 }
