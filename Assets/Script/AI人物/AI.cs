@@ -922,7 +922,6 @@ public class AI : MonoBehaviour
         PreAttack = true;
         Target = target;
        
-
         TargetDir = Target.transform.position - transform.position;
         if (Am.GetBool("FCover"))
         {
@@ -1012,10 +1011,11 @@ public class AI : MonoBehaviour
                 AP = 0;
                 AttakeableList.Clear();
                 UI.LRDestory();
-                Attack = false;
                 Am.SetBool("Fire", true);
                 RemoveVisitedTiles();
+
                 StartCoroutine(FireWait());
+
             }
 
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
@@ -1049,7 +1049,7 @@ public class AI : MonoBehaviour
                     AP = 0;
                     AttakeableList.Clear();
                     UI.LRDestory();
-                    Attack = false;
+                    Am.SetBool("Aim", false);
                     Am.SetBool("Fire", true);
                     RemoveVisitedTiles();
                     StartCoroutine(FireWait());
@@ -1095,6 +1095,7 @@ public class AI : MonoBehaviour
                     AP = 0;
                     AttakeableList.Clear();
                     UI.LRDestory();
+                    Am.SetBool("Aim", false);
                     Am.SetBool("Fire", true);
                     RemoveVisitedTiles();
                     StartCoroutine(FW());
@@ -1158,7 +1159,7 @@ public class AI : MonoBehaviour
             }
             else
             {
-                transform.position = Vector3.Lerp(transform.position, AttackPosition, 0.08f);
+                transform.position = Vector3.Lerp(transform.position, AttackPosition, 0.07f);
                 //transform.position += -transform.forward * MoveSpeed * Time.deltaTime*0.2f;
             }
         }
@@ -1170,7 +1171,7 @@ public class AI : MonoBehaviour
 
     public void Fire(LinkedListNode<(AI target, int location, int aim)> attacklist)
     {
-        int i = 100;//Random.Range(0, 100);
+        int i = 100;// Random.Range(0, 100);
         if (attacklist.Value.aim < i)//Miss
         {
             Miss = true;
@@ -1179,7 +1180,7 @@ public class AI : MonoBehaviour
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (Target.transform.position
-                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f))) - ShotPoint,out RH))
+                    + new Vector3(Random.Range(-1.34f, 1.34f), Random.Range(-1.34f, 1.34f), Random.Range(-1.34f, 1.34f))) - ShotPoint,out RH))
                 {
                     if (RH.collider.tag == "En")
                     {
@@ -1245,32 +1246,35 @@ public class AI : MonoBehaviour
         if (!Miss)
         {
             TargetDir = AttackPoint - FirePoint.position;
+            B.GetComponent<bullet>().SetAttackPoint(AttackPoint);
         }
         else
         {
             TargetDir = Target.BeAttakePoint.position - FirePoint.position;
+            B.GetComponent<bullet>().SetAttackPoint(Target.BeAttakePoint.position);
         }
+        
         B.transform.forward = TargetDir;
-        PreAttack = false;
+        Attack = false;
     }
 
     public delegate IEnumerator FWait();
     public FWait FW;
     public IEnumerator FireWait()//攻擊後緩衝時間給下回合
     {
-        Attack = false;
-        yield return new WaitUntil(() => PreAttack == false);
-        yield return new WaitForSeconds(2f);
+
         PreAttack = false;
+        yield return new WaitUntil(() => Attack == false);
+        yield return new WaitForSeconds(2f);
         Turn = false;
         ResetBool();
     }
     public IEnumerator FullCoverFireWait()
     {
    
-        yield return new WaitUntil(() => stateinfo.normalizedTime >= 1.0f);
+        //yield return new WaitUntil(() => stateinfo.normalizedTime >= 1.0f);
         PreAttakeIdle = PreAtkFCoverAfterAttack;
-
+        
         Am.SetBool("Back", true);
         yield return new WaitUntil(() => stateinfo.IsName("BackToCover"));
 
@@ -1284,7 +1288,8 @@ public class AI : MonoBehaviour
     }
     public IEnumerator FullCoverFireWait2()
     {
-        yield return new WaitUntil(() => PreAttack == false);
+        PreAttack = false;
+        yield return new WaitUntil(() => stateinfo.IsName("Fire"));
         yield return new WaitForSeconds(2f);
         transform.forward = Direction(TileCount);
         Turn = false;
@@ -1471,18 +1476,26 @@ public class AI : MonoBehaviour
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                Point += 4;
+                Point += 3;
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
-                Point += 2;
+                Point += 1;
             }
             if (MinDis > Edir.magnitude)
             {
                 MinDis = Edir.magnitude;
             }
         }
-        Point += 5 / ((int)MinDis+1);
+        int i = 10 / ((int)MinDis + 1);
+        if (i > 5)
+        {
+            Point += 5;
+        }
+        else
+        {
+            Point += i;
+        }
         //可用能力巡一遍，選擇得分高的能力 再拿出來加分
         (Action, int point) Sec = (null, 0);
 
@@ -1621,25 +1634,78 @@ public class AI : MonoBehaviour
     {
         ChaChangeTarget(AttakeTarget.Item1);
         NPCPreaera = false;
-        DoActing = FireCheck;
-    }
-    public void FireCheck()
-    {
-        NPCPreaera = false;
-        Attack = true;
-        DoActing = null;
+        DoActing = Fire;        
     }
 
     public void Fire()
     {
-        Debug.Log("fire");
-        AP = 0;
-        Am.SetBool("Fire", true);
-        AttakeTarget.Item1.BeDamaged(Gun.Damage[0]);
-        RemoveVisitedTiles();
-        StartCoroutine(FireWait());
-        PreAttack = false;
-        NPCPreaera = false;
+        int i = Random.Range(0, 100);
+        if (AttakeTarget.Item3 < i)//Miss
+        {
+            Miss = true;
+            RaycastHit RH;
+            Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(AttakeTarget.Item2);
+            while (true)
+            {
+                if (Physics.Raycast(ShotPoint, (AttakeTarget.Item1.transform.position
+                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f))) - ShotPoint, out RH))
+                {
+                    if (RH.collider.tag == "En")
+                    {
+                        AttackPoint = RH.point;
+
+                        var RHObsetacle = RH.transform.GetComponent<Obstacle>();
+                        if (RHObsetacle != null)
+                            RHObsetacle.TakeDamage(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            Miss = false;
+            AttackPoint = AttakeTarget.Item1.BeAttakePoint.position;
+            Target.BeDamaged(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
+        }
+
+
+        if (Am.GetBool("FCover"))
+        {
+            if (AttakeTarget.Item2 == -1)
+            {
+                Am.SetBool("Aim", true);
+                AttackPosition = CurrentTile.transform.position;
+                FW = FullCoverFireWait2;
+            }
+            else
+            {
+                Am.SetBool("Run", true);
+                Vector3 dir = Direction(AttakeTarget.Item2);
+                transform.forward = dir;
+                AttackPosition = transform.position + dir * 0.67f;
+                FW = FullCoverFireWait;
+            }
+        }
+        else if (Am.GetBool("HCover"))
+        {
+            Am.SetBool("Aim", true);
+        }
+        else
+        {
+            ;
+        }
+        Attack = true;
+        DoActing = null;
+
+
+        //AP = 0;
+        //AttakeableList.Clear();
+        //UI.LRDestory();
+        //Am.SetBool("Fire", true);
+        //RemoveVisitedTiles();
+        //StartCoroutine(FireWait());
+        //PreAttack = false;
     }
 
     protected void PreMove()

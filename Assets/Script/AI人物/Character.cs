@@ -4,7 +4,7 @@ using UnityEngine;
 
 public  class Character :MonoBehaviour
 {
-    
+    public int MaxHP = 5;
     public int HP = 5;
     public float Mobility= 8.0f;//移動距離
     public int Speed = 5;

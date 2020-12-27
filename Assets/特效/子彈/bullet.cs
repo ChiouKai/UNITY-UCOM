@@ -15,16 +15,26 @@ public class bullet : MonoBehaviour
     public GameObject wall_par;
     public GameObject HumanBlood;
     public GameObject AlienBlood;
+    public Vector3 AttackPoint;
     // Update is called once per frame
     void FixedUpdate()
     {
-        life_time += Time.deltaTime;
-
-        this.transform.position += transform.forward * Time.deltaTime * 25.0f;
-        if (life_time > 5f)
+        if ((transform.position - AttackPoint).magnitude < 0.3f)
         {
             Destroy(gameObject);
         }
+        else
+        {
+            transform.position = Vector3.MoveTowards(transform.position, AttackPoint, 20f);
+        }
+
+        //this.transform.position += transform.forward * Time.deltaTime * 25.0f;
+    }
+
+
+    public void SetAttackPoint(Vector3 point)
+    {
+        AttackPoint = point;
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -36,7 +46,7 @@ public class bullet : MonoBehaviour
             fire.transform.forward = DIV;//火花方向 = 子彈的反方向
             fire.SetActive(true); //讓火花顯示
             Destroy(fire, 0.7f); //一秒後刪除火花效果
-            Destroy(gameObject);
+
         }
         else if (collision.gameObject.tag == "Human")
         {
@@ -45,7 +55,7 @@ public class bullet : MonoBehaviour
             Blood.transform.forward = DIV;//火花方向 = 子彈的反方向
             Blood.SetActive(true); //讓火花顯示
             Destroy(Blood, 0.7f); //一秒後刪除火花效果
-            Destroy(gameObject);
+
         }
         else if (collision.gameObject.tag == "Alien")
         {
@@ -54,7 +64,7 @@ public class bullet : MonoBehaviour
             Blood.transform.forward = DIV;//火花方向 = 子彈的反方向
             Blood.SetActive(true); //讓火花顯示
             Destroy(Blood, 0.7f); //一秒後刪除火花效果
-            Destroy(gameObject);
+
         }
     }
 }
