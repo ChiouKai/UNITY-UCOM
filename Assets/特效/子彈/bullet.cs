@@ -23,7 +23,7 @@ public class bullet : MonoBehaviour
         if ((transform.position-AttackPoint).magnitude <0.5f)
         {
             transform.position = AttackPoint;
-            Destroy(gameObject);
+            Destroy(gameObject,0.1f);
         }
         else
         {

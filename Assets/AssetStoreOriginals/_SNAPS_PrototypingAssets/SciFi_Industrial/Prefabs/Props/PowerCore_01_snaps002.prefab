@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3304951585648960226}
   m_Layer: 0
   m_Name: PowerCore_01_snaps002
-  m_TagString: Untagged
+  m_TagString: En
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 8

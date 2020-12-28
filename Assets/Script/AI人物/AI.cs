@@ -599,7 +599,11 @@ public class AI : MonoBehaviour
 
             }
             else
+            {
                 Turn = false;
+                PreAttack = false;
+                NPCPreaera = false;
+            }
         }
     }
 
@@ -899,6 +903,7 @@ public class AI : MonoBehaviour
         {
             if (Am.GetBool("FCover") == true)
             {
+                PreAttakeIdle = PreAtkFullCover;
                 StartCoroutine(AIWaitPreAtkChange());
                 return;
             }
@@ -924,6 +929,7 @@ public class AI : MonoBehaviour
         {
             if (Am.GetBool("HCover") == true)
             {
+                PreAttakeIdle = PreAtkHalfCover;
                 StartCoroutine(AIWaitPreAtkChange());
                 return;
             }
@@ -940,6 +946,7 @@ public class AI : MonoBehaviour
         {
             if(!Am.GetBool("HCover")&& !Am.GetBool("FCover"))
             {
+                PreAttakeIdle = PreAtkNoCover;
                 Am.SetBool("Aim", true);
                 StartCoroutine(AIWaitPreAtkChange());
                 return;
@@ -966,7 +973,7 @@ public class AI : MonoBehaviour
         PreAttack = true;
         Target = target;
 
-         TargetDir = Target.transform.position - transform.position;
+        TargetDir = Target.transform.position - transform.position;
         TargetDir.y = 0;
         if (Am.GetBool("FCover"))
         {
@@ -1309,6 +1316,8 @@ public class AI : MonoBehaviour
         yield return new WaitUntil(() => Attack == false);
         yield return new WaitForSeconds(2f);
         Turn = false;
+        NPCPreaera = false;
+        PreAttack = false;
         ResetBool();
     }
     public IEnumerator FullCoverFireWait()
@@ -1327,6 +1336,8 @@ public class AI : MonoBehaviour
         yield return new WaitUntil(() => PreAttack == false);
         transform.forward = Direction(TileCount);
         Turn = false;
+        PreAttack = false;
+        NPCPreaera = false;
         ResetBool();
     }
     public IEnumerator FullCoverFireWait2()
@@ -1336,6 +1347,8 @@ public class AI : MonoBehaviour
         yield return new WaitForSeconds(2f);
         transform.forward = Direction(TileCount);
         Turn = false;
+        PreAttack = false;
+        NPCPreaera = false;
         ResetBool();
     }
 
@@ -1483,17 +1496,18 @@ public class AI : MonoBehaviour
             }
             else
             {
-                NPCPreaera = false;
                 Turn = false;
+                PreAttack = false;
+                NPCPreaera = false;
                 ResetBool();
             }
-
         }
     }
     protected IEnumerator MoveWait()
     {
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(1.5f);
         DoActing = Acting2;
+        Acting2 = null;
     }
 
     
@@ -1685,6 +1699,8 @@ public class AI : MonoBehaviour
         //TargetDir = Target.transform.position - transform.position;
         //ChangePreAttakeIdle(TargetDir);
         //ChangeTarget = true;
+        TargetDir = AttakeTarget.Item1.transform.position - transform.position;
+        ChangePreAttakeIdle(TargetDir);
         ChaChangeTarget(AttakeTarget.Item1);
         PreAttack = true;
         NPCPreaera = false;
@@ -1752,7 +1768,7 @@ public class AI : MonoBehaviour
         Attack = true;
         DoActing = null;
         NPCPreaera = false;
-
+        AttakeTarget = (null, 0, 0);
         //AP = 0;
         //AttakeableList.Clear();
         //UI.LRDestory();
@@ -1781,7 +1797,6 @@ public class AI : MonoBehaviour
     {
         if (Acting == Move2)
         {
-            
             DoActing = PreMove;
             Acting = null;
         }
