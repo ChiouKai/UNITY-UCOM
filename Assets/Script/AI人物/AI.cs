@@ -873,7 +873,7 @@ public class AI : MonoBehaviour
     protected IEnumerator AIWaitPreAtkChange()
     {
         PreAttack = false;
-        yield return new WaitForSecondsRealtime(1.5f);
+        yield return new WaitForSecondsRealtime(1f);
         NPCPreaera = true;
         PreAttack = true;
     }
@@ -1333,7 +1333,7 @@ public class AI : MonoBehaviour
     {
         PreAttack = false;
         yield return new WaitUntil(() => stateinfo.IsName("Fire"));
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(2f);
         transform.forward = Direction(TileCount);
         Turn = false;
         ResetBool();
@@ -1357,7 +1357,7 @@ public class AI : MonoBehaviour
     private void AIDeath()
     {
         CurrentTile.walkable = true;
-        Am.SetBool("Death", true);
+        Am.Play("Death");
         Death = true;
         RoundSysytem.GetInstance().DeathKick(this);
         UI.DeathKick(this);
@@ -1365,9 +1365,10 @@ public class AI : MonoBehaviour
         Destroy(Cha);
         Destroy(this);
     }
-    private void OnCollisionEnter(Collision collision)
+
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.tag == "Bullet")//子彈打到才做動作
+        if (other.tag == "Bullet")//子彈打到才做動作
         {
             if (Cha.HP <= 0)
             {
@@ -1383,7 +1384,6 @@ public class AI : MonoBehaviour
             }
         }
     }
-
 
 
 
@@ -1478,19 +1478,29 @@ public class AI : MonoBehaviour
             Moving = false;
             if (Acting2 != null)
             {
-                DoActing = Acting2;
+                ResetBool();
+                StartCoroutine(MoveWait());
             }
             else
             {
                 NPCPreaera = false;
                 Turn = false;
+                ResetBool();
             }
 
         }
     }
-
+    protected IEnumerator MoveWait()
+    {
+        yield return new WaitForSeconds(1.0f);
+        DoActing = Acting2;
+    }
 
     
+
+
+
+
 
 
     protected Tile BestT;
@@ -1756,8 +1766,7 @@ public class AI : MonoBehaviour
     {
         MoveToTile(BestT);
         Am.SetBool("Run", true);
-        Am.SetBool("FCover", false);
-        Am.SetBool("HCover", false);
+        ResetBool();
         Idle = NoCover;
         Moving = true;
         RemoveVisitedTiles();//重置Tile狀態

@@ -4658,8 +4658,8 @@ GameObject:
   - component: {fileID: 4361976683952361216}
   - component: {fileID: 9123043218075789881}
   - component: {fileID: 7912185377291601922}
-  - component: {fileID: 937679483948599998}
   - component: {fileID: 6147510747601240494}
+  - component: {fileID: 8442664488878285845}
   m_Layer: 0
   m_Name: bullet_plus
   m_TagString: Bullet
@@ -4749,7 +4749,21 @@ MonoBehaviour:
     type: 3}
   AttackPoint: {x: 0, y: 0, z: 0}
   FirePoint: {x: 0, y: 0, z: 0}
---- !u!54 &937679483948599998
+--- !u!64 &6147510747601240494
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5932418272359934296}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &8442664488878285845
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4761,21 +4775,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &6147510747601240494
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5932418272359934296}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}

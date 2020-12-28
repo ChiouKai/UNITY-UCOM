@@ -97,13 +97,13 @@ public class UISystem : MonoBehaviour
 
     public void ShowActionUI()
     {
-       // BelowButtonAndText.SetActive(true);
+        BelowButtonAndText.SetActive(true);
     }
 
     public void CloseActionUI()
     {
-        //RT.anchoredPosition3D = new Vector3(0, -45, 0);
-        //BelowButtonAndText.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 240, 0);
+        BelowButtonAndText.SetActive(false);
         RunUI = null;
     }
 
@@ -324,7 +324,7 @@ public class UISystem : MonoBehaviour
         Target = TurnCha.AttakeableList.First;
         TurnCha.ChangePreAttakeIdle();
         TurnCha.ChaChangeTarget(Target.Value.Item1);
-        //RT.anchoredPosition3D = new Vector3(0, 45, 0);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
         ButtonText.text = "開火";
         DescribeText.text = "朝向目標開火。";
         LeftText.text = "傷害:" + TurnCha.Gun.Damage[0]+"~"+TurnCha.Gun.Damage[1];
