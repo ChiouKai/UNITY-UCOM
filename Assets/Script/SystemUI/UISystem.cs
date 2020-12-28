@@ -407,6 +407,10 @@ public class UISystem : MonoBehaviour
     }
     public void DeathKick(AI Cha)
     {
+        createhp HPBar;
+        HPBarDic.TryGetValue(Cha, out HPBar);
+        HPBarDic.Remove(Cha);
+        m_HP_Bar.Remove(HPBar);
         TLine.DestoryLogo(Cha);
     }
 
