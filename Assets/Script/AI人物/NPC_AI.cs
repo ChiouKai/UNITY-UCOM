@@ -35,17 +35,11 @@ public class NPC_AI : AI
         else if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
         {
             Move2();
-
         }
         else if (NPCPreaera)
         {
             DoActing?.Invoke();
         }
-        else if (PreAttack)
-        {
-            PreAttakeIdle();
-        }
-
     }
     private void FixedUpdate()
     {
@@ -67,7 +61,11 @@ public class NPC_AI : AI
         {
             StartCoroutine(MV());
         }
-        if (Moving)
+        if (PreAttack)
+        {
+            PreAttakeIdle();
+        }
+        else if (Moving)
         {
             Am.Play("Run");
         }
@@ -83,6 +81,7 @@ public class NPC_AI : AI
         //    }
         //}
     }
+
 
 
 

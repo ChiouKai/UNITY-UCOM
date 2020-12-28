@@ -131,9 +131,9 @@ public class Tile : MonoBehaviour
     }
     public void CoverCheck(Vector3 direction)
     {
-        if (Physics.Raycast(transform.position, direction + new Vector3(0, 0.67f, 0), 1.5f,1<<9))
+        if (Physics.Raycast(transform.position, direction + new Vector3(0, 0.67f, 0), 1.7f,1<<9))
             AdjCoverList.Add(Cover.FullC);
-        else if (Physics.Raycast(transform.position, direction, 0.6f ,1<<9))
+        else if (Physics.Raycast(transform.position, direction, 0.8f ,1<<9))
             AdjCoverList.Add(Cover.HalfC);
         else
             AdjCoverList.Add(Cover.None);

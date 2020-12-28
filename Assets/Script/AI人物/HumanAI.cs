@@ -23,7 +23,6 @@ public class HumanAI : AI
         Idle = NoCover;
         UI = UISystem.getInstance();
         Enemies = RoundSysytem.GetInstance().Aliens;
-        playableDirector = GetComponent<PlayableDirector>();
     }
 
     // Update is called once per frame
@@ -35,7 +34,7 @@ public class HumanAI : AI
         {
             Move();
         }
-        else if (!PreAttack&&!Am.GetBool("Run"))
+        else if (Target==null&&!Am.GetBool("Run"))
         {
             Idle();
         }

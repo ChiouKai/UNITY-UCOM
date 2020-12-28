@@ -11,30 +11,32 @@ using UnityEngine;
     碰到我方 -> 濺出紅血*/
 public class bullet : MonoBehaviour
 {
-    float life_time;
     public GameObject wall_par;
     public GameObject HumanBlood;
     public GameObject AlienBlood;
     public Vector3 AttackPoint;
+    public Vector3 FirePoint;
+    float distance;
     // Update is called once per frame
     void FixedUpdate()
     {
-        if ((transform.position - AttackPoint).magnitude < 0.3f)
+        if ((transform.position-AttackPoint).magnitude <0.5f)
         {
+            transform.position = AttackPoint;
             Destroy(gameObject);
         }
         else
         {
-            transform.position = Vector3.MoveTowards(transform.position, AttackPoint, 20f);
+            transform.position += transform.forward * Time.deltaTime * 20.0f;
         }
-
-        //this.transform.position += transform.forward * Time.deltaTime * 25.0f;
     }
 
 
-    public void SetAttackPoint(Vector3 point)
+    public void SetAttackPoint(Vector3 Position ,Vector3 point)
     {
+        FirePoint = Position;
         AttackPoint = point;
+        distance = (Position - point).magnitude;
     }
     private void OnCollisionEnter(Collision collision)
     {

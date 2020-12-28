@@ -41,13 +41,13 @@ public class UISystem : MonoBehaviour
         Humans = new List<AI>();
         for(int count = 0; count< GHumans.Length; ++count)
         {
-            Humans.Add(GHumans[count].GetComponent<HumanAI>());
+            Humans.Add(GHumans[count].GetComponent<AI>());
         }
         GameObject[] GAliens = GameObject.FindGameObjectsWithTag("Alien");
         Aliens = new List<AI>();
         for (int count = 0; count < GAliens.Length; ++count)
         {
-            Aliens.Add(GAliens[count].GetComponent<NPC_AI>());
+            Aliens.Add(GAliens[count].GetComponent<AI>());
         }
         m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
         LRList = new List<GameObject>();
@@ -59,6 +59,10 @@ public class UISystem : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            onExitClicked();
+        }
         TurnRun?.Invoke();//控制角色UI
         RunUI?.Invoke();//控制UI
     }
@@ -352,6 +356,7 @@ public class UISystem : MonoBehaviour
             RT.anchoredPosition3D = new Vector3(0, -45, 0);
             TurnCha.PreAttack = false;
             TurnCha.Am.SetBool("Aim", false);
+            TurnCha.Target = null;
             RunUI = null;
         }
     }
@@ -374,6 +379,7 @@ public class UISystem : MonoBehaviour
         {
             Cha = Cha.Next;
             CreateHP_Bar(Cha.Value.Cha, Cha.Value.Cha.Cha.MaxHP);
+            Cha.Value.Cha.UI = this;
         }
         Cha = Sequence.First;
         for (int i = 0; i < Sequence.Count-1; ++i)

@@ -232,7 +232,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.38387772
+  m_TransitionDuration: 0.36098945
   m_TransitionOffset: 0
   m_ExitTime: 0
   m_HasExitTime: 1
@@ -827,7 +827,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Turn
+  m_Name: HumanTurn
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Left
@@ -1224,7 +1224,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Run
+  m_Name: RunToAttack
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1816,7 +1816,7 @@ AnimatorStateMachine:
   m_ChildStateMachines:
   - serializedVersion: 1
     m_StateMachine: {fileID: 7737319480092964858}
-    m_Position: {x: 530, y: 220, z: 0}
+    m_Position: {x: 540, y: 220, z: 0}
   - serializedVersion: 1
     m_StateMachine: {fileID: 3894895222762923381}
     m_Position: {x: 610, y: 110, z: 0}
@@ -1826,7 +1826,7 @@ AnimatorStateMachine:
   - first: {fileID: 7737319480092964858}
     second: []
   m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: 20, y: -160, z: 0}
+  m_AnyStatePosition: {x: 70, y: -110, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}

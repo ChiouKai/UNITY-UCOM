@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using UnityEngine.Playables;
+
 
 
 public class AI : MonoBehaviour
@@ -19,7 +19,7 @@ public class AI : MonoBehaviour
     protected Vector3 Ediv;
     protected int EnemyLayer;
     protected int TileCount;
-    public PlayableDirector playableDirector;
+
 
     
     
@@ -27,8 +27,7 @@ public class AI : MonoBehaviour
     protected void NoCover()//沒Cover的狀態
     {
         if (MV == null && stateinfo.IsName("Idle"))
-        {
-            
+        {         
             transform.forward = Direction(TileCount);
             Ediv = (enemy.position - transform.position).normalized;
             float FoB = Vector3.Dot(transform.forward, Ediv);
@@ -65,7 +64,7 @@ public class AI : MonoBehaviour
                     }
                     else
                     {
-
+                        LoR = Vector3.Cross(Direction(i), Ediv);
                         if (LoR.y >= 0)
                         {
                             Am.SetBool("Right", true);
@@ -87,7 +86,7 @@ public class AI : MonoBehaviour
                 }
                 else
                 {
-                    Vector3 LoR = Vector3.Cross(transform.forward, Ediv);
+                    Vector3 LoR = Vector3.Cross(Direction(TileCount), Ediv);
                     if (LoR.y >= 0)
                     {
                         Am.SetBool("Right", true);
@@ -181,10 +180,20 @@ public class AI : MonoBehaviour
                         }
                         else
                         {
+                            LoR = Vector3.Cross(Direction(i), Ediv);
+                            if (LoR.y >= 0)
+                            {
+                                Am.SetBool("Right", true);
+                            }
+                            else
+                            {
+                                Am.SetBool("Left", true);
+                            }
                             Idle = FullCover;
-                            Am.SetBool("HCover", false);
                             Am.SetBool("FCover", true);
                             TileCount = i;
+                            Am.SetBool("HCover", false);
+
                         }
                     }
                     else if (CurrentTile.AdjCoverList[TileCount] == Tile.Cover.HalfC)
@@ -267,7 +276,7 @@ public class AI : MonoBehaviour
         stateinfo = Am.GetCurrentAnimatorStateInfo(0);
         if (stateinfo.normalizedTime >= 1.0f)
         {
-            transform.Rotate(0, -90f, 0);
+            //transform.Rotate(0, -90f, 0);
             Am.SetBool("Left", false);
             Am.SetBool("Turn", false);
             MV = null;
@@ -281,7 +290,7 @@ public class AI : MonoBehaviour
         stateinfo = Am.GetCurrentAnimatorStateInfo(0);
         if (stateinfo.normalizedTime >= 1.0f)
         {
-            transform.Rotate(0, 90f, 0);
+            //transform.Rotate(0, 90f, 0);
             Am.SetBool("Right", false);
             Am.SetBool("Turn", false);
             MV = null;
@@ -295,7 +304,7 @@ public class AI : MonoBehaviour
         stateinfo = Am.GetCurrentAnimatorStateInfo(0);
         if (stateinfo.normalizedTime >= 1.0f)
         {
-            transform.Rotate(0, 180f, 0);
+            //transform.Rotate(0, 180f, 0);
             Am.SetBool("Back", false);
             Am.SetBool("Turn", false);
             MV = null;
@@ -305,9 +314,15 @@ public class AI : MonoBehaviour
     }
 
     public void ResetBool()
-    { 
+    {
+        Idle = NoCover;
+        Am.SetBool("FCover", false);
+        Am.SetBool("HCover", false);
+        Am.SetBool("Left", false);
+        Am.SetBool("Right", false);
         Am.SetBool("Aim", false);
         Am.SetBool("Fire", false);
+        Target = null;
     }
 
 
@@ -335,7 +350,7 @@ public class AI : MonoBehaviour
     protected float ChaHeight;      //角色高度
     public bool End = false;
     Vector3 Heading;                //移動方向
-    public UISystem UI = UISystem.getInstance();
+    public UISystem UI;
     public bool Prepera = false;
     public enum MoveWay    //移動方式(簡化
     {
@@ -711,7 +726,7 @@ public class AI : MonoBehaviour
     public Transform FirePoint;
     public GameObject Bullet;
     public Transform BeAttakePoint;
-    private Vector3 AttackPoint;
+    protected Vector3 AttackPoint;
     protected bool Miss = false;
     protected Vector3 AttackPosition;
 
@@ -855,7 +870,13 @@ public class AI : MonoBehaviour
     //距離影響武器命中率
     }
 
-
+    protected IEnumerator AIWaitPreAtkChange()
+    {
+        PreAttack = false;
+        yield return new WaitForSecondsRealtime(1.5f);
+        NPCPreaera = true;
+        PreAttack = true;
+    }
     public void ChangePreAttakeIdle()
     {
         if (Am.GetBool("FCover"))
@@ -871,7 +892,6 @@ public class AI : MonoBehaviour
             PreAttakeIdle = PreAtkNoCover;
         }
     }
-
     public void ChangePreAttakeIdle(Vector3 dir)
     {
         Tile.Cover cover = CurrentTile.AdjCoverList[FindDirection(dir)];
@@ -879,20 +899,32 @@ public class AI : MonoBehaviour
         {
             if (Am.GetBool("FCover") == true)
             {
+                StartCoroutine(AIWaitPreAtkChange());
                 return;
             }
+            if (Vector3.Cross(transform.forward, dir).y >= 0)
+            {
+                Am.SetBool("Right", true);
+            }
+            else
+            {
+                Am.SetBool("Left", true);
+            }
             Am.SetBool("FCover", true);
-            Am.SetBool("Left", true);
+
             Am.SetBool("HCover", false);
-            Am.SetBool("Right", false);
+
             TileCount = FindDirection(dir);
             PreAttakeIdle = PreAtkFullCover;
             ChangeTarget = true;
+            Idle = FullCover;
+
         }
         else if (cover==Tile.Cover.HalfC)
         {
             if (Am.GetBool("HCover") == true)
             {
+                StartCoroutine(AIWaitPreAtkChange());
                 return;
             }
             Am.SetBool("FCover", false);
@@ -902,16 +934,24 @@ public class AI : MonoBehaviour
             TileCount = FindDirection(dir);
             PreAttakeIdle = PreAtkHalfCover;
             ChangeTarget = true;
+            Idle = HalfCover;
         }
         else
         {
+            if(!Am.GetBool("HCover")&& !Am.GetBool("FCover"))
+            {
+                Am.SetBool("Aim", true);
+                StartCoroutine(AIWaitPreAtkChange());
+                return;
+            }
             Am.SetBool("FCover", false);
             Am.SetBool("Left", false);
             Am.SetBool("HCover", false);
             Am.SetBool("Right", false);
-            TileCount = FindDirection(dir);
             PreAttakeIdle = PreAtkNoCover;
             ChangeTarget = true;
+            Idle = NoCover;
+
         }
     }
 
@@ -919,10 +959,15 @@ public class AI : MonoBehaviour
 
     public void ChaChangeTarget(AI target)//切換攻擊目標
     {
+        if (Target == target)
+        {
+            return;
+        }
         PreAttack = true;
         Target = target;
-       
-        TargetDir = Target.transform.position - transform.position;
+
+         TargetDir = Target.transform.position - transform.position;
+        TargetDir.y = 0;
         if (Am.GetBool("FCover"))
         {
             Vector3 LoR = Vector3.Cross(Direction(TileCount), TargetDir);
@@ -981,25 +1026,25 @@ public class AI : MonoBehaviour
     protected void FaceTarget()//切換攻擊的過程(朝向目標方向)
     {
         TargetDir.y = 0;
-        if (Vector3.Dot(transform.forward, TargetDir.normalized) > 0.97f)
+        if (Vector3.Dot(transform.forward, TargetDir.normalized) > 0.98f)
         {
             transform.forward = TargetDir;
             ChangeTarget = false;
             Am.SetBool("Right", false);
             Am.SetBool("Left", false);
             Am.SetBool("Turn", false);
-            Am.SetBool("Aim", true);
-        }
+            Am.Play("Idle");
 
-        if (stateinfo.IsName("RightTurn") || stateinfo.IsName("LeftTurn"))
+        }
+        else if (stateinfo.IsName("RightTurn") || stateinfo.IsName("LeftTurn"))
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.02f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.03f);
         }
 
     }
 
     public Action PreAttakeIdle;
-    public void PreAtkNoCover()
+    public virtual void PreAtkNoCover()
     {
         if (Attack)
         {
@@ -1016,9 +1061,8 @@ public class AI : MonoBehaviour
 
                 StartCoroutine(FireWait());
 
-            }
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
+            }else
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
         }
         else if (ChangeTarget)
         {
@@ -1026,12 +1070,13 @@ public class AI : MonoBehaviour
         }
         else
         {
-            if(Vector3.Dot(transform.forward, TargetDir.normalized) > 0.97f)
+            if(Vector3.Dot(transform.forward, TargetDir.normalized) > 0.98f)
             {
                 ChangePreAttakeIdle(TargetDir);
-                NPCPreaera = true;
+
             }
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
+            else 
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
         }
     }
     public void PreAtkHalfCover()
@@ -1044,7 +1089,7 @@ public class AI : MonoBehaviour
             {
                 Am.SetBool("Aim", true);
                 transform.forward = TargetDir;
-                if (stateinfo.normalizedTime > 1.0f && stateinfo.IsName("Aim"))
+                if (stateinfo.normalizedTime > 0.8f && stateinfo.IsName("Aim"))
                 {
                     AP = 0;
                     AttakeableList.Clear();
@@ -1056,8 +1101,8 @@ public class AI : MonoBehaviour
                 }
 
             }
-
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
+            else 
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
         }
         else if (ChangeTarget)
         {
@@ -1071,7 +1116,6 @@ public class AI : MonoBehaviour
                 Am.SetBool("Turn", false);
                 ChangeTarget = false;
                 ChangePreAttakeIdle(TargetDir);
-                NPCPreaera = true;
             }
             else if(stateinfo.normalizedTime>=1.0f)
             {//todo
@@ -1102,7 +1146,7 @@ public class AI : MonoBehaviour
                 }
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
             }
-            else if (Am.GetBool("Turn"))
+            else if (Am.GetBool("Turn")&&!stateinfo.IsName("RunToAttack"))
             {
                 if (stateinfo.normalizedTime > 0.9f)
                 {
@@ -1110,7 +1154,7 @@ public class AI : MonoBehaviour
                     Am.SetBool("Turn", false);
                 }
             }
-            else
+            else if(stateinfo.IsName("RunToAttack"))
             {
                 if ((transform.position - AttackPosition).magnitude < 0.1f)
                 {
@@ -1134,7 +1178,6 @@ public class AI : MonoBehaviour
                 Am.SetBool("Left", false);
                 ChangeTarget = false;
                 ChangePreAttakeIdle(TargetDir);
-                NPCPreaera = true;
             }
             else
             {
@@ -1142,7 +1185,6 @@ public class AI : MonoBehaviour
                 Am.SetBool("Left", true);
                 ChangeTarget = false;
                 ChangePreAttakeIdle(TargetDir);
-                NPCPreaera = true;
             }
         }
     }
@@ -1150,7 +1192,7 @@ public class AI : MonoBehaviour
     {
         if (stateinfo.IsName("BackToCover"))
         {
-            if ((transform.position - AttackPosition).magnitude < 0.1f)
+            if ((transform.position - AttackPosition).magnitude < 0.05f)
             {
                 transform.position = CurrentTile.transform.position + Vector3.up * ChaHeight;
                 Am.SetBool("Back", false);
@@ -1159,7 +1201,7 @@ public class AI : MonoBehaviour
             }
             else
             {
-                transform.position = Vector3.Lerp(transform.position, AttackPosition, 0.07f);
+                transform.position = Vector3.Lerp(transform.position, AttackPosition, 0.06f);
                 //transform.position += -transform.forward * MoveSpeed * Time.deltaTime*0.2f;
             }
         }
@@ -1171,7 +1213,7 @@ public class AI : MonoBehaviour
 
     public void Fire(LinkedListNode<(AI target, int location, int aim)> attacklist)
     {
-        int i = 100;// Random.Range(0, 100);
+        int i =  Random.Range(0, 100);
         if (attacklist.Value.aim < i)//Miss
         {
             Miss = true;
@@ -1180,7 +1222,7 @@ public class AI : MonoBehaviour
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (Target.transform.position
-                    + new Vector3(Random.Range(-1.34f, 1.34f), Random.Range(-1.34f, 1.34f), Random.Range(-1.34f, 1.34f))) - ShotPoint,out RH))
+                    + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f))) - ShotPoint,out RH))
                 {
                     if (RH.collider.tag == "En")
                     {
@@ -1243,15 +1285,15 @@ public class AI : MonoBehaviour
     public void FireBullet()
     {
         GameObject B = Instantiate(Bullet,FirePoint.transform.position,Quaternion.identity);
-        if (!Miss)
+        if (Miss)
         {
             TargetDir = AttackPoint - FirePoint.position;
-            B.GetComponent<bullet>().SetAttackPoint(AttackPoint);
+            B.GetComponent<bullet>().SetAttackPoint(FirePoint.position, AttackPoint);
         }
         else
         {
             TargetDir = Target.BeAttakePoint.position - FirePoint.position;
-            B.GetComponent<bullet>().SetAttackPoint(Target.BeAttakePoint.position);
+            B.GetComponent<bullet>().SetAttackPoint(FirePoint.position, Target.BeAttakePoint.position);
         }
         
         B.transform.forward = TargetDir;
@@ -1283,6 +1325,7 @@ public class AI : MonoBehaviour
         transform.forward = dir;
         AttackPosition -= Direction(FindDirection(dir)) * 0.67f;
         yield return new WaitUntil(() => PreAttack == false);
+        transform.forward = Direction(TileCount);
         Turn = false;
         ResetBool();
     }
@@ -1290,7 +1333,7 @@ public class AI : MonoBehaviour
     {
         PreAttack = false;
         yield return new WaitUntil(() => stateinfo.IsName("Fire"));
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2.5f);
         transform.forward = Direction(TileCount);
         Turn = false;
         ResetBool();
@@ -1310,11 +1353,10 @@ public class AI : MonoBehaviour
     public void BeDamaged(int damage)
     {
         Cha.HP -= damage;//todo UI?
-
-
     }
     private void AIDeath()
     {
+        CurrentTile.walkable = true;
         Am.SetBool("Death", true);
         Death = true;
         RoundSysytem.GetInstance().DeathKick(this);
@@ -1329,15 +1371,15 @@ public class AI : MonoBehaviour
         {
             if (Cha.HP <= 0)
             {
+                UI.HpControl(this, Cha.HP);
                 AIDeath();
             }
             else
             {
+                UI.HpControl(this, Cha.HP);
+                ResetBool();
                 Am.Play("Hurt");
-                Am.SetBool("HCover", false);
-                Am.SetBool("FCover", false);
-                Am.SetBool("Left", false);
-                Am.SetBool("Right", false);
+                Idle = NoCover;
             }
         }
     }
@@ -1396,7 +1438,10 @@ public class AI : MonoBehaviour
     public void Move2()
     {
         //if path.Count > 0, move, or remove selectable tiles, disable moving and end the turn. 
-
+        if (Moving != true)
+        {
+            return;
+        }
         if (Path.Count > 0)
         {
             (Tile T, MoveWay M) = Path.Peek();
@@ -1423,16 +1468,8 @@ public class AI : MonoBehaviour
         }
         else
         {
-            float CalAngle = transform.rotation.eulerAngles.y % 90;//移動完轉角度 確保人物角度不會歪掉
-            if (CalAngle > 5 || CalAngle < -5)
-            {
-                if (Vector3.Cross(Ediv, Heading).y < 0)
-                {
-                    transform.Rotate(0, CalAngle, 0);
-                }
-                else
-                    transform.Rotate(0, -CalAngle, 0);
-            }
+            TileCount = FindDirection(transform.forward);
+            transform.forward = Direction(TileCount);
             //RemoveVisitedTiles();//重置Tile狀態
             //CurrentTile.Reset();
             //CurrentTile.walkable = true;
@@ -1476,7 +1513,7 @@ public class AI : MonoBehaviour
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                Point += 3;
+                Point += 2;
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
@@ -1508,8 +1545,9 @@ public class AI : MonoBehaviour
                     aim = AttakeableDetect(T);
                     if (aim.Item1 != null)
                     {
+                        Sec.point += 2;
                         Sec.Item1 = PreFire;
-                        Sec.point += aim.Item3 / 10;
+                        Sec.point += aim.Item3 / 20;
                     }
                 }
                 else
@@ -1530,7 +1568,8 @@ public class AI : MonoBehaviour
                 aim = AttakeableDetect(T);
                 if (aim.Item1 != null)
                 {
-                    Sec.point += aim.Item3 / 10;
+                    Sec.point += 2;
+                    Sec.point += aim.Item3 / 20;
                     Sec.Item1 = PreFire;
                 }
 
@@ -1632,7 +1671,12 @@ public class AI : MonoBehaviour
 
     protected void PreFire()
     {
+        //Target = AttakeTarget.Item1;
+        //TargetDir = Target.transform.position - transform.position;
+        //ChangePreAttakeIdle(TargetDir);
+        //ChangeTarget = true;
         ChaChangeTarget(AttakeTarget.Item1);
+        PreAttack = true;
         NPCPreaera = false;
         DoActing = Fire;        
     }
@@ -1648,7 +1692,7 @@ public class AI : MonoBehaviour
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (AttakeTarget.Item1.transform.position
-                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f))) - ShotPoint, out RH))
+                    + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f))) - ShotPoint, out RH))
                 {
                     if (RH.collider.tag == "En")
                     {
@@ -1697,7 +1741,7 @@ public class AI : MonoBehaviour
         }
         Attack = true;
         DoActing = null;
-
+        NPCPreaera = false;
 
         //AP = 0;
         //AttakeableList.Clear();
@@ -1745,9 +1789,6 @@ public class AI : MonoBehaviour
 
         NPCPreaera = true;
     }
-
-
-
 
 
 
