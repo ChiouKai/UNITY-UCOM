@@ -971,7 +971,7 @@ public class AI : MonoBehaviour
         if (Am.GetBool("FCover"))
         {
             Vector3 LoR = Vector3.Cross(Direction(TileCount), TargetDir);
-            if (LoR.y > 0)
+            if (LoR.y >= 0)
             {
                 Am.SetBool("Right", true);
                 Am.SetBool("Left", false);
@@ -992,7 +992,7 @@ public class AI : MonoBehaviour
             else
             {
                 Vector3 LoR = Vector3.Cross(transform.forward, TargetDir);
-                if (LoR.y > 0)
+                if (LoR.y >= 0)
                 {
                     Am.SetBool("Right", true);
                     Am.SetBool("Turn", true);

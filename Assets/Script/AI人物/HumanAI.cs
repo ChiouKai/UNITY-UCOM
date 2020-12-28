@@ -50,7 +50,7 @@ public class HumanAI : AI
         {
             Am.Play("Run");
         }
-        else if (!Moving)
+        else 
         {
             if (PreAttack)
             {
@@ -58,7 +58,7 @@ public class HumanAI : AI
             }
             else
             {
-                if (UI.Prepera)
+                if (UI.Prepera&&Turn)
                     CheckMouse();
             }
         }
