@@ -13,15 +13,22 @@ public class Move_Camera : MonoBehaviour
     float move_speed = 6f;
     public float y = -45; //旋轉45度
     float gg;
-
+    float td = 0;
+    int i = 0;
     bool move_tr = false; //為true時攝影機移動到目標身上
     //bool rot_cam = false; //旋轉攝影機
+    public GameObject Enemy_star;
+    public GameObject Our_star;
+    public Material[] enstar;
+    public Material[] ourstar;
 
     AI Target;
 
     private void Start()
     {
-
+        
+        Enemy_star.SetActive(false);
+        Our_star.SetActive(false);
         scene_camera.transform.position = transform.position + new Vector3(7.95f, 15f, -7.95f);
         scene_camera.transform.LookAt(transform);
     }
@@ -33,6 +40,39 @@ public class Move_Camera : MonoBehaviour
         //增加以45度角面向目標
         if (Target != null)
         {
+            if (Target.tag == "Alien")
+            {
+                var b = Enemy_star.GetComponent<MeshRenderer>();
+
+                td += Time.deltaTime;
+               
+                Enemy_star.SetActive(true);
+                Our_star.SetActive(false);
+                if (td > 1)
+                {
+                    td = 0;
+                    i++;
+                    if (i >= enstar.Length) i = 0;
+                }
+                b.material = enstar[i];
+                
+                Enemy_star.transform.position = Target.transform.position + new Vector3(0, 0.05f, 0);
+            }
+            if (Target.tag == "Human")
+            {
+                var b = Our_star.GetComponent<MeshRenderer>();
+                td += Time.deltaTime;
+                if (td > 1)
+                {
+                    td = 0;
+                    i++;
+                    if (i >= ourstar.Length) i = 0;
+                }
+                b.material = ourstar[i];
+                Enemy_star.SetActive(false);
+                Our_star.SetActive(true);
+                Our_star.transform.position = Target.transform.position + new Vector3(0, 0.05f, 0);
+            }
             if (move_tr == true || Target.Moving)
             {
 
