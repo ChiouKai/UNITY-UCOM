@@ -43,32 +43,28 @@ public class NPC_AI : AI
     }
     private void FixedUpdate()
     {
-        float MinDis = 99f;
-        foreach (AI EnCha in Enemies)
+        if (!Turn)
         {
-            float dis = (EnCha.transform.position - transform.position).magnitude;
-            if (dis < MinDis)
+            float MinDis = 99f;
+            foreach (AI EnCha in Enemies)
             {
-                MinDis = dis;
-                enemy = EnCha.transform;
+                float dis = (EnCha.transform.position - transform.position).magnitude;
+                if (dis < MinDis)
+                {
+                    MinDis = dis;
+                    enemy = EnCha.transform;
+                }
             }
+            Ediv = (enemy.position - transform.position).normalized;
         }
-        Ediv = (enemy.position - transform.position).normalized;
     }
     private void LateUpdate()
     {
-        if (MV != null && stateinfo.IsName("Idle"))
-        {
-            StartCoroutine(MV());
-        }
         if (PreAttack)
         {
             PreAttakeIdle();
         }
-        else if (Moving)
-        {
-            Am.Play("Run");
-        }
+
         //else if (PreAttack)
         //{
         //    if (ChangeTarget)

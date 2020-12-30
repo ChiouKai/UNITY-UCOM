@@ -10,7 +10,7 @@ public class LogoScript : MonoBehaviour
     private void Start()
     {
         RT = GetComponent<RectTransform>();
-        InsertLocation = RT.anchoredPosition + new Vector2(-100, 0);
+        InsertLocation = RT.anchoredPosition + new Vector2(-200, 0);
         LogoUpdate = LogoInsert;
     }
 
@@ -21,13 +21,13 @@ public class LogoScript : MonoBehaviour
     {
         if ((RT.anchoredPosition- InsertLocation).magnitude > 0.5f)
         {
-            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 0.05f);
+            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 0.06f);
         }
         else
         {
             TimeLine.Instance.Moved = true;
             RT.anchoredPosition = InsertLocation;
-            LeaveLocation = RT.anchoredPosition + new Vector2(120, 0);
+            LeaveLocation = RT.anchoredPosition + new Vector2(200, 0);
             LogoUpdate = null;
         }
 
@@ -42,7 +42,7 @@ public class LogoScript : MonoBehaviour
         else
         {
             RT.anchoredPosition = InsertLocation;
-            LeaveLocation = RT.anchoredPosition + new Vector2(120, 0);
+            LeaveLocation = RT.anchoredPosition + new Vector2(200, 0);
             LogoUpdate = null;
         }
     }
@@ -51,11 +51,11 @@ public class LogoScript : MonoBehaviour
     {
         if ((RT.anchoredPosition - LeaveLocation).magnitude > 0.5f)
         {
-            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.05f);
+            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.06f);
         }
         else
         {
-            RT.anchoredPosition = InsertLocation + new Vector2(120, 0);
+            RT.anchoredPosition = InsertLocation + new Vector2(200, 0);
             LogoUpdate = LogoInsert;
         }
     }
@@ -63,7 +63,7 @@ public class LogoScript : MonoBehaviour
     {
         if ((RT.anchoredPosition - LeaveLocation).magnitude > 0.5f)
         {
-            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.05f);
+            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.06f);
         }
         else
         {

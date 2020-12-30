@@ -73,7 +73,7 @@ public class Tile : MonoBehaviour
         if (other.gameObject.CompareTag("En"))
         {
             walkable = false;
-            GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
+            //GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
             //GetComponent<Renderer>().enabled = false;
         }
     }
@@ -143,11 +143,11 @@ public class Tile : MonoBehaviour
     public Cover[] JudgeCover(Vector3 div,out int AimAngle)
     {
         Cover[] cover = new Cover[2];
-        int Angel= (int)(Mathf.Acos (Vector3.Dot(Vector3.forward, div.normalized))*Mathf.Rad2Deg);
+        float angel = Vector3.Angle(Vector3.forward, div.normalized);
         float LoR = Vector3.Cross(Vector3.forward, div).y;
         if (LoR < 0)
         {
-            if (Angel == 45)
+            if (Mathf.Abs(90f- angel)<1)
             {
                 cover[0] = AdjCoverList[1];
                 cover[1] = Cover.None;
@@ -156,20 +156,20 @@ public class Tile : MonoBehaviour
             }
             else 
             {
-                int i = Angel / 45;
-                int j = Angel / 90;
+                int i = (int)angel / 45;
+                int j = (int)angel / 90;
                 if (i % 2 == 0)
                 {
                     cover[0] = AdjCoverList[j];
                     cover[1] = AdjCoverList[j + 1];
-                    AimAngle = Angel % 45;
+                    AimAngle = (int)angel % 45;
                     return cover;
                 }
                 else
                 {
                     cover[0] = AdjCoverList[j+1];
                     cover[1] = AdjCoverList[j];
-                    AimAngle = 90 * (j + 1) - Angel;
+                    AimAngle = 90 * (j + 1) - (int)angel;
                     return cover;
                 }
 
@@ -177,7 +177,7 @@ public class Tile : MonoBehaviour
         }
         else if (LoR > 0)
         {
-            if (Angel == 270)
+            if (Mathf.Abs(90f - angel) < 1)
             {
                 cover[0] = AdjCoverList[3];
                 cover[1] = Cover.None;
@@ -186,28 +186,28 @@ public class Tile : MonoBehaviour
             }
             else
             {
-                Angel = 360 - Angel;
-                int i = Angel / 45;
-                int j = Angel / 90;
+                angel = 360 - angel;
+                int i = (int)angel / 45;
+                int j = (int)angel / 90;
                 if (i % 2 == 0)
                 {
                     cover[0] = AdjCoverList[j];
                     cover[1] = AdjCoverList[(j + 1)% 4];
-                    AimAngle = Angel % 45;
+                    AimAngle = (int)angel % 45;
                     return cover;
                 }
                 else
                 {
                     cover[0] = AdjCoverList[(j + 1)% 4];
                     cover[1] = AdjCoverList[j];
-                    AimAngle = 90 * (j + 1) - Angel;
+                    AimAngle = 90 * (j + 1) - (int)angel;
                     return cover;
                 }
             }
 
         }else
         {
-            if (Angel == 0)
+            if (Mathf.Abs(angel) < 1)
             {
                 cover[0] = AdjCoverList[0];
                 cover[1] = Cover.None;

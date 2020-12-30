@@ -17,7 +17,7 @@ public class TimeLine : MonoBehaviour
         LogoList = new LinkedList<LogoScript>();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         foreach (LogoScript logo in LogoList)
         {
@@ -33,7 +33,7 @@ public class TimeLine : MonoBehaviour
     {
         LogoScript logo = Instantiate<GameObject>(Logo).GetComponent<LogoScript>();
         logo.transform.SetParent(transform,false);
-        logo.GetComponent<RectTransform>().anchoredPosition =  new Vector2( 50 , -50-110 * Count);
+        logo.GetComponent<RectTransform>().anchoredPosition =  new Vector2( 140 , -50-110 * Count);
         LogoList.AddLast(logo);
         LogoDic.Add(Cha, logo);
     }
@@ -44,7 +44,7 @@ public class TimeLine : MonoBehaviour
         LogoScript logo;
         if(LogoDic.TryGetValue(Cha, out logo))
         {
-            logo.InsertLocation = new Vector2(-50, -50 - 110 * Count);
+            logo.InsertLocation = new Vector2(-60, -50 - 110 * Count);
             logo.LogoUpdate = logo.LogoLeave;
         }
         else

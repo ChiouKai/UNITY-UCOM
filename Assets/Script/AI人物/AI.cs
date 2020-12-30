@@ -12,21 +12,20 @@ public class AI : MonoBehaviour
     protected AnimatorStateInfo stateinfo;
     public Transform enemy;
     public delegate IEnumerator Movement();
-    public Movement MV = null;
     protected Action Idle = null;
     public Character Cha;
     public int AP = 0;
     protected Vector3 Ediv;
     protected int EnemyLayer;
     protected int TileCount;
-
+    public bool AmTurn = false;
 
     
     
     //動畫
     protected void NoCover()//沒Cover的狀態
     {
-        if (MV == null && stateinfo.IsName("Idle"))
+        if (!AmTurn && stateinfo.IsName("Idle"))
         {         
             transform.forward = Direction(TileCount);
             Ediv = (enemy.position - transform.position).normalized;
@@ -103,7 +102,7 @@ public class AI : MonoBehaviour
             {
                 Am.SetBool("Back", true);
                 Am.SetBool("Turn", true);
-                MV = BackTurn;
+                AmTurn = true;
                 TileCount = (TileCount + 2) % 4;
             }
             else
@@ -113,26 +112,24 @@ public class AI : MonoBehaviour
                 {
                     Am.SetBool("Right", true);
                     Am.SetBool("Turn", true);
-                    MV = RightTurn;
+                    AmTurn = true;
                     TileCount = (TileCount + 3) % 4;
                 }
                 else
                 {
                     Am.SetBool("Left", true);
                     Am.SetBool("Turn", true);
-                    MV = LeftTurn;
+                    AmTurn = true;
                     TileCount = (TileCount + 1) % 4;
                 }
-
             }
-
         }
     }
 
 
     protected void HalfCover()
     {
-        if (MV == null && stateinfo.IsName("Idle"))//
+        if (!AmTurn && stateinfo.IsName("Crouch"))//
         {
             Ediv = (enemy.position - transform.position).normalized;
             int EDir = FindDirection(Ediv);
@@ -217,13 +214,13 @@ public class AI : MonoBehaviour
                 {
                     Am.SetBool("Right", true);
                     Am.SetBool("Turn", true);
-                    MV = RightTurn;
+                    AmTurn = true;
                 }
                 else
                 {
                     Am.SetBool("Left", true);
                     Am.SetBool("Turn", true);
-                    MV = LeftTurn;
+                    AmTurn = true;
                 }
 
             }
@@ -232,7 +229,7 @@ public class AI : MonoBehaviour
 
     protected void FullCover()
     {
-        if (MV == null && stateinfo.IsName("Idle"))//
+        if (stateinfo.IsName("LeftCover")|| stateinfo.IsName("RightCover"))
         {
             transform.forward = Direction(TileCount);
             Ediv = (enemy.position - transform.position).normalized;
@@ -254,7 +251,7 @@ public class AI : MonoBehaviour
             }
             else
             {
-                TileCount = FindDirection(Ediv);
+                //TileCount = FindDirection(Ediv);
                 Am.SetBool("Left", false);
                 Am.SetBool("Right", false);
                 Am.SetBool("HCover", false);
@@ -265,57 +262,38 @@ public class AI : MonoBehaviour
     }
 
 
- 
 
 
 
     //轉向動畫控制
-    public virtual IEnumerator LeftTurn()
+    public virtual void LeftTurn()
     {
-        yield return null;
-        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-        if (stateinfo.normalizedTime >= 1.0f)
-        {
-            //transform.Rotate(0, -90f, 0);
-            Am.SetBool("Left", false);
-            Am.SetBool("Turn", false);
-            MV = null;
-        }
-        else
-            yield return LeftTurn();
+        AmTurn = false;
+        Am.SetBool("Left", false);
+        Am.SetBool("Turn", false);
+        transform.Rotate(0, -90f, 0);
     }
-    public virtual IEnumerator RightTurn()
+    public virtual void RightTurn()
     {
-        yield return null;
-        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-        if (stateinfo.normalizedTime >= 1.0f)
-        {
-            //transform.Rotate(0, 90f, 0);
-            Am.SetBool("Right", false);
-            Am.SetBool("Turn", false);
-            MV = null;
-        }
-        else
-            yield return RightTurn();
+        AmTurn = false;
+        Am.SetBool("Right", false);
+        Am.SetBool("Turn", false);
+        transform.Rotate(0, 90f, 0);
     }
-    public virtual IEnumerator BackTurn()
+    public virtual void BackTurn()
     {
-        yield return null;
-        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-        if (stateinfo.normalizedTime >= 1.0f)
-        {
-            //transform.Rotate(0, 180f, 0);
-            Am.SetBool("Back", false);
-            Am.SetBool("Turn", false);
-            MV = null;
-        }
-        else
-            yield return BackTurn();
+        AmTurn = false;
+        Am.SetBool("Back", false);
+        Am.SetBool("Turn", false);
+        transform.Rotate(0, 180f, 0);
     }
 
     public void ResetBool()
     {
         Idle = NoCover;
+        AmTurn = false;
+        Am.SetBool("Turn", false);
+        Am.SetBool("Back", false);
         Am.SetBool("FCover", false);
         Am.SetBool("HCover", false);
         Am.SetBool("Left", false);
@@ -434,38 +412,24 @@ public class AI : MonoBehaviour
         }
         return Process2;
     }
-    protected void CheckMouse()
-    {
-        if (Input.GetMouseButtonUp(1))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit);
-            if (hit.collider.tag == "tile")
-            {
-                Tile T = hit.collider.GetComponent<Tile>();
-                if (T.selectable)
-                {
-                    if (T.distance > Cha.Mobility)
-                        AP = 0;
-                    else
-                        --AP;
-                    Am.SetBool("Run", true);
-                    Am.SetBool("FCover", false);
-                    Am.SetBool("Left", false);
-                    Am.SetBool("Right", false);
-                    Am.SetBool("HCover", false);
-                    Idle = NoCover;
-                    Moving = true;
-                    RemoveVisitedTiles();//重置Tile狀態
-                    UI.Prepera = false;
 
-                    //CurrentTile.walkable = false;
-                    AttakeableList.Clear();
-                    UI.LRDestory();
-                }
-            }
-        }
+
+    public void PrepareMove(Tile T)
+    {
+        if (T.distance > Cha.Mobility)
+            AP = 0;
+        else
+            --AP;
+        Am.SetBool("Run", true);
+        Am.SetBool("FCover", false);
+        Am.SetBool("Left", false);
+        Am.SetBool("Right", false);
+        Am.SetBool("HCover", false);
+        Idle = NoCover;
+        Moving = true;
+        RemoveVisitedTiles();//重置Tile狀態
+        Am.Play("Run");
+        AttakeableList.Clear();
     }
 
     public Stack<(Tile, MoveWay)> MoveToTile(Tile T)//從T的Parent往回推路徑
@@ -602,7 +566,7 @@ public class AI : MonoBehaviour
             {
                 Turn = false;
                 PreAttack = false;
-                NPCPreaera = false;
+
             }
         }
     }
@@ -733,12 +697,13 @@ public class AI : MonoBehaviour
     protected Vector3 AttackPoint;
     protected bool Miss = false;
     protected Vector3 AttackPosition;
+    protected List<AI> AttPredict = new List<AI>();
+
 
     public void GetTargets(List<AI> enemy)
     {
         Enemies = enemy;
     } 
-
 
     public void AttakeableDetect()
     {
@@ -769,33 +734,53 @@ public class AI : MonoBehaviour
             i = FindDirection(TDiv);
             if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), Target - Location, (Target - Location).magnitude, 1 << 9))
             {//確保路徑上沒有障礙物
-                AttakeableList.AddLast((Enemy, -1, CalculateAim(Enemy.CurrentTile, CurrentTile)));
-            } 
+                AttakeableList.AddLast((Enemy, -1, CalculateAim(Enemy, CurrentTile)));
+            }
             else if (CurrentTile.AdjCoverList[i] == Tile.Cover.FullC) //如攻擊方有障礙物，則站出去瞄準。
             {
-                if (Vector3.Cross(Direction(i), TDiv).y >= 0) 
+                float LoR = Vector3.Cross(Direction(i), TDiv).y;
+                if (LoR != 0)
                 {
-                    i = (i + 3) % 4;
+                    if (LoR > 0)
+                    {
+                        i = (i + 3) % 4;
+                    }
+                    else
+                    {
+                        i = (i + 1) % 4;
+                    }
+                    Location += Direction(i) * 0.67f;
+                    if (CurrentTile.AdjList[i].walkable)
+                    {//判斷旁邊可以站
+                        TDiv = Target - Location;
+                        if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        {//確保路徑上沒有障礙物
+                            AttakeableList.AddLast((Enemy, i, CalculateAim(Enemy, CurrentTile)));//todo
+                            continue;
+                        }
+                    }
                 }
                 else
                 {
-                    i = (i + 1) % 4;
-                }
-                Location += Direction(i) * 0.67f;
-                if (CurrentTile.AdjCoverList[i] == Tile.Cover.None 
-                    && Physics.CheckBox(Location, new Vector3(0.1f, 0, 0), Quaternion.identity, 1 << 8))
-                {//判斷旁邊可以站
-                    TDiv = Target - Location;
-                    if (!Physics.Raycast(Location + new Vector3(0, 1.34f, 0), TDiv, TDiv.magnitude, 1 << 9))
-                    {//確保路徑上沒有障礙物
-                        AttakeableList.AddLast((Enemy, i, CalculateAim(Enemy.CurrentTile, CurrentTile)));//todo
-                        continue;
+                    if (CurrentTile.AdjList[(i + 1) % 4].walkable)
+                    {//判斷旁邊可以站
+                        TDiv = Target - Location;
+                        if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        {//確保路徑上沒有障礙物
+                            AttakeableList.AddLast((Enemy, (i + 1) % 4, CalculateAim(Enemy, CurrentTile)));//todo
+                            continue;
+                        }
+                    }
+                    if (CurrentTile.AdjList[(i + 3) % 4].walkable)
+                    {//判斷旁邊可以站
+                        TDiv = Target - Location;
+                        if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        {//確保路徑上沒有障礙物
+                            AttakeableList.AddLast((Enemy, (i + 3) % 4, CalculateAim(Enemy, CurrentTile)));//todo
+                            continue;
+                        }
                     }
                 }
-            }
-            else if (!Physics.Raycast(Location + new Vector3(0, 1.34f, 0), Target - Location, (Target - Location).magnitude, 1 << 9))
-            {//確保路徑上沒有障礙物
-                AttakeableList.AddLast((Enemy, -1, CalculateAim(Enemy.CurrentTile, CurrentTile)));
             }
         }
         for(int i =  0; i < AttakeableList.Count; ++i)//目標順序改成 命中率由大到小
@@ -820,55 +805,137 @@ public class AI : MonoBehaviour
         }
     }
 
-
-    int CalculateAim(Tile Enemy,Tile Location)
+    public List<AI> AttackablePredict(Tile T)
     {
-        Vector3 div = Location.transform.position - Enemy.transform.position;
+        if (AttPredict.Count > 0 )
+        {
+            return AttPredict;
+        }
+        foreach (AI Enemy in Enemies)//改queue ?
+        {
+            Vector3 Location = T.transform.position;
+            Vector3 Target = Enemy.CurrentTile.transform.position;
+            Vector3 RTDiv = Location - Target;
+            int i = FindDirection(RTDiv);
+            if (Enemy.CurrentTile.AdjCoverList[i] == Tile.Cover.FullC)//判斷敵人有無FullCover，如有則瞄準障礙物邊邊。
+            {
+                int j = 0;
+                if (Vector3.Cross(Direction(i), RTDiv).y >= 0)
+                {
+                    j = (i + 3) % 4;
+                }
+                else
+                {
+                    j = (i + 1) % 4;
+                }
+                Target += (Direction(i) + Direction(j)) * 0.3f;
+            }
+            Vector3 TDiv = Target - Location;
+            i = FindDirection(TDiv);
+            if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), Target - Location, (Target - Location).magnitude, 1 << 9))
+            {//確保路徑上沒有障礙物
+                AttPredict.Add(Enemy);
+            }
+            else if (T.AdjCoverList[i] == Tile.Cover.FullC) //如攻擊方有障礙物，則站出去瞄準。
+            {
+                float LoR = Vector3.Cross(Direction(i), TDiv).y;
+                if (LoR != 0)
+                {
+                    if (LoR > 0)
+                    {
+                        i = (i + 3) % 4;
+                    }
+                    else
+                    {
+                        i = (i + 1) % 4;
+                    }
+                    Location += Direction(i) * 0.67f;
+                    if (T.AdjList[i].walkable)
+                    {//判斷旁邊可以站
+                        TDiv = Target - Location;
+                        if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        {//確保路徑上沒有障礙物
+                            AttPredict.Add(Enemy);
+                            continue;
+                        }
+                    }
+                }
+                else
+                {
+                    if (T.AdjList[(i + 1) % 4].walkable)
+                    {//判斷旁邊可以站
+                        TDiv = Target - Location;
+                        if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        {//確保路徑上沒有障礙物
+                            AttPredict.Add(Enemy);
+                            continue;
+                        }
+                    }
+                    if (T.AdjList[(i + 3) % 4].walkable)
+                    {//判斷旁邊可以站
+                        TDiv = Target - Location;
+                        if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        {//確保路徑上沒有障礙物
+                            AttPredict.Add(Enemy);
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+        return AttPredict;
+
+    }
+
+    int CalculateAim(AI Enemy,Tile Location)
+    {
+        Vector3 div = Enemy.CurrentTile.transform.position - Location.transform.position;
+        div.y = 0;
         Tile.Cover[] cover;
         float dis = div.magnitude;
         int AimAngle;
-        if (Cha.type == Character.Type.Humanoid) //人形怪才有障礙物Buff
+        if (Enemy.Cha.type == Character.Type.Humanoid) //人形怪才有障礙物Buff
         {
-            cover = Enemy.JudgeCover(div, out AimAngle);
+            cover = Enemy.CurrentTile.JudgeCover(div, out AimAngle);
             if (cover[0] == Tile.Cover.FullC)
             {
-                return Cha.BasicAim + Gun.atkRange[Mathf.FloorToInt(dis)] - 40;
+                return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40;
             }
             else if (cover[0] == Tile.Cover.HalfC)
             {
                 if (cover[1] == Tile.Cover.FullC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.FloorToInt(dis)] - 40 + 20 * AimAngle / 45;
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 + 20 * AimAngle / 45;
                 }
                 else if(cover[1] == Tile.Cover.HalfC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.FloorToInt(dis)] - 20;
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20;
                 }
                 else
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.FloorToInt(dis)] - 20 + 10 * AimAngle / 45;
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20 + 10 * AimAngle / 45;
                 }
             }
             else
             {
                 if(cover[0] == Tile.Cover.FullC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.FloorToInt(dis)] - 40 * (1 - AimAngle / 45);
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 * (1 - AimAngle / 45);
                 }
                 else if(cover[1] == Tile.Cover.HalfC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.FloorToInt(dis)] - 20*(1 - AimAngle / 45);
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20*(1 - AimAngle / 45);
                 }
                 else
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.FloorToInt(dis)];
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)];
                 }
             }
 
         }
         else
         {
-            return Cha.BasicAim + Gun.atkRange[Mathf.FloorToInt(dis)];
+            return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)];
         }
         //計算方向判斷對方是有遮蔽物
     //距離影響武器命中率
@@ -903,6 +970,7 @@ public class AI : MonoBehaviour
         {
             if (Am.GetBool("FCover") == true)
             {
+                TileCount = FindDirection(dir);
                 PreAttakeIdle = PreAtkFullCover;
                 StartCoroutine(AIWaitPreAtkChange());
                 return;
@@ -929,8 +997,9 @@ public class AI : MonoBehaviour
         {
             if (Am.GetBool("HCover") == true)
             {
+                TileCount = FindDirection(dir);
                 PreAttakeIdle = PreAtkHalfCover;
-                StartCoroutine(AIWaitPreAtkChange());
+                StartCoroutine(AIWaitPreAtkChange());//todo
                 return;
             }
             Am.SetBool("FCover", false);
@@ -944,7 +1013,7 @@ public class AI : MonoBehaviour
         }
         else
         {
-            if(!Am.GetBool("HCover")&& !Am.GetBool("FCover"))
+            if(!Am.GetBool("HCover")&& !Am.GetBool("FCover")&& !ChangeTarget)
             {
                 PreAttakeIdle = PreAtkNoCover;
                 Am.SetBool("Aim", true);
@@ -1017,7 +1086,7 @@ public class AI : MonoBehaviour
             ChangeTarget = true;
             Am.SetBool("Aim", false);
             Vector3 LoR = Vector3.Cross(transform.forward, TargetDir);
-            if (LoR.y > 0)
+            if (LoR.y >= 0)
             {
                 Am.SetBool("Right", true);
                 Am.SetBool("Turn", true);
@@ -1035,15 +1104,29 @@ public class AI : MonoBehaviour
         TargetDir.y = 0;
         if (Vector3.Dot(transform.forward, TargetDir.normalized) > 0.98f)
         {
-            transform.forward = TargetDir;
             ChangeTarget = false;
             Am.SetBool("Right", false);
             Am.SetBool("Left", false);
             Am.SetBool("Turn", false);
-            Am.Play("Idle");
-
+            AmTurn = false;
+            transform.forward = TargetDir;
         }
-        else if (stateinfo.IsName("RightTurn") || stateinfo.IsName("LeftTurn"))
+        else if (!AmTurn)
+        {
+            float LoR = Vector3.Cross(transform.forward, TargetDir).y;
+            if (LoR > 0)
+            {
+                Am.SetBool("Right", true);
+                Am.SetBool("Turn", true);
+            }
+            else
+            {
+                Am.SetBool("Left", true);
+                Am.SetBool("Turn", true);
+            }
+        }
+
+         if (stateinfo.IsName("RightTurn") || stateinfo.IsName("LeftTurn")&& Am.GetBool("Turn"))
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.03f);
         }
@@ -1065,7 +1148,6 @@ public class AI : MonoBehaviour
                 UI.LRDestory();
                 Am.SetBool("Fire", true);
                 RemoveVisitedTiles();
-
                 StartCoroutine(FireWait());
 
             }else
@@ -1077,13 +1159,12 @@ public class AI : MonoBehaviour
         }
         else
         {
-            if(Vector3.Dot(transform.forward, TargetDir.normalized) > 0.98f)
+            if(Vector3.Dot(transform.forward, TargetDir.normalized) > 0.97f)
             {
                 ChangePreAttakeIdle(TargetDir);
-
             }
-            else 
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
+            //else 
+            //    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
         }
     }
     public void PreAtkHalfCover()
@@ -1116,18 +1197,26 @@ public class AI : MonoBehaviour
             stateinfo = Am.GetCurrentAnimatorStateInfo(0);
 
             float FoB = Vector3.Dot(transform.forward, TargetDir.normalized);
+            Vector3 LoR = Vector3.Cross(transform.forward, TargetDir);
             if (FoB > 1 / Mathf.Sqrt(2) - 0.01f&& stateinfo.normalizedTime >= 1.0f)
             {
-                Am.SetBool("Left", false);
-                Am.SetBool("Right", false);
-                Am.SetBool("Turn", false);
+
                 ChangeTarget = false;
                 ChangePreAttakeIdle(TargetDir);
             }
             else if(stateinfo.normalizedTime>=1.0f)
-            {//todo
+            {
                 Am.SetBool("Turn", false);
+                if (LoR.y > 0)
+                {
+                    Am.SetBool("Right", true);
+                }
+                else
+                {
+                    Am.SetBool("Left", true);
+                }
                 Am.SetBool("Turn", true);
+
             }
 
         }
@@ -1153,21 +1242,24 @@ public class AI : MonoBehaviour
                 }
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
             }
-            else if (Am.GetBool("Turn")&&!stateinfo.IsName("RunToAttack"))
-            {
-                if (stateinfo.normalizedTime > 0.9f)
-                {
-                    Am.SetBool("Aim", true);
-                    Am.SetBool("Turn", false);
-                }
-            }
+            //else if (Am.GetBool("Turn")&&!stateinfo.IsName("RunToAttack"))
+            //{
+            //    if (stateinfo.normalizedTime > 0.9f)
+            //    {
+            //        Am.SetBool("Aim", true);
+            //        Am.SetBool("Turn", false);
+            //    }
+            //}
             else if(stateinfo.IsName("RunToAttack"))
             {
                 if ((transform.position - AttackPosition).magnitude < 0.1f)
                 {
                     transform.position = AttackPosition;
-                    Am.SetBool("Turn", true);
+                    //Am.SetBool("Turn", true);
                     Am.SetBool("Run", false);
+                    Am.SetBool("Aim", true);
+                    transform.forward = TargetDir;
+
                 }
                 else
                 {
@@ -1181,6 +1273,7 @@ public class AI : MonoBehaviour
             Vector3 LoR = Vector3.Cross(Direction(TileCount), TargetDir.normalized);
             if (LoR.y >= 0)
             {
+                transform.forward = Direction(TileCount);
                 Am.SetBool("Right", true);
                 Am.SetBool("Left", false);
                 ChangeTarget = false;
@@ -1188,6 +1281,7 @@ public class AI : MonoBehaviour
             }
             else
             {
+                transform.forward = Direction(TileCount);
                 Am.SetBool("Right", false);
                 Am.SetBool("Left", true);
                 ChangeTarget = false;
@@ -1314,10 +1408,8 @@ public class AI : MonoBehaviour
 
         PreAttack = false;
         yield return new WaitUntil(() => Attack == false);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         Turn = false;
-        NPCPreaera = false;
-        PreAttack = false;
         ResetBool();
     }
     public IEnumerator FullCoverFireWait()
@@ -1337,19 +1429,17 @@ public class AI : MonoBehaviour
         transform.forward = Direction(TileCount);
         Turn = false;
         PreAttack = false;
-        NPCPreaera = false;
-        ResetBool();
+
     }
     public IEnumerator FullCoverFireWait2()
     {
         PreAttack = false;
         yield return new WaitUntil(() => stateinfo.IsName("Fire"));
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         transform.forward = Direction(TileCount);
         Turn = false;
         PreAttack = false;
-        NPCPreaera = false;
-        ResetBool();
+        //ResetBool();
     }
 
     public void Reload()
@@ -1385,11 +1475,13 @@ public class AI : MonoBehaviour
         {
             if (Cha.HP <= 0)
             {
+                transform.forward = -other.transform.forward;
                 UI.HpControl(this, Cha.HP);
                 AIDeath();
             }
             else
             {
+                transform.forward = -other.transform.forward;
                 UI.HpControl(this, Cha.HP);
                 ResetBool();
                 Am.Play("Hurt");
@@ -1410,6 +1502,7 @@ public class AI : MonoBehaviour
         if (VisitedTiles.Count > 0)
             return;
         //BFS 寬度優先使用Queue
+        BestPoint = 0;
         Queue<Tile> Process = new Queue<Tile>();
         CalPointAction(CurrentTile);
 
@@ -1446,6 +1539,23 @@ public class AI : MonoBehaviour
                 }
             }
         }
+    }
+
+
+    protected void PreMove()
+    {
+        MoveToTile(BestT);
+        Am.SetBool("Run", true);
+        ResetBool();
+        Idle = NoCover;
+        Moving = true;
+        RemoveVisitedTiles();//重置Tile狀態
+        CurrentTile.walkable = true;
+        CurrentTile = BestT;
+        CurrentTile.walkable = false;
+        DoActing = null;
+        Am.Play("Run");
+
     }
 
     public void Move2()
@@ -1487,12 +1597,12 @@ public class AI : MonoBehaviour
             //CurrentTile.Reset();
             //CurrentTile.walkable = true;
             //CurrentTile = TargetTile;
-            CurrentTile.walkable = false;
             Moving = false;
             if (Acting2 != null)
             {
-                ResetBool();
-                StartCoroutine(MoveWait());
+                DoActing = Acting2;
+                Acting2 = null;
+                //StartCoroutine(MoveWait());
             }
             else
             {
@@ -1503,12 +1613,12 @@ public class AI : MonoBehaviour
             }
         }
     }
-    protected IEnumerator MoveWait()
-    {
-        yield return new WaitForSeconds(1.5f);
-        DoActing = Acting2;
-        Acting2 = null;
-    }
+    //protected IEnumerator MoveWait()
+    //{
+    //    yield return new WaitForSeconds(1.5f);
+    //    DoActing = Acting2;
+    //    Acting2 = null;
+    //}
 
     
 
@@ -1548,10 +1658,10 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        int i = 10 / ((int)MinDis + 1);
-        if (i > 5)
+        int i = 21 / ((int)MinDis + 1);
+        if (i > 3)
         {
-            Point += 5;
+            Point += 3;
         }
         else
         {
@@ -1577,7 +1687,7 @@ public class AI : MonoBehaviour
                 else
                 {
                     Reload = true;
-                    Sec.point += 4;
+                    Sec.point += 1;
                 }
             }
             else
@@ -1585,7 +1695,7 @@ public class AI : MonoBehaviour
                 if (Gun.bullet == 0)
                 {
                     //reload 4分
-                    Sec.point += 4;
+                    Sec.point += 1;
                     Reload = true;
 
                 }
@@ -1643,50 +1753,80 @@ public class AI : MonoBehaviour
             int i = FindDirection(RTDiv);
             if (Enemy.CurrentTile.AdjCoverList[i] == Tile.Cover.FullC)//判斷敵人有無FullCover，如有則瞄準障礙物邊邊。
             {
-                if (i % 2 == 0)
+                int j = 0;
+                if (Vector3.Cross(Direction(i), RTDiv).y >= 0)
                 {
-                    RTDiv.z = 0;
+                    j = (i + 3) % 4;
                 }
                 else
                 {
-                    RTDiv.x = 0;
+                    j = (i + 1) % 4;
                 }
-                int j = FindDirection(RTDiv);
                 Target += (Direction(i) + Direction(j)) * 0.3f;
             }
             Vector3 TDiv = Target - Location;
             i = FindDirection(TDiv);
-            if (T.AdjCoverList[i] == Tile.Cover.FullC) //如攻擊方有障礙物，則站出去瞄準。
-            {
-                if (i % 2 == 0)
-                {
-                    TDiv.z = 0;
-                }
-                else
-                {
-                    TDiv.x = 0;
-                }
-                i = FindDirection(TDiv);
-                if (T.AdjCoverList[i] == Tile.Cover.None && Physics.CheckBox(T.transform.position + Direction(i) * 0.67f
-                    , new Vector3(0.1f, 0, 0), Quaternion.identity, 1 << 8))
-                {//判斷旁邊可以站
-                    TDiv = Target - Location;
-                    if (!Physics.Raycast(Location + new Vector3(0, 1.34f, 0), TDiv, TDiv.magnitude, 1 << 9))
-                    {//確保路徑上沒有障礙物
-                        int j = CalculateAim(Enemy.CurrentTile, T);
-                        if (j > BestAim.Item3)
-                        {
-                            BestAim = (Enemy, i, j);
-                        }
-                    }
-                }
-            }
-            else if (!Physics.Raycast(Location + new Vector3(0, 1.34f, 0), Target - Location, (Target - Location).magnitude, 1 << 9))
+            if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), Target - Location, (Target - Location).magnitude, 1 << 9))
             {//確保路徑上沒有障礙物
-                int j = CalculateAim(Enemy.CurrentTile, T);
+                int j = CalculateAim(Enemy, T);
                 if (j > BestAim.Item3)
                 {
                     BestAim = (Enemy, -1, j);
+                }
+            }
+            else if (T.AdjCoverList[i] == Tile.Cover.FullC) //如攻擊方有障礙物，則站出去瞄準。
+            {
+                float LoR = Vector3.Cross(Direction(i), TDiv).y;
+                if (LoR != 0)
+                {
+                    if (LoR > 0)
+                    {
+                        i = (i + 3) % 4;
+                    }
+                    else
+                    {
+                        i = (i + 1) % 4;
+                    }
+                    Location += Direction(i) * 0.67f;
+                    if (T.AdjList[i].walkable)
+                    {//判斷旁邊可以站
+                        TDiv = Target - Location;
+                        if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        {//確保路徑上沒有障礙物
+                            int j = CalculateAim(Enemy, T);
+                            if (j > BestAim.Item3)
+                            {
+                                BestAim = (Enemy, i, j);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (T.AdjList[(i + 1) % 4].walkable)
+                    {//判斷旁邊可以站
+                        TDiv = Target - Location;
+                        if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        {//確保路徑上沒有障礙物
+                            int j = CalculateAim(Enemy, T);
+                            if (j > BestAim.Item3)
+                            {
+                                BestAim = (Enemy, (i + 1) % 4, j);
+                            }
+                        }
+                    }
+                    if (T.AdjList[(i + 3) % 4].walkable)
+                    {//判斷旁邊可以站
+                        TDiv = Target - Location;
+                        if (!Physics.Raycast(Location + new Vector3(0, 1f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        {//確保路徑上沒有障礙物
+                            int j = CalculateAim(Enemy, T);
+                            if (j > BestAim.Item3)
+                            {
+                                BestAim = (Enemy, (i + 3) % 4, j);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1695,13 +1835,11 @@ public class AI : MonoBehaviour
 
     protected void PreFire()
     {
-        //Target = AttakeTarget.Item1;
-        //TargetDir = Target.transform.position - transform.position;
-        //ChangePreAttakeIdle(TargetDir);
-        //ChangeTarget = true;
-        TargetDir = AttakeTarget.Item1.transform.position - transform.position;
+        Target = AttakeTarget.Item1;
+        TargetDir = Target.transform.position - transform.position;
+        TargetDir.y = 0;
+        ChangeTarget = true;
         ChangePreAttakeIdle(TargetDir);
-        ChaChangeTarget(AttakeTarget.Item1);
         PreAttack = true;
         NPCPreaera = false;
         DoActing = Fire;        
@@ -1778,20 +1916,6 @@ public class AI : MonoBehaviour
         //PreAttack = false;
     }
 
-    protected void PreMove()
-    {
-        MoveToTile(BestT);
-        Am.SetBool("Run", true);
-        ResetBool();
-        Idle = NoCover;
-        Moving = true;
-        RemoveVisitedTiles();//重置Tile狀態
-        CurrentTile.walkable = true;
-        CurrentTile = BestT;
-        //CurrentTile.walkable = false; 
-        DoActing = null;
-
-    }
 
     public void ConfirmAction()
     {
@@ -1808,7 +1932,7 @@ public class AI : MonoBehaviour
 
         if (Acting2 == PreFire)
         {
-            ChangePreAttakeIdle();
+            //ChangePreAttakeIdle();
         }//else if (Acting2==reload)
 
         NPCPreaera = true;

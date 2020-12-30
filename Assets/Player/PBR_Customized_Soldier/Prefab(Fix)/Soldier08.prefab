@@ -722,6 +722,7 @@ GameObject:
   - component: {fileID: 198024168168979697}
   - component: {fileID: 3611120783432747883}
   - component: {fileID: 8157025691337330856}
+  - component: {fileID: -1522777490207009632}
   m_Layer: 0
   m_Name: Soldier08
   m_TagString: Untagged
@@ -769,7 +770,7 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: 1ee2e74d8bd00af40a8f906311e6ffa3, type: 3}
   m_Controller: {fileID: 9100000, guid: a68de6944a30e1343b2a6acab9fe5118, type: 2}
   m_CullingMode: 1
-  m_UpdateMode: 0
+  m_UpdateMode: 1
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
@@ -846,6 +847,22 @@ MonoBehaviour:
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000
   MaxBullet: 4
   bullet: 4
+--- !u!54 &-1522777490207009632
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1829787705810507563}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1829788842908956519
 GameObject:
   m_ObjectHideFlags: 0

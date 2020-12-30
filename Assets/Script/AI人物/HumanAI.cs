@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.ProBuilder;
-using UnityEngine.Playables;
+
+
 
 public class HumanAI : AI
 {
@@ -42,88 +42,51 @@ public class HumanAI : AI
     }
     private void LateUpdate()
     {
-        if (MV != null && stateinfo.IsName("Idle"))
+        
+        if (PreAttack)
         {
-            StartCoroutine(MV());
-        }
-        if (Moving)
-        {
-            Am.Play("Run");
-        }
-        else 
-        {
-            if (PreAttack)
-            {
-                PreAttakeIdle();
-            }
-            else
-            {
-                if (UI.Prepera&&Turn)
-                    CheckMouse();
-            }
+            PreAttakeIdle();
         }
     }
     private void FixedUpdate()
     {
-        float MinDis = 99f;        
-        foreach(AI EnCha in Enemies)
+        float MinDis = 99f;
+        foreach (AI EnCha in Enemies)
         {
-            float dis=(EnCha.transform.position - transform.position).magnitude;
+            float dis = (EnCha.transform.position - transform.position).magnitude;
             if (dis < MinDis)
             {
                 MinDis = dis;
                 enemy = EnCha.transform;
             }
         }
-        Ediv = (enemy.position - transform.position).normalized;
     }
 
 
-    public override IEnumerator LeftTurn()
+    public override void LeftTurn()
     {
-        yield return null;
-        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-        if (stateinfo.normalizedTime >= 1.0f)
-        {
-            
-            Am.SetBool("Left", false);
-            Am.SetBool("Turn", false);
-            MV = null;
-        }
-        else
-            yield return LeftTurn();
+        AmTurn = false;
+        Am.SetBool("Left", false);
+        Am.SetBool("Turn", false);
+        //transform.Rotate(0, -90f, 0);
     }
-    public override IEnumerator RightTurn()
+    public override void RightTurn()
     {
-        yield return null;
-        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-        if (stateinfo.normalizedTime >= 1.0f)
-        {
-            
-            Am.SetBool("Right", false);
-            Am.SetBool("Turn", false);
-            MV = null;
-        }
-        else
-            yield return RightTurn();
+        AmTurn = false;
+        Am.SetBool("Right", false);
+        Am.SetBool("Turn", false);
+        //transform.Rotate(0, 90f, 0);
     }
-    public override IEnumerator BackTurn()
+    public override void BackTurn()
     {
-        yield return null;
-        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-        if (stateinfo.normalizedTime >= 1.0f)
-        {
-            
-            Am.SetBool("Back", false);
-            Am.SetBool("Turn", false);
-            MV = null;
-        }
-        else
-            yield return BackTurn();
+        AmTurn = false;
+        Am.SetBool("Back", false);
+        Am.SetBool("Turn", false);
+        //transform.Rotate(0, 180f, 0);
     }
 
 
 
-    
+
 
 }

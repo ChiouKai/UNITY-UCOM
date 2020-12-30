@@ -319,6 +319,7 @@ GameObject:
   - component: {fileID: 6695740697863207662}
   - component: {fileID: 6990360659797749033}
   - component: {fileID: 3782567742061570154}
+  - component: {fileID: -8922028277927170008}
   m_Layer: 11
   m_Name: Soldier06
   m_TagString: Human
@@ -366,7 +367,7 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: 1ee2e74d8bd00af40a8f906311e6ffa3, type: 3}
   m_Controller: {fileID: 9100000, guid: a68de6944a30e1343b2a6acab9fe5118, type: 2}
   m_CullingMode: 1
-  m_UpdateMode: 0
+  m_UpdateMode: 1
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
@@ -456,6 +457,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.4, y: 1.6696019, z: 0.4}
   m_Center: {x: 0, y: 0.9651999, z: 0}
+--- !u!54 &-8922028277927170008
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1218782440234447633}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1219353878761295083
 GameObject:
   m_ObjectHideFlags: 0

@@ -92,7 +92,7 @@ public class RoundSysytem
             UI.TurnRun = UI.ChaTurnEnd;
             UI.RunUI = UI.CloseActionUI;
             TimeLine.Instance.Moved = false;
-
+            System.Threading.Thread.Sleep(1500);
             Current = Sequence.First;
             if (Current.Value.Speed == 99) //回合結束
             {
@@ -107,6 +107,8 @@ public class RoundSysytem
                 UI.TurnRun = UI.TurnEnd;
 
                 TimeLine.Instance.Moved = false;
+
+                
                 //事件?增援?newcome
             }
 
@@ -167,8 +169,25 @@ public class RoundSysytem
         }
 
     }
-    private void NewCome()
+    private void NewCome((AI Cha ,int speed) obj)
     {
+        LinkedListNode<(AI Cha, int Speed)> current = Sequence.Last;
 
+        for (int Count = Sequence.Count; Count > 0; --Count)
+        {
+            if (obj.speed <= current.Value.Speed)
+            {
+                Sequence.AddAfter(current, obj);
+                break;
+            }
+            else
+                current = current.Previous;
+        }
     }
+
+
+
+
+
+
 }

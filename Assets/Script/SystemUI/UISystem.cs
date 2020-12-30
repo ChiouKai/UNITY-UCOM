@@ -22,6 +22,8 @@ public class UISystem : MonoBehaviour
     public Text RightText;
     LinkedListNode<(AI, int, int)> Target;
     public GameObject MouseOnTile;
+    public Canvas HPCanvas;
+    List<AI> AttPred;
 
     static public UISystem getInstance()
     {
@@ -111,19 +113,20 @@ public class UISystem : MonoBehaviour
 
     public void MouseInTile(Tile T)
     {
-        if (T.transform.rotation != Quaternion.Euler(90, 0, 0))
-        {
-            //變形
-            MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.06f;
-            MouseOnTile.GetComponent<Renderer>().enabled = true;
-        }
-        else
-        {
-            MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.06f;
-            MouseOnTile.GetComponent<Renderer>().enabled = true;
-        }
+        //if (T.transform.rotation != Quaternion.Euler(90, 0, 0))
+        //{
+        //    //變形
+        //    MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.06f;
+        //    MouseOnTile.GetComponent<Renderer>().enabled = true;
+        //}
+        //else
+        //{
+           MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.06f;
+           MouseOnTile.GetComponent<Renderer>().enabled = true;
+        //}
         if (T.selectable && TurnCha.Moving != true)
         {
+            AttPred = TurnCha.AttackablePredict(T);//todo
             var path = TurnCha.MoveToTile(T);
             DrawHeadingLine(path);
             Prepera = true;
@@ -135,15 +138,32 @@ public class UISystem : MonoBehaviour
         MouseOnTile.GetComponent<Renderer>().enabled = false;
         if (T.selectable)
         {
+            AttPred.Clear();
             Destroy(GLR);
             Prepera = false;
         }
     }
 
-
-
-
-
+    void CheckMouse()
+    {
+        if (Input.GetMouseButtonUp(1)&& Prepera)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            Physics.Raycast(ray, out hit);
+            if (hit.collider.tag == "tile")
+            {
+                Tile T = hit.collider.GetComponent<Tile>();
+                if (T.selectable)
+                {
+                    Prepera = false;
+                    LRDestory();
+                    TurnCha.PrepareMove(T);
+                    RunUI = null;
+                }
+            }
+        }
+    }
 
 
 
@@ -159,7 +179,7 @@ public class UISystem : MonoBehaviour
     {
         TurnCha.MoveRange();
         TurnCha.AttakeableDetect();
-        TurnRun = null;
+        TurnRun = CheckMouse;
     }
     public void EnemyStartTurn()
     {
@@ -307,12 +327,6 @@ public class UISystem : MonoBehaviour
 
 
 
-
-
-
-
-
-
     //底部UI
 
     public void PerAttatk()//button
@@ -321,6 +335,7 @@ public class UISystem : MonoBehaviour
         {
             return;
         }
+        Prepera = false;
         Target = TurnCha.AttakeableList.First;
         TurnCha.ChangePreAttakeIdle();
         TurnCha.ChaChangeTarget(Target.Value.Item1);
@@ -353,13 +368,14 @@ public class UISystem : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(1))
         {
-            RT.anchoredPosition3D = new Vector3(0, -45, 0);
+            RT.anchoredPosition3D = new Vector3(0, 240, 0);
             TurnCha.PreAttack = false;
             TurnCha.Am.SetBool("Aim", false);
             TurnCha.Target = null;
-            RunUI = null;
+            RunUI = CheckMouse;
         }
     }
+
 
 
 
@@ -412,6 +428,10 @@ public class UISystem : MonoBehaviour
         HPBarDic.Remove(Cha);
         m_HP_Bar.Remove(HPBar);
         TLine.DestoryLogo(Cha);
+        if (!Aliens.Remove(Cha))
+        {
+            Humans.Remove(Cha);
+        }
     }
 
 
@@ -431,7 +451,7 @@ public class UISystem : MonoBehaviour
         createhp bar = go.GetComponent<createhp>();
         bar.MaxHP = HP;
         bar.followedTarget = target.transform; //血條的位置 = 角色的位置
-        go.transform.SetParent(transform);
+        go.transform.SetParent(HPCanvas.transform);
         HPBarDic.Add(target, bar);
         m_HP_Bar.Add(bar); //放到列表中
     }
