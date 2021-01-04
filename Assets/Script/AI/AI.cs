@@ -1650,7 +1650,8 @@ public class AI : MonoBehaviour
     protected Action Acting2;
     protected (AI, int, int) AttakeTarget;
     protected int BestPoint;
-    public bool NPCPreaera = false;
+    public bool NPCPreaera = false; 
+    public bool NPC_Prefire;
 
     protected void CalPointAction(Tile T)
     {
@@ -1859,12 +1860,16 @@ public class AI : MonoBehaviour
         ChangePreAttakeIdle(TargetDir);
         PreAttack = true;
         NPCPreaera = false;
-        DoActing = Fire;        
+        DoActing = Fire;
+        NPC_Prefire = true;
+        UI.MoveCam.att_cam_bool = true;
     }
 
     public void Fire()
     {
         int i = Random.Range(0, 100);
+        NPC_Prefire = true;
+        UI.MoveCam.att_cam_bool = true;
         if (AttakeTarget.Item3 < i)//Miss
         {
             Miss = true;
