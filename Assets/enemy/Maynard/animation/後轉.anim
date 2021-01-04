@@ -42505,7 +42505,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 1.4333333
-    functionName: BackTurn
+    functionName: BackTurn2
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

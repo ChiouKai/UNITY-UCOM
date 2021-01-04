@@ -24,9 +24,8 @@ public class createhp : MonoBehaviour
     }
     public void UpdateHP_Bar() //放血條的位置
     {
-        Vector3 vPos = followedTarget.position + Vector3.up * 2f;
-        Vector3 vScreenPos = Camera.main.WorldToScreenPoint(vPos);
-        vScreenPos += Vector3.right*50f;
+        Vector3 vScreenPos = Camera.main.WorldToScreenPoint(followedTarget.position);
+        vScreenPos += Vector3.right*50f+ Vector3.up * 150f;
         transform.position = vScreenPos;
     }
     
@@ -56,14 +55,11 @@ public class createhp : MonoBehaviour
         for (int i = 0; i < LiHP_Tiles.Length; i++)
         {
             int j = i;
-            if(i > 4)
-            {
-                j += (i+1) / 5;
-            }
+            j += i / 5;
             int y = 16;
             int x =  -40+ y*j; //血條位置
-            LiHP_Tiles[i] =  Instantiate(hp_tiles,this.transform);
-            LiHP_Tiles[i].transform.position = this.transform.position +new Vector3(x,-20,0);
+            LiHP_Tiles[i] =  Instantiate(hp_tiles,transform);
+            LiHP_Tiles[i].transform.position = transform.position +new Vector3(x,-20,0);
             LiHP_Tiles[i].sprite = full_HP_Tile;
             //,new Vector3(x, -40, 0), Quaternion.Euler(0,0,0)
         }

@@ -186,7 +186,6 @@ public class Tile : MonoBehaviour
             }
             else
             {
-                angel = 360 - angel;
                 int i = (int)angel / 45;
                 int j = (int)angel / 90;
                 if (i % 2 == 0)

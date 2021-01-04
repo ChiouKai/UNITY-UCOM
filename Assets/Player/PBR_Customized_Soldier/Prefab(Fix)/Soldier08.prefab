@@ -722,7 +722,6 @@ GameObject:
   - component: {fileID: 198024168168979697}
   - component: {fileID: 3611120783432747883}
   - component: {fileID: 8157025691337330856}
-  - component: {fileID: -1522777490207009632}
   m_Layer: 0
   m_Name: Soldier08
   m_TagString: Untagged
@@ -793,6 +792,7 @@ MonoBehaviour:
   enemy: {fileID: 0}
   Cha: {fileID: 0}
   AP: 0
+  AmTurn: 0
   VisitedTiles: []
   CurrentTile: {fileID: 0}
   Turn: 0
@@ -847,22 +847,6 @@ MonoBehaviour:
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000
   MaxBullet: 4
   bullet: 4
---- !u!54 &-1522777490207009632
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1829787705810507563}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &1829788842908956519
 GameObject:
   m_ObjectHideFlags: 0
@@ -2254,6 +2238,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1832151502265267221}
+  - component: {fileID: 9166236013380745891}
+  - component: {fileID: 4103631368061526008}
+  - component: {fileID: 8734115238368448969}
   m_Layer: 0
   m_Name: Pelvis
   m_TagString: Untagged
@@ -2276,6 +2263,49 @@ Transform:
   m_Father: {fileID: 1832398031030033457}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9166236013380745891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830304895344538179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a44329b4a2ee645bcb758d2ec4e90e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ai: {fileID: 198024168168979697}
+  Blood: {fileID: 4423328451969313578, guid: 5127a230e1f07344e9c98d3cf3add6d8, type: 3}
+--- !u!54 &4103631368061526008
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830304895344538179}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!65 &8734115238368448969
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830304895344538179}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.4, y: 0.4, z: 0.4}
+  m_Center: {x: -0.13, y: 0, z: 0}
 --- !u!1 &1830314359410268487
 GameObject:
   m_ObjectHideFlags: 0

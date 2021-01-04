@@ -888,6 +888,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4398914994086049270}
+  - component: {fileID: 8846352915459529099}
+  - component: {fileID: 3906589866812450930}
+  - component: {fileID: 6580014159183930859}
   m_Layer: 11
   m_Name: Pelvis
   m_TagString: Untagged
@@ -910,6 +913,49 @@ Transform:
   m_Father: {fileID: 4398969260148377474}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8846352915459529099
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4402559952760080640}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.4, y: 0.4, z: 0.4}
+  m_Center: {x: -0.15, y: 0, z: 0}
+--- !u!114 &3906589866812450930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4402559952760080640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a44329b4a2ee645bcb758d2ec4e90e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ai: {fileID: 7914297589169261363}
+  Blood: {fileID: 4423328451969313578, guid: 5127a230e1f07344e9c98d3cf3add6d8, type: 3}
+--- !u!54 &6580014159183930859
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4402559952760080640}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &4402570292126632752
 GameObject:
   m_ObjectHideFlags: 0
@@ -2417,11 +2463,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4400711128614858402}
   - component: {fileID: 4343734771060798116}
-  - component: {fileID: -6226156219656528477}
   - component: {fileID: 7914297589169261363}
   - component: {fileID: 7049485298074815164}
   - component: {fileID: 8238213367979835545}
-  - component: {fileID: -6518790501914957377}
   m_Layer: 11
   m_Name: Soldier03
   m_TagString: Human
@@ -2476,19 +2520,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!65 &-6226156219656528477
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4403017054556857438}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.4, y: 1.7, z: 0.4}
-  m_Center: {x: 0, y: 0.94, z: 0}
 --- !u!114 &7914297589169261363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2505,6 +2536,7 @@ MonoBehaviour:
   enemy: {fileID: 0}
   Cha: {fileID: 0}
   AP: 0
+  AmTurn: 0
   VisitedTiles: []
   CurrentTile: {fileID: 0}
   Turn: 0
@@ -2559,22 +2591,6 @@ MonoBehaviour:
   BasicAim: 70
   camp: 0
   type: 0
---- !u!54 &-6518790501914957377
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4403017054556857438}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &4403022634824267330
 GameObject:
   m_ObjectHideFlags: 0

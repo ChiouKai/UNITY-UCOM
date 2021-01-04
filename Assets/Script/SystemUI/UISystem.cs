@@ -14,16 +14,7 @@ public class UISystem : MonoBehaviour
     Thread Round;
     public Action TurnRun;
     public Action RunUI;
-    public GameObject BelowButtonAndText;
-    public RectTransform RT;
-    public Text ButtonText;
-    public Text DescribeText;
-    public Text LeftText;
-    public Text RightText;
-    LinkedListNode<(AI, int, int)> Target;
-    public GameObject MouseOnTile;
-    public Canvas HPCanvas;
-    List<AI> AttPred;
+
 
     static public UISystem getInstance()
     {
@@ -85,6 +76,11 @@ public class UISystem : MonoBehaviour
                 }
             }
         }
+        if (AimTarget.activeSelf)
+        {
+            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(Target.Value.Item1.BeAttakePoint.position);
+            AimTarget.transform.position = vScreenPos;
+        }
 
     }
 
@@ -136,7 +132,7 @@ public class UISystem : MonoBehaviour
     public void MouseOutTile(Tile T)
     {
         MouseOnTile.GetComponent<Renderer>().enabled = false;
-        if (T.selectable)
+        if (T.selectable && TurnCha.Moving != true)
         {
             AttPred.Clear();
             Destroy(GLR);
@@ -323,6 +319,19 @@ public class UISystem : MonoBehaviour
     }
 
 
+    public GameObject BelowButtonAndText;
+    public RectTransform RT;
+    public Text ButtonText;
+    public Text DescribeText;
+    public Text LeftText;
+    public Text RightText;
+    LinkedListNode<(AI, int, int)> Target;
+    public GameObject MouseOnTile;
+    public Canvas HPCanvas;
+    List<AI> AttPred = new List<AI>();
+    public GameObject AimTarget;
+
+
 
 
 
@@ -340,6 +349,7 @@ public class UISystem : MonoBehaviour
         TurnCha.ChangePreAttakeIdle();
         TurnCha.ChaChangeTarget(Target.Value.Item1);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        AimTarget.SetActive(true);
         ButtonText.text = "開火";
         DescribeText.text = "朝向目標開火。";
         LeftText.text = "傷害:" + TurnCha.Gun.Damage[0]+"~"+TurnCha.Gun.Damage[1];
@@ -348,8 +358,10 @@ public class UISystem : MonoBehaviour
     }
     public void Attack()//button
     {
+        AimTarget.SetActive(false);
         TurnCha.Fire(Target);
         RunUI = null;
+
     }
 
     void ChangeAttakeTarget()
@@ -362,12 +374,12 @@ public class UISystem : MonoBehaviour
                 Target = TurnCha.AttakeableList.First;
             }
             TurnCha.ChaChangeTarget(Target.Value.Item1);
-
             LeftText.text = "傷害:" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
             RightText.text = "命中率:" + Target.Value.Item3 + "%";
         }
         if (Input.GetMouseButtonDown(1))
         {
+            AimTarget.SetActive(false);
             RT.anchoredPosition3D = new Vector3(0, 240, 0);
             TurnCha.PreAttack = false;
             TurnCha.Am.SetBool("Aim", false);
@@ -439,7 +451,8 @@ public class UISystem : MonoBehaviour
 
 
 
-    public GameObject BarPrefab;
+    public GameObject HPBar_Human;
+    public GameObject HPBar_Alian;
     private List<createhp> m_HP_Bar = new List<createhp>();
     private Dictionary<AI, createhp> HPBarDic = new Dictionary<AI, createhp>();
     ///HP bar
@@ -447,11 +460,19 @@ public class UISystem : MonoBehaviour
 
     public void CreateHP_Bar(AI target, int HP)
     {
-        GameObject go = GameObject.Instantiate(BarPrefab) as GameObject; //生成血條
-        createhp bar = go.GetComponent<createhp>();
+        GameObject Bar;
+        if (target.Cha.camp == Character.Camp.Human)
+        {
+            Bar = GameObject.Instantiate(HPBar_Human) as GameObject; //生成血條
+        }
+        else
+        {
+            Bar = GameObject.Instantiate(HPBar_Alian) as GameObject; //生成血條
+        }
+        createhp bar = Bar.GetComponent<createhp>();
         bar.MaxHP = HP;
         bar.followedTarget = target.transform; //血條的位置 = 角色的位置
-        go.transform.SetParent(HPCanvas.transform);
+        Bar.transform.SetParent(HPCanvas.transform);
         HPBarDic.Add(target, bar);
         m_HP_Bar.Add(bar); //放到列表中
     }

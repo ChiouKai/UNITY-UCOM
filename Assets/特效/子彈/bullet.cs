@@ -58,32 +58,5 @@ public class bullet : MonoBehaviour
                 Destroy(fire, 0.7f); //一秒後刪除火花效果
 
             }
-            else if (other.tag == "Human")
-            {
-                Vector3 DIV = -transform.forward; //子彈前進方向的反方向
-                if (HumanBlood == null)
-                {
-                    return;
-                }
-                GameObject Blood = Instantiate(HumanBlood, transform.position, new Quaternion());
-                Blood.transform.forward = DIV;//火花方向 = 子彈的反方向
-                Blood.SetActive(true); //讓火花顯示
-                Destroy(Blood, 0.7f); //一秒後刪除火花效果
-
-            }
-            else if (other.tag == "Alien")
-            {
-                if (AlienBlood == null)
-                {
-                    return;
-                }
-                Vector3 DIV = -transform.forward; //子彈前進方向的反方向
-                GameObject Blood = Instantiate(AlienBlood, transform.position, new Quaternion());
-                Blood.transform.forward = DIV;//火花方向 = 子彈的反方向
-                Blood.SetActive(true); //讓火花顯示
-                Destroy(Blood, 0.7f); //一秒後刪除火花效果
-
-            }
-        
     }
 }
