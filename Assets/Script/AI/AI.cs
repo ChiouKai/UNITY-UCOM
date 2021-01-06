@@ -1483,7 +1483,7 @@ public class AI : MonoBehaviour
         yield return new WaitUntil(() => stateinfo.IsName("Fire"));
         Am.SetBool("Fire", false);
         yield return new WaitForSeconds(1f);
-        //transform.forward = Direction(TileCount);
+        transform.forward = Direction(TileCount);
         EndTurn();
         PreAttack = false;
         //ResetBool();
@@ -1491,6 +1491,10 @@ public class AI : MonoBehaviour
 
     protected void EndTurn()
     {
+        UI.MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
+        UI.per_but = false; //我方切換子彈預設為關
+        NPC_Prefire = false;
+        UI.MoveCam.att_cam_bool = false;
         if (AttakeTarget.Item1 != null)
         {
             AttakeTarget.Item1.BeAimed = false;
@@ -1529,6 +1533,7 @@ public class AI : MonoBehaviour
 
     public void Hurt(Vector3 dir , Vector3 Pos)
     {
+        dir.y = 0;
         if (Cha.HP <= 0)
         {
             transform.forward = -dir;
