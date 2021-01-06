@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class HumanAI : AI
 {
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -38,7 +39,6 @@ public class HumanAI : AI
         {
             Idle();
         }
-       
     }
     private void LateUpdate()
     {
@@ -50,43 +50,19 @@ public class HumanAI : AI
     }
     private void FixedUpdate()
     {
-        float MinDis = 99f;
-        foreach (AI EnCha in Enemies)
+        if (!BeAimed)
         {
-            float dis = (EnCha.transform.position - transform.position).magnitude;
-            if (dis < MinDis)
+            float MinDis = 99f;
+            foreach (AI EnCha in Enemies)
             {
-                MinDis = dis;
-                enemy = EnCha.transform;
+                float dis = (EnCha.transform.position - transform.position).magnitude;
+                if (dis < MinDis)
+                {
+                    MinDis = dis;
+                    enemy = EnCha.transform;
+                }
             }
         }
     }
-
-
-    public override void LeftTurn()
-    {
-        AmTurn = false;
-        Am.SetBool("Left", false);
-        Am.SetBool("Turn", false);
-        //transform.Rotate(0, -90f, 0);
-    }
-    public override void RightTurn()
-    {
-        AmTurn = false;
-        Am.SetBool("Right", false);
-        Am.SetBool("Turn", false);
-        //transform.Rotate(0, 90f, 0);
-    }
-    public override void BackTurn()
-    {
-        AmTurn = false;
-        Am.SetBool("Back", false);
-        Am.SetBool("Turn", false);
-        //transform.Rotate(0, 180f, 0);
-    }
-
-
-
-
 
 }

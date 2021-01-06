@@ -19,7 +19,6 @@ public class AI : MonoBehaviour
     protected int EnemyLayer;
     protected int TileCount;
     public bool AmTurn = false;
-    public Action MTurn=null;
     
     
     //動畫
@@ -270,37 +269,77 @@ public class AI : MonoBehaviour
         AmTurn = false;
         Am.SetBool("Left", false);
         Am.SetBool("Turn", false);
-        transform.Rotate(0, -90f, 0);
-        MTurn = null;
-    }
-    public virtual void LeftTurn2()
-    {
-        MTurn = LeftTurn;
     }
     public virtual void RightTurn()
     {
         AmTurn = false;
         Am.SetBool("Right", false);
         Am.SetBool("Turn", false);
-        transform.Rotate(0, 90f, 0);
-        MTurn = null;
-    }
-    public virtual void RightTurn2()
-    {
-        MTurn = RightTurn;
     }
     public virtual void BackTurn()
     {
         AmTurn = false;
         Am.SetBool("Back", false);
         Am.SetBool("Turn", false);
-        transform.Rotate(0, 180f, 0);
-        MTurn = null;
     }
-    public virtual void BackTurn2()
+
+    IEnumerator LeftTurn2()
     {
-        MTurn = BackTurn;
+        yield return null;
+        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
+        if (stateinfo.normalizedTime >= 1.0f)
+        {
+            transform.Rotate(0, -90f, 0);
+            Am.SetBool("Left", false);
+            Am.SetBool("Turn", false);
+            AmTurn = false;
+
+        }
+        else
+            yield return LeftTurn2();
     }
+    IEnumerator RightTurn2()
+    {
+        yield return null;
+        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
+        if (stateinfo.normalizedTime >= 1.0f)
+        {
+            transform.Rotate(0, 90f, 0);
+            Am.SetBool("Right", false);
+            Am.SetBool("Turn", false);
+            AmTurn = false;
+        }
+        else
+            yield return RightTurn2();
+    }
+    IEnumerator BackTurn2()
+    {
+        yield return null;
+        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
+        if (stateinfo.normalizedTime >= 1.0f)
+        {
+            transform.Rotate(0, 180f, 0);
+            Am.SetBool("Back", false);
+            Am.SetBool("Turn", false);
+            AmTurn = false;
+
+        }
+        else
+            yield return BackTurn2();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void RunToAttack()
     {
@@ -580,22 +619,11 @@ public class AI : MonoBehaviour
             //UI.LRDestory();
             CurrentTile.walkable = false;
             Moving = false;
-            if (AP != 0)
-            {
-                MoveRange();
-                AttakeableDetect();
-
-            }
-            else
-            {
-                Turn = false;
-                PreAttack = false;
-
-            }
+            StartCoroutine(WaitNextAction());
         }
     }
 
-    protected Vector3 Direction(int tilecount)
+    internal Vector3 Direction(int tilecount)
     {
         switch (tilecount)
         {
@@ -714,15 +742,14 @@ public class AI : MonoBehaviour
     public bool ChangeTarget = false;
     public AI Target;
     protected Vector3 TargetDir;
-    protected float RotationProgress = 0;
     public Transform FirePoint;
     public GameObject Bullet;
     public Transform BeAttakePoint;
-    protected Vector3 AttackPoint;
-    protected bool Miss = false;
-    protected Vector3 AttackPosition;
+    internal Vector3 AttackPoint;
+    internal bool Miss = false;
+    internal Vector3 AttackPosition;
     protected List<AI> AttPredict = new List<AI>();
-
+    public bool BeAimed = false;
 
     public void GetTargets(List<AI> enemy)
     {
@@ -968,11 +995,11 @@ public class AI : MonoBehaviour
     protected IEnumerator AIWaitPreAtkChange()
     {
         PreAttack = false;
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
         NPCPreaera = true;
         PreAttack = true;
     }
-    public void ChangePreAttakeIdle()
+    public void ChangePreAttackIdle()
     {
         if (Am.GetBool("FCover"))
         {
@@ -1333,14 +1360,15 @@ public class AI : MonoBehaviour
 
 
 
-    public void Fire(LinkedListNode<(AI target, int location, int aim)> attacklist)
+    public void Fire((AI target, int location, int aim) FireTarget)
     {
+        Gun.bullet -= 1;
         int i =  Random.Range(0, 100);
-        if (attacklist.Value.aim < i)//Miss
+        if (FireTarget.aim < i)//Miss
         {
             Miss = true;
             RaycastHit RH;
-                Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(attacklist.Value.location);
+                Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(FireTarget.location);
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (Target.transform.position
@@ -1368,7 +1396,7 @@ public class AI : MonoBehaviour
 
         if (Am.GetBool("FCover"))
         {
-            if(attacklist.Value.location == -1)
+            if(FireTarget.location == -1)
             {
                 Am.SetBool("Aim", true);
                 AttackPosition = CurrentTile.transform.position;
@@ -1377,7 +1405,7 @@ public class AI : MonoBehaviour
             else
             {
                 Am.SetBool("Run", true);
-                Vector3 dir = Direction(attacklist.Value.location);
+                Vector3 dir = Direction(FireTarget.location);
                 AttackPosition = transform.position + dir*0.67f;
                 FW = FullCoverFireWait;
             }
@@ -1429,7 +1457,7 @@ public class AI : MonoBehaviour
         PreAttack = false;
         yield return new WaitUntil(() => Attack == false);
         yield return new WaitForSeconds(1f);
-        Turn = false;
+        EndTurn();
         ResetBool();
     }
     public IEnumerator FullCoverFireWait()
@@ -1446,7 +1474,7 @@ public class AI : MonoBehaviour
         yield return new WaitUntil(() => PreAttack == false);
         transform.forward = Direction(TileCount);
         Am.SetBool("Fire", false);
-        Turn = false;
+        EndTurn();
 
     }
     public IEnumerator FullCoverFireWait2()
@@ -1456,21 +1484,32 @@ public class AI : MonoBehaviour
         Am.SetBool("Fire", false);
         yield return new WaitForSeconds(1f);
         //transform.forward = Direction(TileCount);
-        Turn = false;
+        EndTurn();
         PreAttack = false;
         //ResetBool();
     }
 
-    public void Reload()
+    protected void EndTurn()
     {
-        Gun.bullet = Gun.MaxBullet;
-        //Am.set
-        if (Acting2 != null)
+        if (AttakeTarget.Item1 != null)
         {
-            DoActing = Acting2;
-            Acting2 = null;
+            AttakeTarget.Item1.BeAimed = false;
+            AttakeTarget = (null, 0, 0);
         }
+        if (AttakeableList.Count > 0)
+        {
+            foreach ((AI ai, _, _) in AttakeableList)
+            {
+                ai.NotBeAim();
+            }
+        }
+        Turn = false;
     }
+
+
+
+
+    
     
     public void BeDamaged(int damage)
     {
@@ -1505,6 +1544,52 @@ public class AI : MonoBehaviour
             Idle = NoCover;
         }
     }
+
+    public void BeAim(AI Attacker)
+    {
+        BeAimed = true;
+        enemy = Attacker.transform;
+    }
+    public void NotBeAim()
+    {
+        BeAimed = false;
+    }
+
+    public void Reload()
+    {
+        Gun.bullet = Gun.MaxBullet;
+        AP -= 1;
+        Am.SetTrigger("Reload");
+
+        StartCoroutine( WaitNextAction());
+    }
+    protected IEnumerator WaitNextAction()
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (AP != 0)
+        {
+            UI.PlayerStartTurn();
+        }
+        else
+        {
+            EndTurn();
+            PreAttack = false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1925,7 +2010,7 @@ public class AI : MonoBehaviour
         Attack = true;
         DoActing = null;
         NPCPreaera = false;
-        AttakeTarget = (null, 0, 0);
+        AttakeTarget.Item1.BeAim(this);
         //AP = 0;
         //AttakeableList.Clear();
         //UI.LRDestory();
@@ -1958,9 +2043,29 @@ public class AI : MonoBehaviour
     }
 
 
+    public void AIReload()
+    {
+        Gun.bullet = Gun.MaxBullet;
+        AP -= 1;
+        //Am.set
+        if (Acting2 != null)
+        {
+            DoActing = Acting2;
+            Acting2 = null;
+        }
+        else
+        {
+            Turn = false;
+            PreAttack = false;
+            NPCPreaera = false;
+            ResetBool();
+        }
+    }
 
+    protected void MindControl()
+    {
 
-
+    }
 
 
 }

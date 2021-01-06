@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,6 @@ public class UISystem : MonoBehaviour
     public Action TurnRun;
     public Action RunUI;
 
-    public GameObject menu;
 
     static public UISystem getInstance()
     {
@@ -53,10 +53,12 @@ public class UISystem : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            onExitClicked();
+        }
         TurnRun?.Invoke();//控制角色UI
         RunUI?.Invoke();//控制UI
-
-        onEscapeKeyed();  //退出選單
     }
     private void LateUpdate()
     {
@@ -83,20 +85,10 @@ public class UISystem : MonoBehaviour
 
     }
 
-    //press Esc button
-    public void onEscapeKeyed()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape)) { menu.SetActive(!menu.activeInHierarchy); }
-    }
 
-    //menu buttons
+
+
     public void onExitClicked()
-    {       
-        if (menu.activeInHierarchy) { menu.SetActive(false);}
-        else { menu.SetActive(true); }
-    }
-
-    public void QuitGame()
     {
         Round.Abort();
         Application.Quit();
@@ -105,12 +97,14 @@ public class UISystem : MonoBehaviour
     public void ShowActionUI()
     {
         BelowButtonAndText.SetActive(true);
+        AttPredictPanel.gameObject.SetActive(true);
     }
 
     public void CloseActionUI()
     {
         RT.anchoredPosition3D = new Vector3(0, 240, 0);
         BelowButtonAndText.SetActive(false);
+        AttPredictPanel.gameObject.SetActive(false);
         RunUI = null;
     }
 
@@ -131,7 +125,7 @@ public class UISystem : MonoBehaviour
         //}
         if (T.selectable && TurnCha.Moving != true)
         {
-            AttPred = TurnCha.AttackablePredict(T);//todo
+            ShowPredictAttable(T);
             var path = TurnCha.MoveToTile(T);
             DrawHeadingLine(path);
             Prepera = true;
@@ -143,7 +137,7 @@ public class UISystem : MonoBehaviour
         MouseOnTile.GetComponent<Renderer>().enabled = false;
         if (T.selectable && TurnCha.Moving != true)
         {
-            AttPred.Clear();
+            DestroyAPPImage();
             Destroy(GLR);
             Prepera = false;
         }
@@ -151,7 +145,7 @@ public class UISystem : MonoBehaviour
 
     void CheckMouse()
     {
-        if (Input.GetMouseButtonUp(1)&& Prepera)
+        if (Input.GetMouseButtonDown(1)&& Prepera)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -161,6 +155,9 @@ public class UISystem : MonoBehaviour
                 Tile T = hit.collider.GetComponent<Tile>();
                 if (T.selectable)
                 {
+                    AttPredictPanel.gameObject.SetActive(false);
+                    DestroyADPButton();
+                    DestroySkillButton();
                     Prepera = false;
                     LRDestory();
                     TurnCha.PrepareMove(T);
@@ -173,17 +170,26 @@ public class UISystem : MonoBehaviour
 
 
 
-    //畫線
+    
     public GameObject Blue;
     public GameObject Yellow;
     public List<GameObject> LRList;
     private GameObject GLR;
     public bool Prepera = false;
+    public Transform AttDectPanel;
+    public Transform AttPredictPanel;
+    public Transform SkillsPanel;
+    List<Button> ADPButtonList = new List<Button>();
+    List<GameObject> APPImageList = new List<GameObject>();
+    List<Button> SButtonList = new List<Button>();
 
     public void PlayerStartTurn()
     {
         TurnCha.MoveRange();
         TurnCha.AttakeableDetect();
+        ShowAttackableButton();
+        FindSkillButton();
+        RunUI = ShowActionUI;
         TurnRun = CheckMouse;
     }
     public void EnemyStartTurn()
@@ -192,6 +198,116 @@ public class UISystem : MonoBehaviour
         TurnCha.ConfirmAction();
         TurnRun = null;
     }
+    public void FindSkillButton()
+    {
+        var Skills = TurnCha.GetComponents<ISkill>();
+        foreach(var skill in Skills)
+        {
+            string name = skill.Func();
+            if(name!=null)
+            {
+                Button go = Instantiate<GameObject>(Resources.Load<GameObject>(name)).GetComponent<Button>();
+                go.transform.SetParent(SkillsPanel);
+                SButtonList.Add(go);
+                Type type = typeof(UISystem);
+                MethodInfo method = type.GetMethod("Pre" + name);
+                go.onClick.AddListener(() => method.Invoke(this, null));
+            }
+        }
+    }
+    public void DestroySkillButton()
+    {
+        if (SButtonList.Count > 0)
+        {
+            foreach (var button in SButtonList)
+            {
+                Destroy(button.gameObject);
+            }
+        }
+        SButtonList.Clear();
+    }
+
+
+
+
+
+
+
+
+
+    public void ShowAttackableButton()
+    {
+        if (TurnCha.AttakeableList.Count == 0)
+        {
+            return;
+        }
+
+        var Attackable = TurnCha.AttakeableList.First;
+        while (Attackable != null)
+        {
+            Button button;
+            if (Attackable.Value.Item1.Cha.camp == Character.Camp.Alien)
+            {
+                button = Instantiate<GameObject>(Resources.Load<GameObject>("AlianButton")).GetComponent<Button>();
+            }
+            else
+            {
+                button = Instantiate<GameObject>(Resources.Load<GameObject>("HumanButton")).GetComponent<Button>();
+            }
+            ADPButtonList.Add(button);
+            button.transform.SetParent(AttDectPanel);
+            AI ai = Attackable.Value.Item1;
+
+            button.onClick.AddListener(() =>ChangeAttakeTargetButton(ai));
+            Attackable = Attackable.Next;
+        }     
+    }
+    public void DestroyADPButton()
+    {
+        if (ADPButtonList.Count > 0)
+        {
+            foreach (Button button in ADPButtonList)
+            {
+                Destroy(button.gameObject);
+            }
+        }
+        ADPButtonList.Clear();
+    }
+    public void ShowPredictAttable(Tile T)
+    {
+        AttPred = TurnCha.AttackablePredict(T);
+        foreach(AI ai in AttPred)
+        {
+            GameObject go;
+            if (ai.Cha.camp == Character.Camp.Alien)
+            {
+                go = Instantiate<GameObject>(Resources.Load<GameObject>("AlianImage"));
+            }
+            else
+            {
+                go = Instantiate<GameObject>(Resources.Load<GameObject>("HumanImage"));
+            }
+            go.transform.SetParent(AttPredictPanel);
+            APPImageList.Add(go);
+        }
+    }
+    public void DestroyAPPImage()
+    {
+        AttPred.Clear();
+        if (APPImageList.Count > 0)
+        {
+            foreach (GameObject go in APPImageList)
+            {
+                Destroy(go);
+            }
+        }
+        APPImageList.Clear();
+    }
+
+
+
+
+
 
     public void DrawMRLine(Queue<Tile> Process, GameObject LR,float ap)//畫移動範圍線
     {
@@ -339,7 +455,7 @@ public class UISystem : MonoBehaviour
     public Canvas HPCanvas;
     List<AI> AttPred = new List<AI>();
     public GameObject AimTarget;
-
+    public Button ActionButton;
 
 
 
@@ -347,7 +463,7 @@ public class UISystem : MonoBehaviour
 
     //底部UI
 
-    public void PerAttatk()//button
+    public void PreFire()//button
     {
         if (TurnCha.AttakeableList.Count == 0)
         {
@@ -355,22 +471,28 @@ public class UISystem : MonoBehaviour
         }
         Prepera = false;
         Target = TurnCha.AttakeableList.First;
-        TurnCha.ChangePreAttakeIdle();
+        TurnCha.ChangePreAttackIdle();
         TurnCha.ChaChangeTarget(Target.Value.Item1);
+        Target.Value.Item1.BeAim(TurnCha);
+
+        AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
         AimTarget.SetActive(true);
         ButtonText.text = "開火";
         DescribeText.text = "朝向目標開火。";
         LeftText.text = "傷害:" + TurnCha.Gun.Damage[0]+"~"+TurnCha.Gun.Damage[1];
         RightText.text = "命中率:" + Target.Value.Item3 + "%";
-        RunUI = ChangeAttakeTarget;
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(()=>Fire());
+        TurnRun = ChangeAttakeTarget;
     }
-    public void Attack()//button
+    public void Fire()//button
     {
         AimTarget.SetActive(false);
-        TurnCha.Fire(Target);
-        RunUI = null;
-
+        TurnCha.Fire(Target.Value);
+        DestroyADPButton();
+        DestroySkillButton();
+        TurnRun = null;
     }
 
     void ChangeAttakeTarget()
@@ -393,9 +515,40 @@ public class UISystem : MonoBehaviour
             TurnCha.PreAttack = false;
             TurnCha.Am.SetBool("Aim", false);
             TurnCha.Target = null;
-            RunUI = CheckMouse;
+            TurnRun = CheckMouse;
+            AttPredictPanel.gameObject.SetActive(true);
+            //StartCoroutine(WaitMove());
         }
     }
+    public void ChangeAttakeTargetButton(AI ai)
+    {
+        Target = TurnCha.AttakeableList.First;
+        while (Target.Value.Item1 != ai)
+        {
+            Target = Target.Next;
+        }
+        TurnCha.ChaChangeTarget(Target.Value.Item1);
+        LeftText.text = "傷害:" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
+        RightText.text = "命中率:" + Target.Value.Item3 + "%";
+    }
+
+
+    public void PreReloadAmmo()
+    {
+        ButtonText.text = "換彈";
+        DescribeText.text = "更換武器彈夾。";
+        LeftText.text = "";
+        RightText.text = "";
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(() => Reload());
+    }
+    public void Reload()
+    {
+        TurnCha.Reload();
+    }
+
+
+
 
 
 
@@ -434,6 +587,7 @@ public class UISystem : MonoBehaviour
 
     public void ChaTurnEnd()
     {
+        DestroyADPButton();
         TLine.TEndLogo(TurnCha, Count);
         TurnRun = null;
     }

@@ -43,7 +43,7 @@ public class NPC_AI : AI
     }
     private void FixedUpdate()
     {
-        if (!Turn)
+        if (!Turn && !BeAimed)
         {
             float MinDis = 99f;
             foreach (AI EnCha in Enemies)
@@ -60,8 +60,6 @@ public class NPC_AI : AI
     }
     private void LateUpdate()
     {
-        MTurn?.Invoke();
-
         if (PreAttack)
         {
             PreAttakeIdle();

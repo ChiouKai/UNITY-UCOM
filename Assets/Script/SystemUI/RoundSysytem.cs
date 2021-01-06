@@ -70,7 +70,7 @@ public class RoundSysytem
             if (TurnCha.Cha.camp == 0)
             {
                 UI.TurnRun = UI.PlayerStartTurn;
-                UI.RunUI = UI.ShowActionUI;
+                
                 TurnCha.Turn = true;
                 TurnCha.AP = 2;
             }
