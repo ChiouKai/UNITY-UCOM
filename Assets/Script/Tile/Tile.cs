@@ -190,15 +190,15 @@ public class Tile : MonoBehaviour
                 int j = (int)angel / 90;
                 if (i % 2 == 0)
                 {
-                    cover[0] = AdjCoverList[j];
-                    cover[1] = AdjCoverList[(j + 1)% 4];
+                    cover[0] = AdjCoverList[(4 - j) % 4];
+                    cover[1] = AdjCoverList[3 - j];
                     AimAngle = (int)angel % 45;
                     return cover;
                 }
                 else
                 {
-                    cover[0] = AdjCoverList[(j + 1)% 4];
-                    cover[1] = AdjCoverList[j];
+                    cover[0] = AdjCoverList[3 - j];
+                    cover[1] = AdjCoverList[(4 - j) % 4];
                     AimAngle = 90 * (j + 1) - (int)angel;
                     return cover;
                 }
