@@ -16,6 +16,7 @@ public class UISystem : MonoBehaviour
     public Action TurnRun;
     public Action RunUI;
 
+    public GameObject menu;
 
     static public UISystem getInstance()
     {
@@ -53,12 +54,10 @@ public class UISystem : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            onExitClicked();
-        }
         TurnRun?.Invoke();//控制角色UI
         RunUI?.Invoke();//控制UI
+
+        onEscapeKeyed();  //退出選單
     }
     private void LateUpdate()
     {
@@ -85,10 +84,20 @@ public class UISystem : MonoBehaviour
 
     }
 
+    //press Esc button
+    public void onEscapeKeyed()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape)) { menu.SetActive(!menu.activeInHierarchy); }
+    }
 
-
-
+    //menu buttons
     public void onExitClicked()
+    {       
+        if (menu.activeInHierarchy) { menu.SetActive(false);}
+        else { menu.SetActive(true); }
+    }
+
+    public void QuitGame()
     {
         Round.Abort();
         Application.Quit();
@@ -471,6 +480,8 @@ public class UISystem : MonoBehaviour
         }
         Prepera = false;
         Target = TurnCha.AttakeableList.First;
+        MoveCam.att_cam_bool = true;
+        per_but = true;
         TurnCha.ChangePreAttackIdle();
         TurnCha.ChaChangeTarget(Target.Value.Item1);
         Target.Value.Item1.BeAim(TurnCha);
@@ -504,6 +515,7 @@ public class UISystem : MonoBehaviour
             {
                 Target = TurnCha.AttakeableList.First;
             }
+            MoveCam.att_cam_bool = true;
             TurnCha.ChaChangeTarget(Target.Value.Item1);
             LeftText.text = "傷害:" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
             RightText.text = "命中率:" + Target.Value.Item3 + "%";
@@ -515,6 +527,10 @@ public class UISystem : MonoBehaviour
             TurnCha.PreAttack = false;
             TurnCha.Am.SetBool("Aim", false);
             TurnCha.Target = null;
+            per_but = false;
+            MoveCam.cam_dis = 20.0f;//攝影機與標的物距離變回20公尺
+            Vector3 ab = TurnCha.Cha.transform.position; //回到原本的位置
+            MoveCam.transform.position = Vector3.Lerp(ab, MoveCam.transform.position, 1 * Time.deltaTime);
             TurnRun = CheckMouse;
             AttPredictPanel.gameObject.SetActive(true);
             //StartCoroutine(WaitMove());
@@ -646,4 +662,72 @@ public class UISystem : MonoBehaviour
         HPBarDic.TryGetValue(Target,out bar);
         bar.HPControl(valve);
     }
+
+
+    public bool per_but;
+    public void Attack_camera()
+    {
+
+        Vector3 Target_position; //目標點
+        Vector3 sce_cam_pos = MoveCam.scene_camera.transform.position; //攝影機位置
+
+        if (TurnCha.Cha.tag == "Human" && per_but == true)
+        {
+            MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
+            float dis = Vector3.Distance(TurnCha.Cha.transform.position, Target.Value.Item1.transform.position); //與目標的距離
+            Vector3 dir = (Target.Value.Item1.transform.position - TurnCha.Cha.transform.position).normalized; //到目標的方向
+            Target_position = TurnCha.Cha.transform.position + dir * dis / 2; //目標點位置
+
+            MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime);//標的物往目標點移動
+            float Gg = Vector3.Distance(MoveCam.transform.position, Target_position);//如果movecam與目標點距離小於0.02 位置直接等於目標點
+            if (Gg <= 0.05)
+                MoveCam.transform.position = Target_position;
+
+            Vector3 scp = MoveCam.transform.position + -MoveCam.scene_camera.transform.forward * MoveCam.cam_dis;//攝影機位置往後
+            sce_cam_pos = Vector3.Lerp(scp, MoveCam.transform.position, 3f * Time.deltaTime); //攝影機滑順移動到指定距離
+            float mg = Vector3.Distance(sce_cam_pos, scp);
+            if (mg <= 0.05)
+            {
+                sce_cam_pos = scp;
+            }
+            if (Gg <= 0.05 && mg <= 0.05) MoveCam.att_cam_bool = false; //到達位置的時候將攻擊用攝影機關閉
+        }
+        if (TurnCha.Cha.tag == "Alien" && TurnCha.NPC_Prefire == true)
+        {
+            MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
+            float dis = Vector3.Distance(TurnCha.Cha.transform.position, TurnCha.Target.transform.position); //與目標的距離
+            Vector3 dir = (TurnCha.Target.transform.position - TurnCha.Cha.transform.position).normalized; //到目標的方向
+            Target_position = TurnCha.Cha.transform.position + dir * dis / 2; //目標位置
+
+            MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 3 * Time.deltaTime);//攝影機往前目標移動
+            float Gg = Vector3.Distance(MoveCam.transform.position, Target_position);
+
+            if (Gg <= 0.05)
+            {
+                MoveCam.transform.position = Target_position;
+            }
+
+            Vector3 scp = MoveCam.transform.position + -MoveCam.scene_camera.transform.forward * MoveCam.cam_dis;//攝影機為標的物加往後一個方向的距離                                                                                                                  
+            sce_cam_pos = Vector3.Lerp(scp, sce_cam_pos, 5 * Time.deltaTime);
+            float mg = Vector3.Distance(sce_cam_pos, scp);
+            if (mg <= 0.05)
+            {
+                sce_cam_pos = scp;
+            }
+            if (Gg <= .05 && mg <= .05) MoveCam.att_cam_bool = false;
+
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

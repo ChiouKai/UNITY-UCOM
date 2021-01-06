@@ -21,12 +21,16 @@ public class Move_Camera : MonoBehaviour
     public GameObject Our_star;
     public Material[] enstar;
     public Material[] ourstar;
+    public float cam_dis;
+    UISystem US;
+    public bool att_cam_bool;
 
     AI Target;
 
     private void Start()
     {
-        
+        att_cam_bool = false;
+        US = UISystem.getInstance();
         Enemy_star.SetActive(false);
         Our_star.SetActive(false);
         scene_camera.transform.position = transform.position + new Vector3(7.95f, 15f, -7.95f);
@@ -38,6 +42,14 @@ public class Move_Camera : MonoBehaviour
         float fH = Input.GetAxis("Horizontal");
         float fV = Input.GetAxis("Vertical");
         //增加以45度角面向目標
+        Vector3 ab = transform.position + -scene_camera.transform.forward * cam_dis;  //攝影機要到的位置
+        scene_camera.transform.position = Vector3.Lerp(scene_camera.transform.position, ab, 3 * Time.deltaTime);
+        float vc = Vector3.Distance(ab, scene_camera.transform.position);
+        if (vc <= 0.05)
+            scene_camera.transform.position = ab;
+        //scene_camera.transform.position = ab;
+
+
         if (Target != null)
         {
             if (Target.tag == "Alien")
@@ -83,12 +95,16 @@ public class Move_Camera : MonoBehaviour
                 if (gg < 0.001f)
                 {
                     transform.position = Target.transform.position;
-                    if (Target.tag == "Alien" && Target.Turn) //如果tag為敵人時繼續為true 代表持續鎖定目標位置
-                        move_tr = true; //為true時不可移動
-                    else move_tr = false; //為false則表示一開始移動到目標後就不進行動作
+                    move_tr = false; //為false則表示一開始移動到目標後就不進行動作
                 }
             }
+            if (att_cam_bool)
+            {
+                US.Attack_camera();
+            }
         }
+
+
         if (fH != 0 || fV != 0 ) //wsad移動
         {
             if (move_tr == false && !Target.Moving)
