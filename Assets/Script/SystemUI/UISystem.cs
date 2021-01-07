@@ -105,8 +105,10 @@ public class UISystem : MonoBehaviour
 
     public void ShowActionUI()
     {
+        RT.anchoredPosition3D = new Vector3(0, 240, 0);
         BelowButtonAndText.SetActive(true);
         AttPredictPanel.gameObject.SetActive(true);
+        RunUI = null;
     }
 
     public void CloseActionUI()
@@ -212,7 +214,7 @@ public class UISystem : MonoBehaviour
         var Skills = TurnCha.GetComponents<ISkill>();
         foreach(var skill in Skills)
         {
-            string name = skill.Func();
+            string name = skill.CheckUseable();
             if(name!=null)
             {
                 Button go = Instantiate<GameObject>(Resources.Load<GameObject>(name)).GetComponent<Button>();
@@ -549,8 +551,10 @@ public class UISystem : MonoBehaviour
     }
 
 
-    public void PreReloadAmmo()
+    public void PreReload()
     {
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        Prepera = false;
         ButtonText.text = "換彈";
         DescribeText.text = "更換武器彈夾。";
         LeftText.text = "";
@@ -560,7 +564,11 @@ public class UISystem : MonoBehaviour
     }
     public void Reload()
     {
+
         TurnCha.Reload();
+        DestroyADPButton();
+        DestroySkillButton();
+        TurnRun = null;
     }
 
 
@@ -667,7 +675,6 @@ public class UISystem : MonoBehaviour
     public bool per_but;
     public void Attack_camera()
     {
-
         Vector3 Target_position; //目標點
         Vector3 sce_cam_pos = MoveCam.scene_camera.transform.position; //攝影機位置
 

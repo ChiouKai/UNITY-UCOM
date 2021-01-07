@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 
@@ -1051,7 +1053,8 @@ public class AI : MonoBehaviour
             {
                 TileCount = FindDirection(dir);
                 PreAttakeIdle = PreAtkHalfCover;
-                StartCoroutine(AIWaitPreAtkChange());//todo
+                NPCPreaera = true;
+                //StartCoroutine(AIWaitPreAtkChange());//todo
                 return;
             }
             Am.SetBool("FCover", false);
@@ -1069,7 +1072,8 @@ public class AI : MonoBehaviour
             {
                 PreAttakeIdle = PreAtkNoCover;
                 Am.SetBool("Aim", true);
-                StartCoroutine(AIWaitPreAtkChange());
+                NPCPreaera = true;
+                //StartCoroutine(AIWaitPreAtkChange());
                 return;
             }
             Am.SetBool("FCover", false);
@@ -1198,7 +1202,7 @@ public class AI : MonoBehaviour
                 AP = 0;
                 AttakeableList.Clear();
                 UI.LRDestory();
-                Am.SetBool("Fire", true);
+                Am.SetBool("Fire", true);//action name
                 RemoveVisitedTiles();
                 StartCoroutine(FireWait());
 
@@ -1229,7 +1233,7 @@ public class AI : MonoBehaviour
             {
                 Am.SetBool("Aim", true);
                 transform.forward = TargetDir;
-                if (stateinfo.normalizedTime > 0.8f && stateinfo.IsName("Aim"))
+                if (stateinfo.normalizedTime > 0.5f && stateinfo.IsName("Aim"))
                 {
                     AP = 0;
                     AttakeableList.Clear();
@@ -1242,7 +1246,7 @@ public class AI : MonoBehaviour
 
             }
             else 
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.08f);
         }
         else if (ChangeTarget)
         {
@@ -1287,7 +1291,7 @@ public class AI : MonoBehaviour
                     AP = 0;
                     AttakeableList.Clear();
                     UI.LRDestory();
-                    Am.SetBool("Aim", false);
+                    Am.SetBool("Aim", false);//func(name)
                     Am.SetBool("Fire", true);
                     RemoveVisitedTiles();
                     StartCoroutine(FW());
@@ -1369,7 +1373,7 @@ public class AI : MonoBehaviour
         {
             Miss = true;
             RaycastHit RH;
-                Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(FireTarget.location);
+            Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(FireTarget.location);
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (Target.transform.position
@@ -1528,6 +1532,7 @@ public class AI : MonoBehaviour
         RoundSysytem.GetInstance().DeathKick(this);
         UI.DeathKick(this);
         CurrentTile.walkable = true;
+        Destroy(GetComponent<EPOOutline.Outlinable>());
         Destroy(Cha);
         Destroy(this);
     }
@@ -1728,13 +1733,13 @@ public class AI : MonoBehaviour
     //    Acting2 = null;
     //}
 
-    
 
 
 
 
 
 
+    protected string ActionName;
     protected Tile BestT;
     public Action DoActing;
     protected Action Acting;
@@ -1778,11 +1783,23 @@ public class AI : MonoBehaviour
         }
         //可用能力巡一遍，選擇得分高的能力 再拿出來加分
         (Action, int point) Sec = (null, 0);
+        (Action, int point) Sec2 = (null, 0);
 
         if (T.distance < Cha.Mobility)
         {
             if (T.distance != 0)
             {
+                //aim = AttakeableDetect(T);
+                //var Skills = GetComponents<ISkill>();
+                //foreach (var skill in Skills)
+                //{
+                //    string name = skill.CheckUseable();
+                //    if (name != null)
+                //    {
+                //        if()
+
+                //    }
+                //}
                 if (Gun.bullet != 0)
                 {
                     aim = AttakeableDetect(T);
@@ -1801,6 +1818,7 @@ public class AI : MonoBehaviour
             }
             else
             {
+                int ap = 2;
                 if (Gun.bullet == 0)
                 {
                     //reload 4分
@@ -1951,9 +1969,9 @@ public class AI : MonoBehaviour
         ChangePreAttakeIdle(TargetDir);
         PreAttack = true;
         NPCPreaera = false;
-        DoActing = Fire;
-        NPC_Prefire = true;
-        UI.MoveCam.att_cam_bool = true;
+        DoActing = Fire;//method.invoke
+        //NPC_Prefire = true;
+        //UI.MoveCam.att_cam_bool = true;
     }
 
     public void Fire()
@@ -2039,16 +2057,21 @@ public class AI : MonoBehaviour
             DoActing = PreMove;
             Acting = null;
         }
-        else if(Acting == PreFire)
+        else if (Acting == AIReload)
+        {
+            DoActing = AIReload;
+            Acting = null;
+        }
+        else if(Acting == PreFire)//AttackTarget.i!=null
         {
             DoActing = PreFire;
             Acting = null;
-        }//else if(Acting=reload)
+        }
 
-        if (Acting2 == PreFire)
-        {
+        //if (Acting2 == PreFire)//Target!=null
+        //{
             //ChangePreAttakeIdle();
-        }//else if (Acting2==reload)
+        //}//else if (Acting2==reload)
 
         NPCPreaera = true;
     }
@@ -2073,9 +2096,53 @@ public class AI : MonoBehaviour
         }
     }
 
-    protected void MindControl()
+    public void MindControl()
     {
+        NPC_Prefire = true;
+        UI.MoveCam.att_cam_bool = true;
 
+        Miss = false;
+        AttackPoint = AttakeTarget.Item1.BeAttakePoint.position;///?
+
+
+        if (Am.GetBool("FCover"))
+        {
+            if (AttakeTarget.Item2 == -1)
+            {
+                Am.SetBool("Aim", true);
+                AttackPosition = CurrentTile.transform.position;
+                FW = FullCoverFireWait2;
+            }
+            else
+            {
+                Am.SetBool("Run", true);
+
+                Vector3 dir = Direction(AttakeTarget.Item2);
+
+                AttackPosition = transform.position + dir * 0.67f;
+
+                FW = FullCoverFireWait;
+            }
+        }
+        else if (Am.GetBool("HCover"))
+        {
+            Am.SetBool("Aim", true);
+        }
+        else
+        {
+            ;
+        }
+        Attack = true;
+        DoActing = null;
+        NPCPreaera = false;
+        AttakeTarget.Item1.BeAim(this);
+        //AP = 0;
+        //AttakeableList.Clear();
+        //UI.LRDestory();
+        //Am.SetBool("Fire", true);
+        //RemoveVisitedTiles();
+        //StartCoroutine(FireWait());
+        //PreAttack = false;
     }
 
 

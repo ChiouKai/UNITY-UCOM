@@ -2467,6 +2467,8 @@ GameObject:
   - component: {fileID: 7049485298074815164}
   - component: {fileID: 8238213367979835545}
   - component: {fileID: 3976737086774447390}
+  - component: {fileID: 5508467469406454807}
+  - component: {fileID: 5049723129472703890}
   m_Layer: 11
   m_Name: Soldier03
   m_TagString: Human
@@ -2557,6 +2559,7 @@ MonoBehaviour:
   BeAttakePoint: {fileID: 4399166512745742258}
   BeAimed: 0
   NPCPreaera: 0
+  NPC_Prefire: 0
 --- !u!114 &7049485298074815164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2819,6 +2822,30 @@ MonoBehaviour:
     fillPass:
       shader: {fileID: 0}
       serializedProperties: []
+--- !u!114 &5508467469406454807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4403017054556857438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 563f9f28dffb63b42b42a8a96d88ef6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5049723129472703890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4403017054556857438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c96a1904e9de814a906b87bdfaece11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4403022634824267330
 GameObject:
   m_ObjectHideFlags: 0
@@ -3803,12 +3830,6 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 2255575011787380108}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &2260178314591107018 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4694597090140742, guid: dda5d32a2ba08d94599e5aa88a54a366,
-    type: 3}
-  m_PrefabInstance: {fileID: 2255575011787380108}
-  m_PrefabAsset: {fileID: 0}
 --- !u!23 &2242374647725494158 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 23620092228049410, guid: dda5d32a2ba08d94599e5aa88a54a366,
@@ -3824,6 +3845,12 @@ MeshRenderer:
 --- !u!23 &2241023871758531946 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 23888897146874086, guid: dda5d32a2ba08d94599e5aa88a54a366,
+    type: 3}
+  m_PrefabInstance: {fileID: 2255575011787380108}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2260178314591107018 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4694597090140742, guid: dda5d32a2ba08d94599e5aa88a54a366,
     type: 3}
   m_PrefabInstance: {fileID: 2255575011787380108}
   m_PrefabAsset: {fileID: 0}

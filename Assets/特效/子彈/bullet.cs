@@ -17,6 +17,8 @@ public class bullet : MonoBehaviour
     public Vector3 AttackPoint;
     public Vector3 FirePoint;
     float distance;
+    public float Speed = 20f;
+
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -27,7 +29,7 @@ public class bullet : MonoBehaviour
         }
         else
         {
-            transform.position += transform.forward * Time.deltaTime * 20.0f;
+            transform.position += transform.forward * Time.deltaTime * Speed;
         }
     }
 

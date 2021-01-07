@@ -55,9 +55,9 @@ public class createhp : MonoBehaviour
         for (int i = 0; i < LiHP_Tiles.Length; i++)
         {
             int j = i;
-            j += i / 5;
+            j = i / 5;
             int y = 16;
-            int x =  -40+ y*j; //血條位置
+            int x =  -40+ y*i+10*j; //血條位置
             LiHP_Tiles[i] =  Instantiate(hp_tiles,transform);
             LiHP_Tiles[i].transform.position = transform.position +new Vector3(x,-20,0);
             LiHP_Tiles[i].sprite = full_HP_Tile;

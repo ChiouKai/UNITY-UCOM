@@ -4749,6 +4749,7 @@ MonoBehaviour:
     type: 3}
   AttackPoint: {x: 0, y: 0, z: 0}
   FirePoint: {x: 0, y: 0, z: 0}
+  Speed: 36
 --- !u!54 &8442664488878285845
 Rigidbody:
   m_ObjectHideFlags: 0

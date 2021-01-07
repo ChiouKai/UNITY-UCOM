@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +11,8 @@ public class Fire : MonoBehaviour,ISkill
 
     public int CDCount { get; private set ; }
 
-    public int Point { get;  private set; }
+    public float AimPoint { get;  private set; }
+    public int Point { get; private set; }
 
     public AI ai { get; private set; }
 
@@ -23,10 +25,11 @@ public class Fire : MonoBehaviour,ISkill
         AP = 2;
         CD = 1;
         CDCount = 0;
-        //Point = ;
+        AimPoint = 1/20;
+        Point = 2;
     }
 
-    public string Func()
+    public string CheckUseable()
     {
         if (ai.Gun.bullet == 0||ai.AttakeableList.Count==0)
         {
@@ -35,4 +38,21 @@ public class Fire : MonoBehaviour,ISkill
         return Name;
 
     }
+
+    public void EnterCD()
+    {
+        CDCount = CD;
+    }
+    public Action GetAction()
+    {
+        if (ai.Cha.camp == Character.Camp.Alien)
+        {
+            return ai.Fire;
+        }
+        else
+        {
+            return UISystem.getInstance().PreFire;
+        }
+    }
+
 }

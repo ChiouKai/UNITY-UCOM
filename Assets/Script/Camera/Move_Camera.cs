@@ -85,23 +85,27 @@ public class Move_Camera : MonoBehaviour
                 Our_star.SetActive(true);
                 Our_star.transform.position = Target.transform.position + new Vector3(0, 0.05f, 0);
             }
-            if (move_tr == true || Target.Moving)
+            if (att_cam_bool == false)
             {
-
-                //Vector3 div = (Target.transform.position - transform.position).normalized;
-                //transform.position += div * Time.deltaTime * 10; //此方法為朝目標方向移動 but 太僵硬
-                transform.position = Vector3.Lerp(transform.position, Target.transform.position, 5 * Time.deltaTime); //目前位置 要前往的位置 移動速度
-                gg = Vector3.Distance(transform.position, Target.transform.position);
-                if (gg < 0.001f)
+                if (move_tr == true || Target.Moving)
                 {
-                    transform.position = Target.transform.position;
-                    move_tr = false; //為false則表示一開始移動到目標後就不進行動作
+
+                    //Vector3 div = (Target.transform.position - transform.position).normalized;
+                    //transform.position += div * Time.deltaTime * 10; //此方法為朝目標方向移動 but 太僵硬
+                    transform.position = Vector3.Lerp(transform.position, Target.transform.position, 5 * Time.deltaTime); //目前位置 要前往的位置 移動速度
+                    gg = Vector3.Distance(transform.position, Target.transform.position);
+                    if (gg < 0.001f)
+                    {
+                        transform.position = Target.transform.position;
+                        move_tr = false; //為false則表示一開始移動到目標後就不進行動作
+                    }
                 }
             }
             if (att_cam_bool)
             {
                 US.Attack_camera();
             }
+            
         }
 
 

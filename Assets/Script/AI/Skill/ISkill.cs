@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,9 @@ public interface ISkill
     int AP { get; }
     int CD { get; }
     int CDCount { get; }
+    float AimPoint { get; }
     int Point { get; }
-    string Func();
-    
+    string CheckUseable();//bool
+    void EnterCD();
+    Action GetAction();
 }
