@@ -995,7 +995,7 @@ public class AI : MonoBehaviour
     protected IEnumerator AIWaitPreAtkChange()
     {
         PreAttack = false;
-        yield return new WaitForSecondsRealtime(0.5f);
+        yield return new WaitForSecondsRealtime(1f);
         NPCPreaera = true;
         PreAttack = true;
     }
@@ -1026,7 +1026,8 @@ public class AI : MonoBehaviour
                 StartCoroutine(AIWaitPreAtkChange());
                 return;
             }
-            if (Vector3.Cross(transform.forward, dir).y >= 0)
+            TileCount = FindDirection(dir);
+            if (Vector3.Cross(Direction(TileCount), dir).y >= 0)
             {
                 Am.SetBool("Right", true);
             }
@@ -1038,7 +1039,7 @@ public class AI : MonoBehaviour
 
             Am.SetBool("HCover", false);
 
-            TileCount = FindDirection(dir);
+
             PreAttakeIdle = PreAtkFullCover;
             ChangeTarget = true;
             Idle = FullCover;
@@ -1465,11 +1466,11 @@ public class AI : MonoBehaviour
         //yield return new WaitUntil(() => stateinfo.normalizedTime >= 1.0f);
         PreAttakeIdle = PreAtkFCoverAfterAttack;
         Am.SetBool("Back", true);
-        //yield return new WaitUntil(() => stateinfo.IsName("LeftToAttack") || stateinfo.IsName("RightToAttack"));
+        //yield return new WaitUntil(() => stateinfo.IsName("LeftToCover") || stateinfo.IsName("RightToCover"));
 
         Vector3 dir = AttackPosition - CurrentTile.transform.position;
         dir.y = 0;
-        transform.forward = Direction(TileCount);
+        //transform.forward = Direction(TileCount);
         AttackPosition = CurrentTile.transform.position;
         yield return new WaitUntil(() => PreAttack == false);
         transform.forward = Direction(TileCount);
