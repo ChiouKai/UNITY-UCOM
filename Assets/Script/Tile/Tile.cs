@@ -141,7 +141,7 @@ public class Tile : MonoBehaviour
         
     }
 
-    public Cover[] JudgeCover(Vector3 div,out int AimAngle)
+    public Cover[] JudgeCover(Vector3 div,out float AimAngle)
     {
         Cover[] cover = new Cover[2];
         float angel = Vector3.Angle(Vector3.forward, div.normalized);

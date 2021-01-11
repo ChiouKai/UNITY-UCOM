@@ -492,7 +492,7 @@ public class AI : MonoBehaviour
                         adjT.distance = TDis + T.distance;
                         if (!adjT.walkable)
                         {
-                            if (EnemyLayer != adjT.Cha.EnemyLayer)
+                            if (adjT.Cha!=null && EnemyLayer != adjT.Cha.EnemyLayer)
                             {
                                 MeleeableList.AddLast((adjT.Cha, adjT));
                             }
@@ -958,7 +958,7 @@ public class AI : MonoBehaviour
         div.y = 0;
         Tile.Cover[] cover;
         float dis = div.magnitude;
-        int AimAngle;
+        float AimAngle;
         if (Enemy.Cha.type == Character.Type.Humanoid) //人形怪才有障礙物Buff
         {
             cover = Enemy.CurrentTile.JudgeCover(div, out AimAngle);
@@ -970,7 +970,7 @@ public class AI : MonoBehaviour
             {
                 if (cover[1] == Tile.Cover.FullC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 + 20 * AimAngle / 45;
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 + (int)(20f * AimAngle / 45f);
                 }
                 else if(cover[1] == Tile.Cover.HalfC)
                 {
@@ -978,18 +978,18 @@ public class AI : MonoBehaviour
                 }
                 else
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20 + 10 * AimAngle / 45;
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20 + (int)(10 * AimAngle / 45f);
                 }
             }
             else
             {
-                if(cover[0] == Tile.Cover.FullC)
+                if(cover[1] == Tile.Cover.FullC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 * (1 - AimAngle / 45);
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 + (int)(40f * AimAngle / 45f);
                 }
                 else if(cover[1] == Tile.Cover.HalfC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20*(1 - AimAngle / 45);
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20 + (int)(20f * AimAngle / 45f);
                 }
                 else
                 {
@@ -1856,11 +1856,11 @@ public class AI : MonoBehaviour
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                Point += 2.5f;
+                Point += 2f;
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
-                Point += 1.5f;
+                Point += 1f;
             }
             if (MinDis > Edir.magnitude)
             {
@@ -2287,7 +2287,7 @@ public class AI : MonoBehaviour
         AIState = NpcAI;
         UI.ChangeLogo(this);
         UI.DestroyHPBar(this);
-        UI.CreateHP_Bar(this, Cha.MaxHP);
+        UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
     }
 
     public IEnumerator RecoverMind()
@@ -2304,7 +2304,7 @@ public class AI : MonoBehaviour
         AIState = PlayerAI;
         UI.ChangeLogo(this);
         UI.DestroyHPBar(this);
-        UI.CreateHP_Bar(this, Cha.MaxHP);
+        UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
         RoundSysytem.GetInstance().EndChecked = true;
     }
 

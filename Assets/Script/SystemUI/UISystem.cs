@@ -609,7 +609,7 @@ public class UISystem : MonoBehaviour
         for(int i = 0; i < Sequence.Count - 1; ++i)
         {
             Cha = Cha.Next;
-            CreateHP_Bar(Cha.Value.Cha, Cha.Value.Cha.Cha.MaxHP);
+            CreateHP_Bar(Cha.Value.Cha, Cha.Value.Cha.Cha.MaxHP, Cha.Value.Cha.Cha.HP);
             Cha.Value.Cha.UI = this;
         }
         Cha = Sequence.First;
@@ -662,7 +662,7 @@ public class UISystem : MonoBehaviour
     ///HP bar
 
 
-    public void CreateHP_Bar(AI target, int MaxHP)
+    public void CreateHP_Bar(AI target, int MaxHP,int HP)
     {
         GameObject Bar;
         if (target.Cha.camp == Character.Camp.Human)
@@ -675,6 +675,7 @@ public class UISystem : MonoBehaviour
         }
         createhp bar = Bar.GetComponent<createhp>();
         bar.MaxHP = MaxHP;
+        bar.HP = HP;
         bar.followedTarget = target.transform; //血條的位置 = 角色的位置
         Bar.transform.SetParent(HPCanvas.transform);
         HPBarDic.Add(target, bar);

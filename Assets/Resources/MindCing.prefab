@@ -9460,9 +9460,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4465332516364958}
-  - component: {fileID: 2994059215294681403}
   m_Layer: 0
-  m_Name: Effect5
+  m_Name: MindCing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9483,24 +9482,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &2994059215294681403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1535771586102566}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8723bb0427933a64b88fc7607a50363c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wall_par: {fileID: 0}
-  HumanBlood: {fileID: 0}
-  AlienBlood: {fileID: 0}
-  AttackPoint: {x: 0, y: 0, z: 0}
-  FirePoint: {x: 0, y: 0, z: 0}
-  Speed: 20
 --- !u!1 &1612242095681892
 GameObject:
   m_ObjectHideFlags: 0
