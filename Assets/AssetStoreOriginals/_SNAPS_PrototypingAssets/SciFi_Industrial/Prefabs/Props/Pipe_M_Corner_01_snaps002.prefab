@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 33854150367039948}
   - component: {fileID: 23477091517516608}
   - component: {fileID: 8707447123285606955}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Pipe_M_Corner_01_snaps002
-  m_TagString: En
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 8
@@ -88,7 +88,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1154922107760960}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1.5000004, y: 0.99999994, z: 1.5}

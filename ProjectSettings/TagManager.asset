@@ -8,6 +8,8 @@ TagManager:
   - Human
   - Alien
   - En
+  - Bullet
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -22,7 +24,7 @@ TagManager:
   - NPC
   - Player
   - post
-  - 
+  - Wall
   - 
   - 
   - 
