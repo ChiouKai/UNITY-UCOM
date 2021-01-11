@@ -673,6 +673,7 @@ public class UISystem : MonoBehaviour
     public GameObject[] camera_point;
     float[] cam_dir;
     float max_dis;
+    bool change_point;
 
     public void Attack_camera()
     {
@@ -717,17 +718,32 @@ public class UISystem : MonoBehaviour
                 if (f != -1)
                 {
                     RaycastHit hit;
-                    Vector3 eni_dir = (Target_position - camera_point[f].transform.position).normalized;
+                    Vector3 eni_dir = Target_position - camera_point[f].transform.position;
                     MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime); //標的物到雙方中間
                     Debug.DrawRay(camera_point[f].transform.position, eni_dir);
-                    if (Physics.Raycast(camera_point[f].transform.position, eni_dir, out hit, 1.5f, 1 << 11))
+                    if (Physics.Raycast(camera_point[f].transform.position, eni_dir, out hit, 1.5f))
                     {
-                        Debug.Log("dsa");
                         if (f == 1) f = 8;
-                        MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f - 1].transform.position, 5 * Time.deltaTime);
+                        Debug.DrawRay(camera_point[f - 1].transform.position, Target_position - camera_point[f - 1].transform.position);
+                        if (Physics.Raycast(camera_point[f - 1].transform.position, Target_position - camera_point[f - 1].transform.position, out hit, 1.5f))
+                        {
+                            if (f == 8) f = 1;
+                            MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f + 1].transform.position, 5 * Time.deltaTime);
+                        }
+                        else
+                            MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f - 1].transform.position, 5 * Time.deltaTime);
                     }
                     else
                         MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f].transform.position, 5 * Time.deltaTime);
+                    /* if (Physics.Raycast(camera_point[f].transform.position, eni_dir, out hit, 1.5f, 1 << 11))
+                     {
+                         Debug.Log("dsa");
+                         if (f == 1) f = 8;
+                             MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f - 1].transform.position, 5 * Time.deltaTime);
+                     }
+                     else
+                         MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f].transform.position, 5 * Time.deltaTime);
+                         */
                     MoveCam.scene_camera.transform.LookAt(Target_position);
                 }
             }

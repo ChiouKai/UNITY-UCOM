@@ -8,7 +8,6 @@ public class COLLIDER_WALL : MonoBehaviour
     public Material[] wall_render_alpha;
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Hello : " +other.gameObject.name);
         if (other.tag == "Wall")
         {
             other.GetComponent<Renderer>().materials = wall_render_alpha;
