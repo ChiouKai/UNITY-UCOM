@@ -32,8 +32,8 @@ public class RoundSysytem
         Aliens = aliens;
         UI = ui;
         MoveCam = MC;
-        MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
         UI.per_but = false; //我方切換子彈預設為關
+        MoveCam.att_cam_bool = false;
         Sequence = new LinkedList<(AI, int)>();
         Sequence.AddFirst((UI.GetComponent<AI>(), 99));
         foreach (AI human in Humans)
