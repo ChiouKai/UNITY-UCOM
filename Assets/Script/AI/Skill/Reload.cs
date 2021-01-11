@@ -31,13 +31,13 @@ public class Reload : MonoBehaviour, ISkill
         Name = "Reload";
     }
 
-    public string CheckUseable()
+    public bool CheckUseable(AI Target)
     {
         if (ai.Gun.bullet == ai.Gun.MaxBullet)
         {
-            return null;
+            return false;
         }
-        return Name;
+        return true;
     }
 
     public void EnterCD()
@@ -55,5 +55,11 @@ public class Reload : MonoBehaviour, ISkill
         {
             return UISystem.getInstance().PreReload;
         }
+    }
+    public void CountCD()
+    {
+        if (CDCount == 0)
+            return;
+        --CDCount;
     }
 }

@@ -16,6 +16,7 @@ public class Tile : MonoBehaviour
     public Tile Parent;
     public float distance = 0;
     float Grid = 0.67f;
+    public AI Cha;
 
 
     public enum Cover

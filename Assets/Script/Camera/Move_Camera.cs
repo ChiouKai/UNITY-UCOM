@@ -12,8 +12,9 @@ public class Move_Camera : MonoBehaviour
     public Camera scene_camera;
     float move_speed = 6f;
     public float y = -45; //旋轉45度
-    float td = 0; //時間
-    int i = 0; // 地板提示變數
+    float gg;
+    float td = 0;
+    int i = 0;
     bool move_tr = false; //為true時攝影機移動到目標身上
     //bool rot_cam = false; //旋轉攝影機
     public GameObject Enemy_star;
@@ -23,28 +24,31 @@ public class Move_Camera : MonoBehaviour
     public float cam_dis;
     UISystem US;
     public bool att_cam_bool;
-    public Transform Birth_cam;
+
     AI Target;
 
     private void Start()
     {
-        att_cam_bool = false;//關掉攻擊攝影機
+        att_cam_bool = false;
         US = UISystem.getInstance();
         Enemy_star.SetActive(false);
         Our_star.SetActive(false);
+        scene_camera.transform.position = transform.position + new Vector3(7.95f, 15f, -7.95f);
+        scene_camera.transform.LookAt(transform);
     }
+
     private void LateUpdate()
     {
         float fH = Input.GetAxis("Horizontal");
         float fV = Input.GetAxis("Vertical");
         //增加以45度角面向目標
-        scene_camera.transform.LookAt(transform);
-        if (att_cam_bool == false)
-        {
-            float axc = Vector3.Distance(scene_camera.transform.position, Birth_cam.transform.position);
-            scene_camera.transform.position = Vector3.Lerp(scene_camera.transform.position, Birth_cam.transform.position, 3 * Time.deltaTime);
-            if (axc <= 0.05) scene_camera.transform.position = Birth_cam.transform.position;
-        } //攻擊攝影機關閉時回到原位
+        Vector3 ab = transform.position + -scene_camera.transform.forward * cam_dis;  //攝影機要到的位置
+        scene_camera.transform.position = Vector3.Lerp(scene_camera.transform.position, ab, 3 * Time.deltaTime);
+        float vc = Vector3.Distance(ab, scene_camera.transform.position);
+        if (vc <= 0.05)
+            scene_camera.transform.position = ab;
+        //scene_camera.transform.position = ab;
+
 
         if (Target != null)
         {
@@ -53,7 +57,7 @@ public class Move_Camera : MonoBehaviour
                 var b = Enemy_star.GetComponent<MeshRenderer>();
 
                 td += Time.deltaTime;
-
+               
                 Enemy_star.SetActive(true);
                 Our_star.SetActive(false);
                 if (td > 1)
@@ -63,7 +67,7 @@ public class Move_Camera : MonoBehaviour
                     if (i >= enstar.Length) i = 0;
                 }
                 b.material = enstar[i];
-
+                
                 Enemy_star.transform.position = Target.transform.position + new Vector3(0, 0.05f, 0);
             }
             if (Target.tag == "Human")
@@ -85,9 +89,11 @@ public class Move_Camera : MonoBehaviour
             {
                 if (move_tr == true || Target.Moving)
                 {
-                    scene_camera.transform.position = Vector3.Lerp(scene_camera.transform.position, Birth_cam.position, 3 * Time.deltaTime);
+
+                    //Vector3 div = (Target.transform.position - transform.position).normalized;
+                    //transform.position += div * Time.deltaTime * 10; //此方法為朝目標方向移動 but 太僵硬
                     transform.position = Vector3.Lerp(transform.position, Target.transform.position, 5 * Time.deltaTime); //目前位置 要前往的位置 移動速度
-                    float gg = Vector3.Distance(transform.position, Target.transform.position);
+                    gg = Vector3.Distance(transform.position, Target.transform.position);
                     if (gg < 0.001f)
                     {
                         transform.position = Target.transform.position;
@@ -99,11 +105,11 @@ public class Move_Camera : MonoBehaviour
             {
                 US.Attack_camera();
             }
-
+            
         }
 
 
-        if (fH != 0 || fV != 0) //wsad移動
+        if (fH != 0 || fV != 0 ) //wsad移動
         {
             if (move_tr == false && !Target.Moving)
             {
@@ -124,12 +130,12 @@ public class Move_Camera : MonoBehaviour
         }
         Quaternion avc = Quaternion.Euler(0, y, 0);
         transform.rotation = Quaternion.Slerp(transform.rotation, avc, Time.deltaTime * 5.0f);
-
+        
     }
 
     public void ChaTurn(AI target)
     {
         Target = target;
         move_tr = true;
-    }
+    } 
 }

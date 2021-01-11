@@ -29,13 +29,13 @@ public class Fire : MonoBehaviour,ISkill
         Point = 2;
     }
 
-    public string CheckUseable()
+    public bool CheckUseable(AI Target)
     {
-        if (ai.Gun.bullet == 0||ai.AttakeableList.Count==0)
+        if (ai.Gun.bullet == 0||Target==null)
         {
-            return null;
+            return false;
         }
-        return Name;
+        return true;
 
     }
 
@@ -47,7 +47,7 @@ public class Fire : MonoBehaviour,ISkill
     {
         if (ai.Cha.camp == Character.Camp.Alien)
         {
-            return ai.Fire;
+            return ai.PreFire;
         }
         else
         {
@@ -55,4 +55,10 @@ public class Fire : MonoBehaviour,ISkill
         }
     }
 
+    public void CountCD()
+    {
+        if (CDCount == 0)
+            return;
+        --CDCount;
+    }
 }

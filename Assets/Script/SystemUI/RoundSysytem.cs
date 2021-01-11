@@ -24,7 +24,7 @@ public class RoundSysytem
     public List<AI> Humans;
     public List<AI> Aliens;
     UISystem UI;
-    public bool DeathChecked = true;
+    public bool EndChecked = true;
 
     public void RoundPrepare(List<AI> humans, List<AI> aliens, Move_Camera MC, UISystem ui) //遊戲開始前 抓取每個單位資料
     {
@@ -32,8 +32,8 @@ public class RoundSysytem
         Aliens = aliens;
         UI = ui;
         MoveCam = MC;
+        MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
         UI.per_but = false; //我方切換子彈預設為關
-        MoveCam.att_cam_bool = false;
         Sequence = new LinkedList<(AI, int)>();
         Sequence.AddFirst((UI.GetComponent<AI>(), 99));
         foreach (AI human in Humans)
@@ -86,9 +86,9 @@ public class RoundSysytem
             MoveCam.ChaTurn(TurnCha);
 
 
-            while (TurnCha.Turn!= false|| DeathChecked!= true|| TimeLine.Instance.Moved != true)
+            while (TurnCha.Turn!= false|| EndChecked!= true|| TimeLine.Instance.Moved != true)
             {
-                System.Threading.Thread.Sleep(1);
+                System.Threading.Thread.Sleep(2);
             }
 
             UI.Count = InsertCha(Current);
@@ -156,7 +156,6 @@ public class RoundSysytem
 
     public void DeathKick(AI cha)//死亡剔除名單
     {
-        DeathChecked = false;
         LinkedListNode<(AI Cha, int Speed)> Current = Sequence.Find((cha, cha.Cha.Speed));
         lock (Sequence)
         {

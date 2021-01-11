@@ -29,14 +29,13 @@ public class MindControl : MonoBehaviour,ISkill
         Point = 6;
     }
 
-    public string CheckUseable()
+    public bool CheckUseable(AI Target)
     {
-        CDCount--;
-        if (CDCount>0)
+        if (CDCount > 0 || Target == null) 
         {
-            return null;
+            return false;
         }
-        return Name;
+        return true;
     }
 
     public void EnterCD()
@@ -49,12 +48,18 @@ public class MindControl : MonoBehaviour,ISkill
 
         if (ai.Cha.camp == Character.Camp.Alien)
         {
-            return ai.MindControl;
+            return ai.PreMindControl;
         }
         else
         {
             return null;//
         }
-
+    }
+    public void CountCD()
+    {
+        if (CDCount == 0)
+            return;
+        --CDCount;
     }
 }
+

@@ -11,7 +11,7 @@ public class HumanAI : AI
     // Start is called before the first frame update
     void Start()
     {
-        CurrentTile.walkable = false;
+        InCurrentTile(CurrentTile);
         Vector3 CTP = CurrentTile.transform.position;
         ChaHeight = transform.position.y - CTP.y;
         CTP.y = transform.position.y;
@@ -24,21 +24,14 @@ public class HumanAI : AI
         Idle = NoCover;
         UI = UISystem.getInstance();
         Enemies = RoundSysytem.GetInstance().Aliens;
+        Skills = GetComponents<ISkill>();
+        AIState = PlayerAI;
     }
 
     // Update is called once per frame
     void Update()
     {
-        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-
-        if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
-        {
-            Move();
-        }
-        else if (Target==null&&!Am.GetBool("Run"))
-        {
-            Idle();
-        }
+        AIState();
     }
     private void LateUpdate()
     {

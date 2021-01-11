@@ -67,7 +67,7 @@ public class LogoScript : MonoBehaviour
         }
         else
         {
-            RoundSysytem.GetInstance().DeathChecked = true;
+            TimeLine.Instance.Moved = true;
             TimeLine.Instance.LogoList.Remove(this);
             Destroy(gameObject);
         }
