@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CrabAi : AI
+public class CrabAI : AI
 {
 
 
@@ -17,12 +17,8 @@ public class CrabAi : AI
         Cha = GetComponent<Character>();
         Am = GetComponent<Animator>();
         EnemyLayer = 1 << 11;
-        Gun = GetComponent<Weapon>();
-        TileCount = FindDirection(transform.forward);
-        Idle = NoCover;
         Enemies = RoundSysytem.GetInstance().Humans;
         Skills = GetComponents<ISkill>();
-        AIState = NpcAI;
     }
 
     // Update is called once per frame
@@ -38,7 +34,7 @@ public class CrabAi : AI
         {
             if (Attack)
             {
-                //melee
+                Melee();
             }
             else 
             {
@@ -68,7 +64,21 @@ public class CrabAi : AI
             Ediv = (enemy.position - transform.position).normalized;
         }
     }
-
+    private void LateUpdate()
+    {
+        if (AmTurn && stateinfo.IsName("Turn"))
+        {
+            Ediv = (enemy.position - transform.position).normalized;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Ediv), 0.05f);
+            float FoB = Vector3.Dot(transform.forward, Ediv);
+            if (FoB > 0.99f) 
+            {
+                transform.forward = Ediv;
+                Am.SetBool("Turn", false);
+                AmTurn = false;
+            }
+        }
+    }
 
 
 
@@ -76,38 +86,17 @@ public class CrabAi : AI
     {
         if (!AmTurn && stateinfo.IsName("Idle"))
         {
-            transform.forward = Direction(TileCount);
             Ediv = (enemy.position - transform.position).normalized;
             float FoB = Vector3.Dot(transform.forward, Ediv);
 
-            if (FoB > 1 / Mathf.Sqrt(2) - 0.1f)   //判斷前後左右
+            if (FoB > 1 / Mathf.Sqrt(2))   //判斷前後左右
             {
                 return;
             }
-            else if (FoB < -1 / Mathf.Sqrt(2))
+            else 
             {
-                Am.SetBool("Back", true);
                 Am.SetBool("Turn", true);
                 AmTurn = true;
-                TileCount = (TileCount + 2) % 4;
-            }
-            else
-            {
-                Vector3 LoR = Vector3.Cross(transform.forward, Ediv);
-                if (LoR.y > 0.0f)
-                {
-                    Am.SetBool("Right", true);
-                    Am.SetBool("Turn", true);
-                    AmTurn = true;
-                    TileCount = (TileCount + 3) % 4;
-                }
-                else
-                {
-                    Am.SetBool("Left", true);
-                    Am.SetBool("Turn", true);
-                    AmTurn = true;
-                    TileCount = (TileCount + 1) % 4;
-                }
             }
         }
     }
@@ -220,7 +209,7 @@ public class CrabAi : AI
     {
         if (Target != null)
         {
-            DoActing = PreMelee;
+            DoActing = PreMelee2;
         }
         else 
         {
@@ -230,8 +219,140 @@ public class CrabAi : AI
         NPCPreaera = true;
     }
 
+    protected override void PreMove()
+    {
+        MoveToTile(BestT);
+        Am.SetBool("Run", true);
+        AmTurn = false;
+        Am.SetBool("Turn", false);
+        Moving = true;
+        RemoveVisitedTiles();//重置Tile狀態
+        OutCurrentTile();
+        InCurrentTile(BestT);
+        DoActing = null;
+    }
+
+    public override void Move2()
+    {
+        //if path.Count > 0, move, or remove selectable tiles, disable moving and end the turn. 
+        if (Moving != true)
+        {
+            return;
+        }
+        if (Path.Count > 0)
+        {
+            (Tile T, MoveWay M) = Path.Peek();
+            Vector3 target = T.transform.position;
+            target.y += ChaHeight;
+
+            if ((transform.position - target).magnitude >= 0.05f)
+            {
+                Heading = target - transform.position;
+                Heading.Normalize();
+                transform.forward = Heading;
+                transform.position += Heading * MoveSpeed * Time.deltaTime;
+            }
+            else
+            {
+                transform.position = target;
+                Path.Pop();
+            }
+        }
+        else
+        {
+            Am.SetBool("Run", false);
+            Moving = false;
+            Turn = false;
+            PreAttack = false;
+            NPCPreaera = false;
+        }
+    }
 
 
 
 
+
+
+
+
+    public override void PreMelee2()
+    {
+        MoveToTile(BestT);
+        Am.SetBool("Run", true);
+        AmTurn = false;
+        Am.SetBool("Turn", false);
+        Moving = true;
+        RemoveVisitedTiles();//重置Tile狀態
+        OutCurrentTile();
+        InCurrentTile(BestT);
+        DoActing = null;
+        Attack = true;
+    }
+
+    public override void Melee()
+    {
+        if (Moving != true)
+        {
+            return;
+        }
+        //if path.Count > 0, move, or remove selectable tiles, disable moving and end the turn. 
+
+        if (Path.Count > 0)
+        {
+            (Tile T, MoveWay M) = Path.Peek();
+            Vector3 target = T.transform.position;
+            target.y += ChaHeight;
+            if ((transform.position - target).magnitude >= 0.05f)
+            {
+                Heading = target - transform.position;
+                Heading.Normalize();
+                transform.forward = Heading;
+                transform.position += Heading * MoveSpeed * Time.deltaTime;
+            }
+            else
+            {
+                transform.position = target;
+                Path.Pop();
+            }
+        }
+        else
+        {
+            Target.BeDamaged(3);
+            Am.SetBool("Run",false);
+            Vector3 TargetDir = Target.transform.position - transform.position;
+            TargetDir.y = 0;
+            transform.forward = TargetDir;
+            Moving = false;
+            Attack = false;
+            Am.SetTrigger("Melee");
+            StartCoroutine(WaitMelee2());
+        }
+    }
+
+    protected IEnumerator WaitMelee2()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Target.Hurt(transform.forward);
+        yield return new WaitForSeconds(1f);//
+        EndTurn();
+    }
+
+    public override void Hurt(Vector3 dir)
+    {
+        dir.y = 0;
+        if (Cha.HP <= 0)
+        {
+            transform.forward = -dir;
+            UI.HpControl(this, Cha.HP);
+            AIDeath();
+        }
+        else
+        {
+            transform.forward = -dir;
+            UI.HpControl(this, Cha.HP);
+            Am.SetBool("Turn", false);
+            AmTurn = false;
+            Am.Play("Hurt");
+        }
+    }
 }

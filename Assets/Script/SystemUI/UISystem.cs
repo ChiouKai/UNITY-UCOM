@@ -78,10 +78,9 @@ public class UISystem : MonoBehaviour
         }
         if (AimTarget.activeSelf)
         {
-            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(Target.Value.Item1.BeAttakePoint.position);
+            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(AimPos.position);
             AimTarget.transform.position = vScreenPos;
         }
-
     }
 
     //press Esc button
@@ -107,7 +106,7 @@ public class UISystem : MonoBehaviour
     {
         RT.anchoredPosition3D = new Vector3(0, 240, 0);
         BelowButtonAndText.SetActive(true);
-
+        AttDectPanel.gameObject.SetActive(true);
         RunUI = null;
     }
 
@@ -303,7 +302,7 @@ public class UISystem : MonoBehaviour
         foreach(AI ai in AttPred)
         {
             GameObject go;
-            if (ai.Cha.camp == Character.Camp.Alien)
+            if (ai.tag == "Alien")
             {
                 go = Instantiate<GameObject>(Resources.Load<GameObject>("AlianImage"));
             }
@@ -475,10 +474,13 @@ public class UISystem : MonoBehaviour
     public Text LeftText;
     public Text RightText;
     LinkedListNode<(AI, int, int)> Target;
+    LinkedListNode<(AI, Tile)> MeleeTarget;
+    LinkedListNode<AI> HealTarget;
     public GameObject MouseOnTile;
     public Canvas HPCanvas;
     List<AI> AttPred = new List<AI>();
     public GameObject AimTarget;
+    private Transform AimPos;
     public Button ActionButton;
 
 
@@ -502,6 +504,7 @@ public class UISystem : MonoBehaviour
         Target.Value.Item1.BeAim(TurnCha);
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        AimPos = Target.Value.Item1.BeAttakePoint;
         AimTarget.SetActive(true);
         ButtonText.text = "開火";
         DescribeText.text = "朝向目標開火。";
@@ -530,6 +533,7 @@ public class UISystem : MonoBehaviour
                 Target = TurnCha.AttakeableList.First;
             }
             MoveCam.att_cam_bool = true;
+            AimPos = Target.Value.Item1.BeAttakePoint;
             TurnCha.ChaChangeTarget(Target.Value.Item1);
             LeftText.text = "傷害:" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
             RightText.text = "命中率:" + Target.Value.Item3 + "%";
@@ -554,9 +558,10 @@ public class UISystem : MonoBehaviour
         {
             Target = Target.Next;
         }
+        AimPos = Target.Value.Item1.BeAttakePoint;
         TurnCha.ChaChangeTarget(Target.Value.Item1);
-        LeftText.text = "傷害:" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
-        RightText.text = "命中率:" + Target.Value.Item3 + "%";
+        LeftText.text = "傷害：" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
+        RightText.text = "命中率：" + Target.Value.Item3 + "%";
     }
 
 
@@ -571,10 +576,10 @@ public class UISystem : MonoBehaviour
         RightText.text = "";
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Reload());
+        TurnRun = Canceal;
     }
     public void Reload()
     {
-
         TurnCha.Reload();
         DestroyADPButton();
         DestroySkillButton();
@@ -584,7 +589,159 @@ public class UISystem : MonoBehaviour
 
     public void PreMelee()
     {
+        if (TurnCha.MeleeableList.Count == 0)
+        {
+            return;
+        }
+        Prepera = false;
+        AttDectPanel.gameObject.SetActive(false);
+        foreach (var T in TurnCha.MeleeableList)
+        {
+            T.Item2.MeleePos();
+        }
+        MeleeTarget = TurnCha.MeleeableList.First;
+        MeleeTarget.Value.Item2.ChoMeleePos();
+        AimTarget.SetActive(true);
+        AimPos = MeleeTarget.Value.Item1.BeAttakePoint;
+        AttPredictPanel.gameObject.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        ButtonText.text = "斬殺";
+        DescribeText.text = "用長劍攻擊一名在你移動範圍的敵人。";
+        LeftText.text = "傷害：3 ～ 4 ";
+        RightText.text = "命中率：90 %";
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(() => Melee());
+        TurnRun = ChangeMeleeTarget;
+    }
 
+    void ChangeMeleeTarget()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            MeleeTarget.Value.Item2.MeleePos();
+            MeleeTarget = MeleeTarget.Next;
+            if (MeleeTarget == null)
+            {
+                MeleeTarget = TurnCha.MeleeableList.First;
+            }
+            MeleeTarget.Value.Item2.ChoMeleePos();
+            AimPos = MeleeTarget.Value.Item1.BeAttakePoint;
+        }
+        //ifcheckmouse
+        if (Input.GetMouseButtonDown(1))
+        {
+            foreach (var T in TurnCha.MeleeableList)
+            {
+                T.Item2.Recover();
+            }
+            AimTarget.SetActive(false);
+            RT.anchoredPosition3D = new Vector3(0, 240, 0);
+            AttDectPanel.gameObject.SetActive(true);
+            TurnRun = CheckMouse;
+        }
+    }
+
+    public void Melee()
+    {
+        AimTarget.SetActive(false);
+        TurnCha.PreMelee(MeleeTarget);
+        DestroyADPButton();
+        DestroySkillButton();
+        TurnRun = null;
+    }
+
+
+    public void PreHeal()//button
+    {
+        if (TurnCha.HealList.Count == 0)
+        {
+            return;
+        }
+        Prepera = false;
+        HealTarget = TurnCha.HealList.First;
+        AttPredictPanel.gameObject.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        //UI
+        ButtonText.text = "治療";
+        DescribeText.text = "快速治療一名友軍。";
+        LeftText.text = "治癒：3";
+        RightText.text = "";
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(() => Heal());
+        TurnRun = ChangeHealTarget;
+    }
+
+    private void ChangeHealTarget()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            HealTarget = HealTarget.Next;
+            if (HealTarget == null)
+            {
+                HealTarget = TurnCha.HealList.First;
+            }
+        }
+        Canceal();
+    }
+
+    public void Heal()//button
+    {
+        TurnCha.PreHeal(HealTarget.Value);
+        DestroyADPButton();
+        DestroySkillButton();
+        TurnRun = null;
+    }
+
+    public void PreCooperation()
+    {
+        if (m_Roundsystem.Humans.Count < 1)
+        {
+            return;
+        }
+        Prepera = false;
+        
+        AttPredictPanel.gameObject.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        //UI
+        ButtonText.text = "合作";
+        DescribeText.text = "提供資訊，使隊友獲得一個行動點。";
+        LeftText.text = "";
+        RightText.text = "";
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(() => Cooperation());
+        TurnRun = ChangeAllyTarget;
+    }
+
+    private void ChangeAllyTarget()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            HealTarget = HealTarget.Next;
+            if (HealTarget == null)
+            {
+                HealTarget = TurnCha.HealList.First;
+            }
+        }
+        Canceal();
+    }
+
+
+    private void Cooperation()
+    {
+
+    }
+
+
+
+
+    private void Canceal()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            RT.anchoredPosition3D = new Vector3(0, 240, 0);
+            AttDectPanel.gameObject.SetActive(true);
+            TurnRun = CheckMouse;
+        }
     }
 
 
@@ -629,11 +786,13 @@ public class UISystem : MonoBehaviour
     public void ChaTurnEnd()
     {
         DestroyADPButton();
+        TimeLine.Instance.Moved = false;
         TLine.TEndLogo(TurnCha, Count);
         TurnRun = null;
     }
     public void TurnEnd()
     {
+        TimeLine.Instance.Moved = false;
         TLine.TEndLogo(GetComponent<AI>(), Sequence.Count - 1);
         TurnRun = null;
     }
@@ -701,6 +860,7 @@ public class UISystem : MonoBehaviour
     public GameObject[] camera_point;
     float[] cam_dir;
     float max_dis;
+    bool change_point;
 
     public void Attack_camera()
     {
@@ -750,9 +910,15 @@ public class UISystem : MonoBehaviour
                     Debug.DrawRay(camera_point[f].transform.position, eni_dir);
                     if (Physics.Raycast(camera_point[f].transform.position, eni_dir, out hit, 1.5f, 1 << 11))
                     {
-                        Debug.Log("dsa");
                         if (f == 1) f = 8;
-                        MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f - 1].transform.position, 5 * Time.deltaTime);
+                        Debug.DrawRay(camera_point[f - 1].transform.position, Target_position - camera_point[f - 1].transform.position);
+                        if (Physics.Raycast(camera_point[f - 1].transform.position, Target_position - camera_point[f - 1].transform.position, out hit, 1.5f))
+                        {
+                            if (f == 8) f = 1;
+                            MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f + 1].transform.position, 5 * Time.deltaTime);
+                        }
+                        else
+                            MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f - 1].transform.position, 5 * Time.deltaTime);
                     }
                     else
                         MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f].transform.position, 5 * Time.deltaTime);

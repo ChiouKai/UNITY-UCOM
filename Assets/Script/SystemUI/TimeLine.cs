@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class TimeLine : MonoBehaviour
     public LinkedList<LogoScript> LogoList;
     public static TimeLine Instance;
     public bool Moved;
+    public Action acting;
     private void Start()
     {
         Moved = false;
@@ -23,6 +25,7 @@ public class TimeLine : MonoBehaviour
         {
             logo.LogoUpdate?.Invoke();
         }
+        acting?.Invoke();
     }
 
 

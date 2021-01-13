@@ -37,28 +37,20 @@ public class Tile : MonoBehaviour
         UpdateCover();
     }
 
-    public void CurrentChange()
+
+    public void MeleePos()
     {
-       
-        current = true;
-        GetComponent<Renderer>().material.color = Color.cyan;
-    }
-    public void TargetChange()
-    {
-        target = true;
-        GetComponent<Renderer>().material = Resources.Load<Material>("targetTile");
-    }
-    public void WalkableTest()
-    {
-        if(walkable)
-            GetComponent<Renderer>().material = Resources.Load<Material>("selectable1");
-    }
-    public void SelectableChange2()
-    {
-        selectable = true;
-        GetComponent<Renderer>().material = Resources.Load<Material>("selectable2");
+        GetComponent<Renderer>().material = Resources.Load<Material>("MeleePos");
     }
 
+    public void ChoMeleePos()
+    {
+        GetComponent<Renderer>().material = Resources.Load<Material>("ChoMeleePos");
+    }
+    public void Recover()
+    {
+        GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
+    }
 
     private void OnMouseEnter()
     {

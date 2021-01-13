@@ -7,11 +7,13 @@ public class LogoScript : MonoBehaviour
 {
     public Vector2 InsertLocation, LeaveLocation;
     RectTransform RT;
+    TimeLine TL;
     private void Start()
     {
         RT = GetComponent<RectTransform>();
         InsertLocation = RT.anchoredPosition + new Vector2(-200, 0);
         LogoUpdate = LogoInsert;
+        TL = TimeLine.Instance;
     }
 
 
@@ -25,7 +27,7 @@ public class LogoScript : MonoBehaviour
         }
         else
         {
-            TimeLine.Instance.Moved = true;
+            TL.Moved = true;
             RT.anchoredPosition = InsertLocation;
             LeaveLocation = RT.anchoredPosition + new Vector2(200, 0);
             LogoUpdate = null;
@@ -67,9 +69,8 @@ public class LogoScript : MonoBehaviour
         }
         else
         {
-            TimeLine.Instance.Moved = true;
-            TimeLine.Instance.LogoList.Remove(this);
-            Destroy(gameObject);
+            TL.Moved = true;
+            TL.acting = () => { TimeLine.Instance.LogoList.Remove(this); Destroy(this); TimeLine.Instance.acting = null; };
         }
     }
 }

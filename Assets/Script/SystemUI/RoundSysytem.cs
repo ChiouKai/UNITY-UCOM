@@ -59,16 +59,20 @@ public class RoundSysytem
         Sequence.RemoveFirst();
         Sequence.AddLast(Current);
         Current = Sequence.First;
+        AI TurnCha;
+        TurnCha = Current.Value.Cha;
+        UI.TurnCha = TurnCha;
         while (true)
         {
             //wait UI 右邊順序動畫
-            AI TurnCha = Current.Value.Cha;
             while(UI.TurnRun != null)
             {
                 System.Threading.Thread.Sleep(1);
             }
-            UI.TurnCha = TurnCha;
-            
+            lock (UI.TurnCha)
+            {
+                UI.TurnCha = TurnCha;
+            }
             if (TurnCha.Cha.camp == 0)
             {
                 UI.TurnRun = UI.PlayerStartTurn;
@@ -94,9 +98,9 @@ public class RoundSysytem
             UI.Count = InsertCha(Current);
             UI.TurnRun = UI.ChaTurnEnd;
             UI.RunUI = UI.CloseActionUI;
-            TimeLine.Instance.Moved = false;
             System.Threading.Thread.Sleep(1500);
             Current = Sequence.First;
+
             if (Current.Value.Speed == 99) //回合結束
             {
                 Sequence.RemoveFirst();
@@ -109,12 +113,10 @@ public class RoundSysytem
                 }
                 UI.TurnRun = UI.TurnEnd;
 
-                TimeLine.Instance.Moved = false;
-
                 
                 //事件?增援?newcome
             }
-
+            TurnCha = Current.Value.Cha;
         }
     }
 

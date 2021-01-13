@@ -10,17 +10,17 @@ using Random = UnityEngine.Random;
 
 public class AI : MonoBehaviour
 {
-    public Animator Am;
+    internal Animator Am;
     protected AnimatorStateInfo stateinfo;
-    public Transform enemy;
+    internal Transform enemy;
     public delegate IEnumerator Movement();
     protected Action Idle = null;
-    public Character Cha;
-    public int AP = 0;
+    internal Character Cha;
+    internal int AP = 0;
     protected Vector3 Ediv;
     internal int EnemyLayer;
     protected int TileCount;
-    public bool AmTurn = false;
+    internal bool AmTurn = false;
     
     
     //動畫
@@ -360,10 +360,16 @@ public class AI : MonoBehaviour
     protected void PlayerAI()
     {
         stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-
-        if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
+        if (Moving)
         {
-            Move();
+            if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
+            {
+                Move();
+            }
+            else if (stateinfo.IsName("RunToMelee") || stateinfo.IsName("RunToStop"))
+            {
+                Melee();
+            }
         }
         else if (Target == null && !Am.GetBool("Run"))
         {
@@ -393,6 +399,11 @@ public class AI : MonoBehaviour
     {
         Idle = NoCover;
         AmTurn = false;
+        if (ActionName != null)
+        {
+            Am.SetBool(ActionName, false);
+            ActionName = null;
+        }
         Am.SetBool("Turn", false);
         Am.SetBool("Back", false);
         Am.SetBool("FCover", false);
@@ -418,18 +429,18 @@ public class AI : MonoBehaviour
 
     //移動
 
-    public List<Tile> VisitedTiles = new List<Tile>();
-    public Stack<(Tile, MoveWay)> Path = new Stack<(Tile, MoveWay)>();      //tile的資料設定為Stack(後進先出)
+    internal List<Tile> VisitedTiles = new List<Tile>();
+    internal Stack<(Tile, MoveWay)> Path = new Stack<(Tile, MoveWay)>();      //tile的資料設定為Stack(後進先出)
     public Tile CurrentTile;      //玩家目前站的tile
-    public bool Turn = false;       //回合判斷
-    public bool Moving = false;     
-    public bool Running = false;
+    internal bool Turn = false;       //回合判斷
+    internal bool Moving = false;
+    internal bool Running = false;
     public float MoveSpeed = 4;
     protected float ChaHeight;      //角色高度
-    public bool End = false;
-    Vector3 Heading;                //移動方向
-    public UISystem UI;
-    public bool Prepera = false;
+    internal bool End = false;
+    internal Vector3 Heading;                //移動方向
+    internal UISystem UI;
+    internal bool Prepera = false;
     public enum MoveWay    //移動方式(簡化
     {
         Run=0,
@@ -439,6 +450,7 @@ public class AI : MonoBehaviour
 
     public void MoveRange() //開始計算移動範圍
     {
+        MeleeableList.Clear();
         if (AP == 2)
         {
             Queue<Tile> Process = new Queue<Tile>();
@@ -450,6 +462,7 @@ public class AI : MonoBehaviour
             UI.DrawMRLine(Process, UI.Yellow,2.0f);
             Process.Clear();
             CurrentTile.selectable = false;
+            ArrangeMeleeList();
         }
         else if (AP == 1)
         {
@@ -460,6 +473,7 @@ public class AI : MonoBehaviour
             UI.DrawMRLine(Process, UI.Yellow,1.0f);
             Process.Clear();
             CurrentTile.selectable = false;
+            ArrangeMeleeList();
         }
 
 
@@ -492,9 +506,9 @@ public class AI : MonoBehaviour
                         adjT.distance = TDis + T.distance;
                         if (!adjT.walkable)
                         {
-                            if (adjT.Cha!=null && EnemyLayer != adjT.Cha.EnemyLayer)
+                            if (adjT.Cha != null && EnemyLayer != adjT.Cha.EnemyLayer)
                             {
-                                MeleeableList.AddLast((adjT.Cha, adjT));
+                                MeleeableList.AddLast((adjT.Cha, T));
                             }
                             Process2.Enqueue(adjT);
                             AddVisited(adjT);
@@ -511,6 +525,11 @@ public class AI : MonoBehaviour
                         AddVisited(adjT);
                         Process.Enqueue(adjT);
                     }
+                    else if (adjT.Cha != null && EnemyLayer != adjT.Cha.EnemyLayer)
+                    {
+                        MeleeableList.AddLast((adjT.Cha, T));
+                    }
+                    
                 }
             }
             else
@@ -747,13 +766,12 @@ public class AI : MonoBehaviour
 
     //攻擊
     protected List<AI> Enemies;
-    public LinkedList<(AI, int ,int )> AttakeableList = new LinkedList<(AI, int, int)>();//角色,射擊位置,命中率;
-    public LinkedList<(AI, int, int)> PreAttakeableList;
-    public Weapon Gun;
-    public bool PreAttack = false;
-    public bool Attack;
-    public bool ChangeTarget = false;
-    public AI Target;
+    internal LinkedList<(AI, int ,int )> AttakeableList = new LinkedList<(AI, int, int)>();//角色,射擊位置,命中率;
+    internal Weapon Gun;
+    internal bool PreAttack = false;
+    internal bool Attack;
+    internal bool ChangeTarget = false;
+    internal AI Target;
     protected Vector3 TargetDir;
     public Transform FirePoint;
     public GameObject Bullet;
@@ -762,9 +780,11 @@ public class AI : MonoBehaviour
     internal bool Miss = false;
     internal Vector3 AttackPosition;
     protected List<AI> AttPredict = new List<AI>();
-    public bool BeAimed = false;
+    internal bool BeAimed = false;
     internal LinkedList<(AI, Tile)> MeleeableList = new LinkedList<(AI, Tile)>();
-
+    internal LinkedList<AI> HealList = new LinkedList<AI>();
+    public GameObject Rifle;
+    public GameObject Knife;
     public void GetTargets(List<AI> enemy)
     {
         Enemies = enemy;
@@ -799,7 +819,7 @@ public class AI : MonoBehaviour
             i = FindDirection(TDiv);
             if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), Target - Location, (Target - Location).magnitude, 1 << 9))
             {//確保路徑上沒有障礙物
-                AttakeableList.AddLast((Enemy, -1, CalculateAim(Enemy, CurrentTile)));
+                AttakeableList.AddLast((Enemy, -1, CalculateAim(Enemy, CurrentTile.transform.position)));
             }
             else if (CurrentTile.AdjCoverList[i] == Tile.Cover.FullC) //如攻擊方有障礙物，則站出去瞄準。
             {
@@ -820,7 +840,7 @@ public class AI : MonoBehaviour
                         TDiv = Target - Location;
                         if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
                         {//確保路徑上沒有障礙物
-                            AttakeableList.AddLast((Enemy, i, CalculateAim(Enemy, CurrentTile)));//todo
+                            AttakeableList.AddLast((Enemy, i, CalculateAim(Enemy, Location)));//todo
                             continue;
                         }
                     }
@@ -832,7 +852,7 @@ public class AI : MonoBehaviour
                         TDiv = Target - Location;
                         if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
                         {//確保路徑上沒有障礙物
-                            AttakeableList.AddLast((Enemy, (i + 1) % 4, CalculateAim(Enemy, CurrentTile)));//todo
+                            AttakeableList.AddLast((Enemy, (i + 1) % 4, CalculateAim(Enemy, Location)));//todo
                             continue;
                         }
                     }
@@ -841,7 +861,7 @@ public class AI : MonoBehaviour
                         TDiv = Target - Location;
                         if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
                         {//確保路徑上沒有障礙物
-                            AttakeableList.AddLast((Enemy, (i + 3) % 4, CalculateAim(Enemy, CurrentTile)));//todo
+                            AttakeableList.AddLast((Enemy, (i + 3) % 4, CalculateAim(Enemy, Location)));//todo
                             continue;
                         }
                     }
@@ -952,9 +972,9 @@ public class AI : MonoBehaviour
 
     }
 
-    int CalculateAim(AI Enemy,Tile Location)
+    int CalculateAim(AI Enemy,Vector3 Location)
     {
-        Vector3 div = Location.transform.position - Enemy.CurrentTile.transform.position;
+        Vector3 div = Location - Enemy.CurrentTile.transform.position;
         div.y = 0;
         Tile.Cover[] cover;
         float dis = div.magnitude;
@@ -1251,6 +1271,7 @@ public class AI : MonoBehaviour
                     Am.SetBool("Aim", false);
                     Am.SetBool(ActionName, true);
                     RemoveVisitedTiles();
+                    PreAttack = false;
                     StartCoroutine(FireWait());
                 }
 
@@ -1264,7 +1285,7 @@ public class AI : MonoBehaviour
 
             float FoB = Vector3.Dot(transform.forward, TargetDir.normalized);
             Vector3 LoR = Vector3.Cross(transform.forward, TargetDir);
-            if (FoB > 1 / Mathf.Sqrt(2) - 0.01f&& stateinfo.normalizedTime >= 1.0f)
+            if (FoB > 1 / Mathf.Sqrt(2) - 0.01f&& stateinfo.normalizedTime >= 0.4f)
             {
 
                 ChangeTarget = false;
@@ -1386,7 +1407,7 @@ public class AI : MonoBehaviour
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (Target.transform.position
-                    + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f))) - ShotPoint,out RH))
+                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f))) - ShotPoint,out RH))
                 {
                     if (RH.collider.tag == "En")
                     {
@@ -1406,8 +1427,6 @@ public class AI : MonoBehaviour
             AttackPoint = Target.BeAttakePoint.position;
             Target.BeDamaged(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
         }
-
-
         if (Am.GetBool("FCover"))
         {
             if(FireTarget.location == -1)
@@ -1434,15 +1453,6 @@ public class AI : MonoBehaviour
         }
         Attack = true;
         ActionName = "Fire";
-
-
-        //AP = 0;
-        //AttakeableList.Clear();
-        //UI.LRDestory();
-        //Am.SetBool("Fire", true);
-        //RemoveVisitedTiles();
-        //StartCoroutine(FireWait());
-        //PreAttack = false;
     }
 
     public void FireBullet()
@@ -1458,7 +1468,6 @@ public class AI : MonoBehaviour
             TargetDir = Target.BeAttakePoint.position - FirePoint.position;
             B.GetComponent<bullet>().SetAttackPoint(FirePoint.position, Target.BeAttakePoint.position);
         }
-        
         B.transform.forward = TargetDir;
         Attack = false;
     }
@@ -1467,12 +1476,8 @@ public class AI : MonoBehaviour
     public FWait FW;
     public IEnumerator FireWait()//攻擊後緩衝時間給下回合
     {
-
-        PreAttack = false;
         yield return new WaitUntil(() => Attack == false);
         yield return new WaitForSeconds(1f);
-        Am.SetBool(ActionName, false);
-        ActionName = null;
         EndTurn();
         ResetBool();
     }
@@ -1507,7 +1512,80 @@ public class AI : MonoBehaviour
         //ResetBool();
     }
 
-    public void Melee()
+
+
+    protected void ArrangeMeleeList()
+    {
+        if (MeleeableList.Count == 0) { return; }
+        AI First, Previous = null;
+
+        while (true)
+        {
+            var Current = MeleeableList.First;
+            First = Current.Value.Item1;
+            if (Previous == First)
+            {
+                break;
+            }
+                var tmp = Current.Next;
+            while (tmp != null)
+            {
+
+                
+                if (Previous!=null&&tmp.Value.Item1 == Previous)
+                {
+                    break;
+                }
+                if (tmp.Value.Item1 != First)
+                {
+                    MeleeableList.Remove(tmp);
+                    MeleeableList.AddFirst(tmp);
+                }
+                else
+                {
+                    Current = tmp;
+                }
+                tmp = Current.Next;
+            }
+            Previous = First;
+        }
+    }
+    public virtual void PreMelee(LinkedListNode<(AI, Tile)> MeleeTarget)
+    {
+        MoveToTile(MeleeTarget.Value.Item2);
+        ResetBool();
+        Idle = NoCover;
+        Moving = true;
+        RemoveVisitedTiles();//重置Tile狀態
+        Attack = true;
+        Target = MeleeTarget.Value.Item1;
+        Am.SetBool("Melee",true);
+        Am.SetBool("Run", true);
+        UI.LRDestory();
+    }
+
+
+    public void PutRifle()
+    {
+        Rifle.SetActive(false);
+        Am.Play("RunToMelee");
+    }
+    public void GrabRifle()
+    {
+        Rifle.SetActive(true);
+    }
+    public void PutKnife()
+    {
+        BeAttakePoint.Find("BackKnife").gameObject.SetActive(true);
+        Knife.SetActive(false);
+    }
+    public void GrabKnife()
+    {
+        BeAttakePoint.Find("BackKnife").gameObject.SetActive(false);
+        Knife.SetActive(true);
+    }
+
+    public virtual void Melee()
     {
         if (Moving != true)
         {
@@ -1548,15 +1626,16 @@ public class AI : MonoBehaviour
                 Heading.Normalize();
                 //Locomotion
                 transform.forward = Heading;
-                transform.position += Heading * MoveSpeed * Time.deltaTime;
+                transform.position += Heading * 5f * Time.deltaTime;
             }
             else
             {
                 //Tile center reached
                 if (Path.Count == 1)
                 {
+                    Am.SetBool("Melee", false);
                     Am.SetBool("Run", false);
-                    Am.Play("Stop");
+                    Am.Play("RunToStop");
                     OutCurrentTile();
                     InCurrentTile(Path.Peek().Item1);
                 }
@@ -1566,30 +1645,61 @@ public class AI : MonoBehaviour
         }
         else
         {
-            Vector3 TargetDir = Target.transform.position - transform.position;
-            TargetDir.y = 0;
-            transform.forward = TargetDir;
             Moving = false;
             Attack = false;
-            Am.SetBool("Melee",true);
-            StartCoroutine(WaitMelee());
+            Target.Cha.HP -= 3;//todo
+            StartCoroutine(FaceMeleeTarget());
         }
     }
 
-    public void Meleeing()
+    public IEnumerator FaceMeleeTarget()
     {
-        Target.Cha.HP -= 3;
-        Target.Hurt(transform.forward);
-        //todo
+        yield return new WaitUntil(() => stateinfo.IsName("Armed"));
+        Vector3 TargetDir = Target.transform.position - transform.position;
+        transform.forward = TargetDir;
     }
-
-    protected IEnumerator WaitMelee()
-
+    protected void EndMelee()
     {
-        yield return new WaitForSeconds(2f);
         ResetBool();
         EndTurn();
     }
+    public void Meleeing()
+    {
+        Target.Hurt(transform.forward);
+    }
+
+    public void PreHeal(AI Cha)
+    {
+        foreach(var Skill in Skills)
+        {
+            if (Skill.Name == "Heal")
+            {
+                Skill.EnterCD();
+                break;
+            }
+        }
+        PreAttakeIdle = Heal;
+        ResetBool();
+        Target = Cha;
+        ChangeTarget = true;
+    }
+
+    protected void Heal()
+    {
+        if (ChangeTarget)
+        { 
+            FaceTarget();
+        }
+        else
+        {
+            //am.settrigger(
+        }
+    }
+
+
+
+
+
 
 
 
@@ -1625,9 +1735,9 @@ public class AI : MonoBehaviour
     
     public void BeDamaged(int damage)
     {
-        Cha.HP -= damage;//todo UI?
+        Cha.HP -= damage;//todo ?
     }
-    private void AIDeath()
+    protected void AIDeath()
     {
         if (MindControlAI != null)
         {
@@ -1640,10 +1750,10 @@ public class AI : MonoBehaviour
         UI.DeathKick(this);
         Destroy(GetComponent<EPOOutline.Outlinable>());
         Destroy(Cha);
-        Destroy(this);
+        //Destroy(this);
     }
 
-    public void Hurt(Vector3 dir)
+    public virtual void Hurt(Vector3 dir)
     {
         dir.y = 0;
         if (Cha.HP <= 0)
@@ -1761,7 +1871,7 @@ public class AI : MonoBehaviour
     }
 
 
-    protected void PreMove()
+    protected virtual void PreMove()
     {
         MoveToTile(BestT);
         Am.SetBool("Run", true);
@@ -1773,10 +1883,9 @@ public class AI : MonoBehaviour
         InCurrentTile(BestT);
         DoActing = null;
         Am.Play("Run");
-
     }
 
-    public void Move2()
+    public virtual void Move2()
     {
         //if path.Count > 0, move, or remove selectable tiles, disable moving and end the turn. 
         if (Moving != true)
@@ -1841,9 +1950,9 @@ public class AI : MonoBehaviour
     protected ISkill Acting2;
     protected (AI, int, int) AttakeTarget;
     protected float BestPoint;
-    public bool NPCPreaera = false;
-    public bool NPC_Prefire;
-    public ISkill[] Skills;
+    internal bool NPCPreaera = false;
+    internal bool NPC_Prefire;
+    internal ISkill[] Skills;
 
     protected virtual bool CalPointAction(Tile T)
     {
@@ -1867,10 +1976,10 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        int i = 16 / ((int)MinDis + 1);
+        float i = 8 / (MinDis + 1);
         if (i > 4)
         {
-            Point += 4;
+            Point += 2;
         }
         else
         {
@@ -1988,7 +2097,7 @@ public class AI : MonoBehaviour
             i = FindDirection(TDiv);
             if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), Target - Location, (Target - Location).magnitude, 1 << 9))
             {//確保路徑上沒有障礙物
-                int j = CalculateAim(Enemy, T);
+                int j = CalculateAim(Enemy, T.transform.position);
                 if (j > BestAim.Item3)
                 {
                     BestAim = (Enemy, -1, j);
@@ -2013,7 +2122,7 @@ public class AI : MonoBehaviour
                         TDiv = Target - Location;
                         if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
                         {//確保路徑上沒有障礙物
-                            int j = CalculateAim(Enemy, T);
+                            int j = CalculateAim(Enemy, Location);
                             if (j > BestAim.Item3)
                             {
                                 BestAim = (Enemy, i, j);
@@ -2028,7 +2137,7 @@ public class AI : MonoBehaviour
                         TDiv = Target - Location;
                         if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
                         {//確保路徑上沒有障礙物
-                            int j = CalculateAim(Enemy, T);
+                            int j = CalculateAim(Enemy, Location);
                             if (j > BestAim.Item3)
                             {
                                 BestAim = (Enemy, (i + 1) % 4, j);
@@ -2040,7 +2149,7 @@ public class AI : MonoBehaviour
                         TDiv = Target - Location;
                         if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
                         {//確保路徑上沒有障礙物
-                            int j = CalculateAim(Enemy, T);
+                            int j = CalculateAim(Enemy, Location);
                             if (j > BestAim.Item3)
                             {
                                 BestAim = (Enemy, (i + 3) % 4, j);
@@ -2078,9 +2187,9 @@ public class AI : MonoBehaviour
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (AttakeTarget.Item1.transform.position
-                    + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f))) - ShotPoint, out RH))
+                    + new Vector3(Random.Range(-1f, 1f), Random.Range(-0.67f, 0.67f), Random.Range(-1f, 1f))) - ShotPoint, out RH))
                 {
-                    if (RH.collider.tag == "En")
+                    if (RH.collider.tag == "En"|| RH.collider.tag =="Wall" )
                     {
                         AttackPoint = RH.point;
 
@@ -2213,7 +2322,7 @@ public class AI : MonoBehaviour
         UI.MoveCam.att_cam_bool = true;
 
         Miss = false;
-        AttackPoint = AttakeTarget.Item1.BeAttakePoint.position;///?
+        AttackPoint = AttakeTarget.Item1.BeAttakePoint.position;
 
 
         if (Am.GetBool("FCover"))
@@ -2275,6 +2384,7 @@ public class AI : MonoBehaviour
     public IEnumerator BeMindControl(float Sec)
     {
         yield return new WaitForSeconds(Sec);
+        Am.Play("Agony");
         GameObject go = Instantiate<GameObject>(Resources.Load<GameObject>("MindCing"));
         Transform head = BeAttakePoint.GetChild(0).Find("Head");
         go.transform.position = head.position;
@@ -2285,6 +2395,7 @@ public class AI : MonoBehaviour
         Enemies.Remove(this);
         EnemyLayer = 1 << 11;
         AIState = NpcAI;
+        yield return new WaitForSeconds(1f);
         UI.ChangeLogo(this);
         UI.DestroyHPBar(this);
         UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
@@ -2294,8 +2405,8 @@ public class AI : MonoBehaviour
     {
         RoundSysytem.GetInstance().EndChecked = false;
         yield return new WaitForSeconds(1f);
-        Transform MCing = BeAttakePoint.GetChild(0).Find("Head").Find("MindCing");
-        Destroy(MCing);
+        Transform MCing = BeAttakePoint.GetChild(0).Find("Head").Find("MindCing(Clone)");
+        Destroy(MCing.gameObject);
         Cha.camp = Character.Camp.Human;
         Enemies.Add(this);
         Enemies = RoundSysytem.GetInstance().Aliens;
@@ -2309,7 +2420,7 @@ public class AI : MonoBehaviour
     }
 
 
-    public void PreMelee()
+    public virtual void PreMelee2()
     {
         MoveToTile(BestT);
         Am.SetBool("Run", true);

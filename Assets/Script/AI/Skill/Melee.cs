@@ -31,11 +31,11 @@ public class Melee : MonoBehaviour , ISkill
 
     public bool CheckUseable(AI Target)
     {
-        if (Target == null)
+        if (ai.MeleeableList.Count>0)
         {
-            return false;
+            return true;
         }
-        return true;
+        return false;
 
     }
 
@@ -47,7 +47,7 @@ public class Melee : MonoBehaviour , ISkill
     {
         if (ai.Cha.camp == Character.Camp.Alien)
         {
-            return ai.PreMelee;
+            return ai.PreMelee2;
         }
         else
         {
