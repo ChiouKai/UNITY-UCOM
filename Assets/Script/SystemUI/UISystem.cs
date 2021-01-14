@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class UISystem : MonoBehaviour
 {
@@ -874,7 +875,7 @@ public class UISystem : MonoBehaviour
             float dis = Vector3.Distance(TurnCha.Cha.transform.position, Target.Value.Item1.transform.position); //與目標的距離
             Vector3 dir = (Target.Value.Item1.transform.position - TurnCha.Cha.transform.position).normalized; //到目標的方向
             Target_position = TurnCha.Cha.transform.position + dir * dis / 2 + new Vector3(0, 1.2f, 0f); //目標點位置
-            if (dis > 15f)
+            if (dis > 50f)
             {
                 MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
                 MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime);//標的物往目標點移動
@@ -965,5 +966,44 @@ public class UISystem : MonoBehaviour
         toggle[0].transform.GetChild(1).GetComponent<Text>().color = Color.green;
         toggle[0].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
         explosion.SetActive(true);
+    }
+
+    public GameObject[] status_UI;
+    public bool status_bool;
+    public void status(string a)
+    {
+        int judge = 0;
+        if (TurnCha.Cha.tag == "Human")
+        {
+            if (a == "Demage") judge = 0;
+            else if (a == "Miss") judge = 1;
+            else if (a == "MindControl") judge = 2;
+            else if (a == "coma") judge = 3;
+            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(Target.Value.Item1.BeAttakePoint.transform.position);
+            vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
+            GameObject go = Instantiate(status_UI[judge]) as GameObject;
+            if (judge == 0)
+                go.transform.GetChild(2).GetComponent<Text>().text = "4";
+            go.transform.position = vScreenPos;
+
+            go.transform.SetParent(this.transform);
+            Destroy(go, 2f);
+        }
+        if (TurnCha.Cha.tag == "Alien")
+        {
+            if (a == "Demage") judge = 0;
+            else if (a == "Miss") judge = 1;
+            else if (a == "MindControl") judge = 2;
+            else if (a == "coma") judge = 3;
+            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(TurnCha.Target.transform.position);
+            vScreenPos += Vector3.right * -100 + Vector3.up * 150f;
+            GameObject go = Instantiate(status_UI[judge]) as GameObject;
+            go.transform.position = vScreenPos;
+            go.transform.SetParent(this.transform);
+            if (judge == 0)
+                go.transform.GetChild(2).GetComponent<Text>().text = "4";
+            Destroy(go, 2f);
+        }
+        status_bool = false;
     }
 }

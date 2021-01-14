@@ -2398,6 +2398,7 @@ public class AI : MonoBehaviour
         UI.ChangeLogo(this);
         UI.DestroyHPBar(this);
         UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
+        //UI.status("MindControl");
     }
 
     public IEnumerator RecoverMind()
@@ -2435,21 +2436,23 @@ public class AI : MonoBehaviour
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public void status(string s)
+    {
+        Debug.Log("-------------------------------: " + s);
+        if (s == "Demage")
+        {
+            if (Miss)
+            {
+                UI.status("Miss");
+            }
+            if (Miss == false)
+            {
+                UI.status("Demage");
+            }
+        }
+        else
+            UI.status(s);
+    }
     public void CountCD()
     {
         foreach (var skill in Skills)
