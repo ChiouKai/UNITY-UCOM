@@ -333,6 +333,7 @@ public class CrabAI : AI
     {
         yield return new WaitForSeconds(0.5f);
         Target.Hurt(transform.forward);
+        UI.status("Demage",this);
         yield return new WaitForSeconds(1f);//
         EndTurn();
     }

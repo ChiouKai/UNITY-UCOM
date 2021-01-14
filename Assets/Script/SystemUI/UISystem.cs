@@ -970,7 +970,9 @@ public class UISystem : MonoBehaviour
 
     public GameObject[] status_UI;
     public bool status_bool;
-    public void status(string a)
+    public int demage;
+
+    public void status(string a,AI target)
     {
         int judge = 0;
         if (TurnCha.Cha.tag == "Human")
@@ -979,11 +981,11 @@ public class UISystem : MonoBehaviour
             else if (a == "Miss") judge = 1;
             else if (a == "MindControl") judge = 2;
             else if (a == "coma") judge = 3;
-            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(Target.Value.Item1.BeAttakePoint.transform.position);
+            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(target.Target.BeAttakePoint.transform.position);
             vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
             GameObject go = Instantiate(status_UI[judge]) as GameObject;
             if (judge == 0)
-                go.transform.GetChild(2).GetComponent<Text>().text = "4";
+                go.transform.GetChild(2).GetComponent<Text>().text = demage.ToString();
             go.transform.position = vScreenPos;
 
             go.transform.SetParent(this.transform);
@@ -995,13 +997,13 @@ public class UISystem : MonoBehaviour
             else if (a == "Miss") judge = 1;
             else if (a == "MindControl") judge = 2;
             else if (a == "coma") judge = 3;
-            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(TurnCha.Target.transform.position);
+            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(target.Target.transform.position);
             vScreenPos += Vector3.right * -100 + Vector3.up * 150f;
             GameObject go = Instantiate(status_UI[judge]) as GameObject;
             go.transform.position = vScreenPos;
             go.transform.SetParent(this.transform);
             if (judge == 0)
-                go.transform.GetChild(2).GetComponent<Text>().text = "4";
+                go.transform.GetChild(2).GetComponent<Text>().text = demage.ToString();
             Destroy(go, 2f);
         }
         status_bool = false;

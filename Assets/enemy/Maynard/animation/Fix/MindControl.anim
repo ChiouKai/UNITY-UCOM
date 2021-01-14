@@ -118614,7 +118614,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.55
+  - time: 2
     functionName: status
     data: MindControl
     objectReferenceParameter: {fileID: 0}

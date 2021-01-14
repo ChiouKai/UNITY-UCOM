@@ -1647,7 +1647,7 @@ public class AI : MonoBehaviour
         {
             Moving = false;
             Attack = false;
-            Target.Cha.HP -= 3;//todo
+            Target.BeDamaged(3);
             StartCoroutine(FaceMeleeTarget());
         }
     }
@@ -1735,6 +1735,7 @@ public class AI : MonoBehaviour
     public void BeDamaged(int damage)
     {
         Cha.HP -= damage;//todo ?
+        UI.demage = damage;
     }
     protected void AIDeath()
     {
@@ -2398,7 +2399,6 @@ public class AI : MonoBehaviour
         UI.ChangeLogo(this);
         UI.DestroyHPBar(this);
         UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
-        //UI.status("MindControl");
     }
 
     public IEnumerator RecoverMind()
@@ -2443,15 +2443,17 @@ public class AI : MonoBehaviour
         {
             if (Miss)
             {
-                UI.status("Miss");
+                UI.status("Miss",this);
             }
-            if (Miss == false)
+            else if (Miss == false)
             {
-                UI.status("Demage");
+                UI.status("Demage", this);
             }
+            else
+                UI.status("Demage",this);
         }
         else
-            UI.status(s);
+            UI.status(s,this);
     }
     public void CountCD()
     {
