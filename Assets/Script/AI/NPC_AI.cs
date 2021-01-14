@@ -1,15 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.ProBuilder;
 
 public class NPC_AI : AI
 {
 
     // Start is called before the first frame update
     void Start()
-    { 
-        CurrentTile.walkable = false;
+    {
+        InCurrentTile(CurrentTile);
         Vector3 CTP = CurrentTile.transform.position;
         ChaHeight = transform.position.y - CTP.y;
         CTP.y = transform.position.y;
@@ -21,25 +20,15 @@ public class NPC_AI : AI
         TileCount = FindDirection(transform.forward);
         Idle = NoCover;
         Enemies = RoundSysytem.GetInstance().Humans;
+        Skills = GetComponents<ISkill>();
+        AIState = NpcAI;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
-
-        if (!Turn)
-        {
-            Idle();
-        }
-        else if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
-        {
-            Move2();
-        }
-        else if (NPCPreaera)
-        {
-            DoActing?.Invoke();
-        }
+        AIState();
     }
     private void FixedUpdate()
     {

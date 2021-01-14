@@ -1610,6 +1610,8 @@ GameObject:
   - component: {fileID: 3181660201966367008}
   - component: {fileID: 3181660201966367009}
   - component: {fileID: 1732583735357124354}
+  - component: {fileID: 8096873058704215738}
+  - component: {fileID: 7752306214394360249}
   m_Layer: 10
   m_Name: Enemy 1
   m_TagString: Alien
@@ -1688,6 +1690,7 @@ MonoBehaviour:
   BeAttakePoint: {fileID: 8498292573919531213}
   BeAimed: 0
   NPCPreaera: 0
+  NPC_Prefire: 0
 --- !u!114 &3181660201966367008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1854,6 +1857,30 @@ MonoBehaviour:
     fillPass:
       shader: {fileID: 0}
       serializedProperties: []
+--- !u!114 &8096873058704215738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6847276895815141289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 563f9f28dffb63b42b42a8a96d88ef6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7752306214394360249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6847276895815141289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c1078a89fcce54db6cb10e5481d581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6863447113591960524
 GameObject:
   m_ObjectHideFlags: 0

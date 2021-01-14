@@ -16,6 +16,7 @@ public class Tile : MonoBehaviour
     public Tile Parent;
     public float distance = 0;
     float Grid = 0.67f;
+    public AI Cha;
 
 
     public enum Cover
@@ -36,28 +37,20 @@ public class Tile : MonoBehaviour
         UpdateCover();
     }
 
-    public void CurrentChange()
+
+    public void MeleePos()
     {
-       
-        current = true;
-        GetComponent<Renderer>().material.color = Color.cyan;
-    }
-    public void TargetChange()
-    {
-        target = true;
-        GetComponent<Renderer>().material = Resources.Load<Material>("targetTile");
-    }
-    public void WalkableTest()
-    {
-        if(walkable)
-            GetComponent<Renderer>().material = Resources.Load<Material>("selectable1");
-    }
-    public void SelectableChange2()
-    {
-        selectable = true;
-        GetComponent<Renderer>().material = Resources.Load<Material>("selectable2");
+        GetComponent<Renderer>().material = Resources.Load<Material>("MeleePos");
     }
 
+    public void ChoMeleePos()
+    {
+        GetComponent<Renderer>().material = Resources.Load<Material>("ChoMeleePos");
+    }
+    public void Recover()
+    {
+        GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
+    }
 
     private void OnMouseEnter()
     {
@@ -140,7 +133,7 @@ public class Tile : MonoBehaviour
         
     }
 
-    public Cover[] JudgeCover(Vector3 div,out int AimAngle)
+    public Cover[] JudgeCover(Vector3 div,out float AimAngle)
     {
         Cover[] cover = new Cover[2];
         float angel = Vector3.Angle(Vector3.forward, div.normalized);

@@ -1,0 +1,358 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CrabAI : AI
+{
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        InCurrentTile(CurrentTile);
+        Vector3 CTP = CurrentTile.transform.position;
+        ChaHeight = transform.position.y - CTP.y;
+        CTP.y = transform.position.y;
+        transform.position = CTP;
+        Cha = GetComponent<Character>();
+        Am = GetComponent<Animator>();
+        EnemyLayer = 1 << 11;
+        Enemies = RoundSysytem.GetInstance().Humans;
+        Skills = GetComponents<ISkill>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        stateinfo = Am.GetCurrentAnimatorStateInfo(0);
+
+        if (!Turn)
+        {
+            NoCover();
+        }
+        else if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
+        {
+            if (Attack)
+            {
+                Melee();
+            }
+            else 
+            {
+                Move2();
+            }
+
+        }
+        else if (NPCPreaera)
+        {
+            DoActing?.Invoke();
+        }
+    }
+    private void FixedUpdate()
+    {
+        if (!Turn && !BeAimed)
+        {
+            float MinDis = 99f;
+            foreach (AI EnCha in Enemies)
+            {
+                float dis = (EnCha.transform.position - transform.position).magnitude;
+                if (dis < MinDis)
+                {
+                    MinDis = dis;
+                    enemy = EnCha.transform;
+                }
+            }
+            Ediv = (enemy.position - transform.position).normalized;
+        }
+    }
+    private void LateUpdate()
+    {
+        if (AmTurn && stateinfo.IsName("Turn"))
+        {
+            Ediv = (enemy.position - transform.position).normalized;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Ediv), 0.05f);
+            float FoB = Vector3.Dot(transform.forward, Ediv);
+            if (FoB > 0.99f) 
+            {
+                transform.forward = Ediv;
+                Am.SetBool("Turn", false);
+                AmTurn = false;
+            }
+        }
+    }
+
+
+
+    protected override void NoCover()
+    {
+        if (!AmTurn && stateinfo.IsName("Idle"))
+        {
+            Ediv = (enemy.position - transform.position).normalized;
+            float FoB = Vector3.Dot(transform.forward, Ediv);
+
+            if (FoB > 1 / Mathf.Sqrt(2))   //判斷前後左右
+            {
+                return;
+            }
+            else 
+            {
+                Am.SetBool("Turn", true);
+                AmTurn = true;
+            }
+        }
+    }
+
+
+    public override void FindSelectableTiles()
+    {
+        if (VisitedTiles.Count > 0)
+            return;
+        //BFS 寬度優先使用Queue
+        BestPoint = 0;
+        Queue<Tile> Process = new Queue<Tile>();
+        if (CalPointAction(CurrentTile)) 
+        {
+            return;
+        }
+
+        Process.Enqueue(CurrentTile);
+        AddVisited(CurrentTile);
+
+        while (Process.Count > 0)
+        {
+            Tile T = Process.Dequeue();
+            foreach (Tile adjT in T.AdjList)
+            {
+                if (!adjT.visited && adjT.walkable)
+                {
+                    Vector3 vdiv = adjT.transform.position - T.transform.position;
+                    vdiv.y = 0;
+                    float TDis = vdiv.magnitude;
+                    if (TDis > 0.9f)        //如果斜向移動，則判斷路徑上有沒有東西卡到
+                    {
+                        if (Physics.CheckBox(T.transform.position + (vdiv / 2) + new Vector3(0, 0.67f, 0), new Vector3(0.3f, 0.3f, 0.3f), Quaternion.identity, LayerMask.GetMask("Environment"))
+                        || Physics.CheckBox(T.transform.position + (vdiv / 2) + new Vector3(0, 0.67f, 0), new Vector3(0.3f, 0.3f, 0.3f), Quaternion.identity, EnemyLayer))
+                        {
+                            continue;
+                        }
+                    }
+                    adjT.distance = TDis + T.distance;
+                    if (adjT.distance > Cha.Mobility * 2) //移動距離不會超過上限
+                    {
+                        continue;
+                    }
+                    adjT.Parent = T;  //visited過的就被設為 parent
+                    AddVisited(adjT);
+                    if (CalPointAction(adjT))
+                    {
+                        return;
+                    }
+                    Process.Enqueue(adjT);
+                }
+            }
+        }
+    }
+
+
+
+    protected override bool CalPointAction(Tile T)
+    {
+        float Point = 0;
+        Vector3 Location = T.transform.position;
+
+        float MinDis = 99;
+        
+        foreach (AI enemy in Enemies)
+        {
+            Vector3 Edir = enemy.transform.position - Location;
+            
+            if (MinDis > Edir.magnitude)
+            {
+                MinDis = Edir.magnitude;
+            }
+        }
+        int i = 16 / ((int)MinDis + 1);
+        if (i > 4)
+        {
+            Point += 8;
+        }
+        else
+        {
+            Point += i;
+        }
+        //可用能力巡一遍，選擇得分高的能力 再拿出來加分
+        float SecPoint = 0;
+        for (i = 0; i < 4; ++i) 
+        {
+            if (T.AdjList[i].Cha != null && EnemyLayer != T.AdjList[i].Cha.EnemyLayer) 
+            {
+                Target = T.AdjList[i].Cha;
+                SecPoint += 3;
+                break;
+            }
+        }
+
+        //todo特殊能力 先確認CD 如果可以用 在計算命中 得分會比普通射擊高一些
+        Point += SecPoint;
+        if (Point > BestPoint)
+        {
+            BestT = T;
+            BestPoint = Point;
+            if (Target != null)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public override void ConfirmAction()
+    {
+        if (Target != null)
+        {
+            DoActing = PreMelee2;
+        }
+        else 
+        {
+            DoActing = PreMove;
+        }
+
+        NPCPreaera = true;
+    }
+
+    protected override void PreMove()
+    {
+        MoveToTile(BestT);
+        Am.SetBool("Run", true);
+        AmTurn = false;
+        Am.SetBool("Turn", false);
+        Moving = true;
+        RemoveVisitedTiles();//重置Tile狀態
+        OutCurrentTile();
+        InCurrentTile(BestT);
+        DoActing = null;
+    }
+
+    public override void Move2()
+    {
+        //if path.Count > 0, move, or remove selectable tiles, disable moving and end the turn. 
+        if (Moving != true)
+        {
+            return;
+        }
+        if (Path.Count > 0)
+        {
+            (Tile T, MoveWay M) = Path.Peek();
+            Vector3 target = T.transform.position;
+            target.y += ChaHeight;
+
+            if ((transform.position - target).magnitude >= 0.05f)
+            {
+                Heading = target - transform.position;
+                Heading.Normalize();
+                transform.forward = Heading;
+                transform.position += Heading * MoveSpeed * Time.deltaTime;
+            }
+            else
+            {
+                transform.position = target;
+                Path.Pop();
+            }
+        }
+        else
+        {
+            Am.SetBool("Run", false);
+            Moving = false;
+            Turn = false;
+            PreAttack = false;
+            NPCPreaera = false;
+        }
+    }
+
+
+
+
+
+
+
+
+    public override void PreMelee2()
+    {
+        MoveToTile(BestT);
+        Am.SetBool("Run", true);
+        AmTurn = false;
+        Am.SetBool("Turn", false);
+        Moving = true;
+        RemoveVisitedTiles();//重置Tile狀態
+        OutCurrentTile();
+        InCurrentTile(BestT);
+        DoActing = null;
+        Attack = true;
+    }
+
+    public override void Melee()
+    {
+        if (Moving != true)
+        {
+            return;
+        }
+        //if path.Count > 0, move, or remove selectable tiles, disable moving and end the turn. 
+
+        if (Path.Count > 0)
+        {
+            (Tile T, MoveWay M) = Path.Peek();
+            Vector3 target = T.transform.position;
+            target.y += ChaHeight;
+            if ((transform.position - target).magnitude >= 0.05f)
+            {
+                Heading = target - transform.position;
+                Heading.Normalize();
+                transform.forward = Heading;
+                transform.position += Heading * MoveSpeed * Time.deltaTime;
+            }
+            else
+            {
+                transform.position = target;
+                Path.Pop();
+            }
+        }
+        else
+        {
+            Target.BeDamaged(3);
+            Am.SetBool("Run",false);
+            Vector3 TargetDir = Target.transform.position - transform.position;
+            TargetDir.y = 0;
+            transform.forward = TargetDir;
+            Moving = false;
+            Attack = false;
+            Am.SetTrigger("Melee");
+            StartCoroutine(WaitMelee2());
+        }
+    }
+
+    protected IEnumerator WaitMelee2()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Target.Hurt(transform.forward);
+        yield return new WaitForSeconds(1f);//
+        EndTurn();
+    }
+
+    public override void Hurt(Vector3 dir)
+    {
+        dir.y = 0;
+        if (Cha.HP <= 0)
+        {
+            transform.forward = -dir;
+            UI.HpControl(this, Cha.HP);
+            AIDeath();
+        }
+        else
+        {
+            transform.forward = -dir;
+            UI.HpControl(this, Cha.HP);
+            Am.SetBool("Turn", false);
+            AmTurn = false;
+            Am.Play("Hurt");
+        }
+    }
+}

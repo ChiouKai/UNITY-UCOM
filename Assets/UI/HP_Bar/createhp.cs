@@ -21,11 +21,12 @@ public class createhp : MonoBehaviour
     {
         LiHP_Tiles = new Image[MaxHP];
         Create_HPBAR();
+        HPControl(HP);
     }
     public void UpdateHP_Bar() //放血條的位置
     {
-        Vector3 vScreenPos = Camera.main.WorldToScreenPoint(followedTarget.position);
-        vScreenPos += Vector3.right*50f+ Vector3.up * 150f;
+        Vector3 vScreenPos = Camera.main.WorldToScreenPoint(followedTarget.position+new Vector3(0,2.2f,0));
+        vScreenPos += Vector3.right * 5f;
         transform.position = vScreenPos;
     }
     

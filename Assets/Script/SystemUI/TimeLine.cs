@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class TimeLine : MonoBehaviour
     public LinkedList<LogoScript> LogoList;
     public static TimeLine Instance;
     public bool Moved;
+    public Action acting;
     private void Start()
     {
         Moved = false;
@@ -23,6 +25,7 @@ public class TimeLine : MonoBehaviour
         {
             logo.LogoUpdate?.Invoke();
         }
+        acting?.Invoke();
     }
 
 
@@ -85,5 +88,35 @@ public class TimeLine : MonoBehaviour
             Debug.LogError("LogoError");
         }
     }
-
+    public void ChangeLogo(AI Cha)
+    {
+        LogoScript logo;
+        if (LogoDic.TryGetValue(Cha, out logo))
+        {
+            LogoScript newlogo;
+            LogoDic.Remove(Cha);
+            var tem = LogoList.First;
+            int i = 0;
+            while (tem.Value != logo)
+            {
+                ++i;
+                tem = tem.Next;
+            }
+            if (Cha.Cha.camp == Character.Camp.Alien)
+            {
+                newlogo = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy"+Cha.name)).GetComponent<LogoScript>();
+            }
+            else
+            {
+                newlogo = Instantiate<GameObject>(Resources.Load<GameObject>(Cha.name)).GetComponent<LogoScript>();
+            }
+            newlogo.transform.SetParent(transform, false);
+            newlogo.GetComponent<RectTransform>().anchoredPosition = new Vector2(140, -50 - 110 * i);
+            LogoList.AddBefore(tem, newlogo);
+            LogoList.Remove(tem);
+            Destroy(logo.gameObject);
+            LogoDic.Add(Cha, newlogo);
+            RoundSysytem.GetInstance().EndChecked = true;
+        }
+    }
 }
