@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 /*  假設場景上有一個目標 攝影機為跟著目標移動
     攝影機的位置等於目標的位置加上一個距離
     攝影機永遠看向目標
@@ -38,6 +39,13 @@ public class Move_Camera : MonoBehaviour
         float fH = Input.GetAxis("Horizontal");
         float fV = Input.GetAxis("Vertical");
         //增加以45度角面向目標
+        US.final_text.text = (7 - US.Bomb_Round).ToString();
+        if (US.Bomb_Round == 5)
+        {
+            US.toggle[2].SetActive(true);
+            US.toggle[1].transform.GetChild(1).GetComponent<Text>().color = Color.green;
+            US.toggle[1].transform.GetChild(0).GetComponent<Image>().sprite = US.mission_Images[1];
+        }
         scene_camera.transform.LookAt(transform);
         if (att_cam_bool == false)
         {

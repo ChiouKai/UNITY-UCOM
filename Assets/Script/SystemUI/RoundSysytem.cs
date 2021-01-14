@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RoundSysytem
 {
@@ -34,6 +35,15 @@ public class RoundSysytem
         MoveCam = MC;
         UI.per_but = false; //我方切換子彈預設為關
         MoveCam.att_cam_bool = false;
+        UI.toggle[0].SetActive(true);
+        UI.toggle[1].SetActive(false);
+        UI.toggle[2].SetActive(false);
+        UI.explosion.SetActive(false);
+        for (int i = 0; i < UI.toggle.Length; i++)
+        {
+            UI.toggle[i].transform.GetChild(1).GetComponent<Text>().color = Color.white;
+            UI.toggle[i].transform.GetChild(0).GetComponent<Image>().sprite = UI.mission_Images[0];
+        }
         Sequence = new LinkedList<(AI, int)>();
         Sequence.AddFirst((UI.GetComponent<AI>(), 99));
         foreach (AI human in Humans)
@@ -103,6 +113,10 @@ public class RoundSysytem
 
             if (Current.Value.Speed == 99) //回合結束
             {
+                if (UI.Bomb_start)
+                {
+                    UI.Bomb_Round++;
+                }
                 Sequence.RemoveFirst();
                 Sequence.AddLast(Current);
                 Current = Sequence.First;

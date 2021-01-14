@@ -865,7 +865,7 @@ public class UISystem : MonoBehaviour
     public void Attack_camera()
     {
         Vector3 Target_position; //目標點
-        Vector3 sce_cam_pos = MoveCam.scene_camera.transform.position; //攝影機位置
+        //Vector3 sce_cam_pos = MoveCam.scene_camera.transform.position; //攝影機位置
         cam_dir = new float[9];
         cam_dir[0] = 0.0f;
         max_dis = 0;
@@ -876,18 +876,17 @@ public class UISystem : MonoBehaviour
             Target_position = TurnCha.Cha.transform.position + dir * dis / 2 + new Vector3(0, 1.2f, 0f); //目標點位置
             if (dis > 15f)
             {
-
                 MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
                 MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime);//標的物往目標點移動
                 float Gg = Vector3.Distance(MoveCam.transform.position, Target_position);//如果movecam與目標點距離小於0.02 位置直接等於目標點
                 if (Gg <= 0.05)
                     MoveCam.transform.position = Target_position;
                 Vector3 scp = MoveCam.transform.position + -MoveCam.scene_camera.transform.forward * MoveCam.cam_dis;//攝影機位置往後
-                sce_cam_pos = Vector3.Lerp(scp, MoveCam.transform.position, 3f * Time.deltaTime); //攝影機滑順移動到指定距離
-                float mg = Vector3.Distance(sce_cam_pos, scp);
+                MoveCam.scene_camera.transform.position = Vector3.Lerp(scp, MoveCam.scene_camera.transform.position, 3f * Time.deltaTime); //攝影機滑順移動到指定距離
+                float mg = Vector3.Distance(MoveCam.scene_camera.transform.position, scp);
                 if (mg <= 0.05)
                 {
-                    sce_cam_pos = scp;
+                    MoveCam.scene_camera.transform.position = scp;
                 }
             }
             else
@@ -922,20 +921,10 @@ public class UISystem : MonoBehaviour
                     }
                     else
                         MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f].transform.position, 5 * Time.deltaTime);
-                    /* if (Physics.Raycast(camera_point[f].transform.position, eni_dir, out hit, 1.5f, 1 << 11))
-                     {
-                         Debug.Log("dsa");
-                         if (f == 1) f = 8;
-                             MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f - 1].transform.position, 5 * Time.deltaTime);
-                     }
-                     else
-                         MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f].transform.position, 5 * Time.deltaTime);
-                         */
                     MoveCam.scene_camera.transform.LookAt(Target_position);
                 }
             }
         }
-
 
         if (TurnCha.Cha.tag == "Alien" && TurnCha.NPC_Prefire == true)
         {
@@ -951,15 +940,30 @@ public class UISystem : MonoBehaviour
             {
                 MoveCam.transform.position = Target_position;
             }
-
             Vector3 scp = MoveCam.transform.position + -MoveCam.scene_camera.transform.forward * MoveCam.cam_dis;//攝影機為標的物加往後一個方向的距離                                                                                                                  
-            sce_cam_pos = Vector3.Lerp(scp, sce_cam_pos, 5 * Time.deltaTime);
-            float mg = Vector3.Distance(sce_cam_pos, scp);
+            MoveCam.scene_camera.transform.position = Vector3.Lerp(scp, MoveCam.scene_camera.transform.position, 5 * Time.deltaTime);
+            float mg = Vector3.Distance(MoveCam.scene_camera.transform.position, scp);
             if (mg <= 0.05)
             {
-                sce_cam_pos = scp;
+                MoveCam.scene_camera.transform.position = scp;
             }
-
         }
+    }
+
+    public bool Bomb_start;
+    public int Bomb_Round;
+    //public Text fr;
+    public Text final_text;
+    public GameObject[] toggle;
+    public GameObject explosion;
+    public Sprite[] mission_Images;
+    public void Bomb_button()
+    {
+        Bomb_start = true;
+        Debug.Log("安裝炸彈");
+        toggle[1].SetActive(true);
+        toggle[0].transform.GetChild(1).GetComponent<Text>().color = Color.green;
+        toggle[0].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
+        explosion.SetActive(true);
     }
 }
