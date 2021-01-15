@@ -95,7 +95,7 @@ public class Move_Camera : MonoBehaviour
                 {
                     transform.position = Vector3.Lerp(transform.position, Target.transform.position, 5 * Time.deltaTime); //目前位置 要前往的位置 移動速度
                     float gg = Vector3.Distance(transform.position, Target.transform.position);
-                    if (gg < 0.001f)
+                    if (gg < 0.01f)
                     {
                         transform.position = Target.transform.position;
                         move_tr = false; //為false則表示一開始移動到目標後就不進行動作
@@ -108,6 +108,8 @@ public class Move_Camera : MonoBehaviour
             }
 
         }
+
+
         if (fH != 0 || fV != 0) //wsad移動
         {
             if (move_tr == false && !Target.Moving)

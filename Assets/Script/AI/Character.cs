@@ -10,6 +10,8 @@ public  class Character :MonoBehaviour
     public int Speed = 5;
     public int BasicAim = 70;
     string Weapon;
+    public int Energy;
+    public int MaxEnergy ;
     public enum Camp
     {
         Human = 0,

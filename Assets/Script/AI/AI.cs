@@ -15,7 +15,7 @@ public class AI : MonoBehaviour
     internal Transform enemy;
     public delegate IEnumerator Movement();
     protected Action Idle = null;
-    internal Character Cha;
+    public Character Cha;
     internal int AP = 0;
     protected Vector3 Ediv;
     internal int EnemyLayer;
@@ -27,7 +27,11 @@ public class AI : MonoBehaviour
     protected virtual void NoCover()//沒Cover的狀態
     {
         if (!AmTurn && stateinfo.IsName("Idle"))
-        {         
+        {
+            if (enemy == null)
+            {
+                return;
+            }
             transform.forward = Direction(TileCount);
             Ediv = (enemy.position - transform.position).normalized;
             float FoB = Vector3.Dot(transform.forward, Ediv);
@@ -352,7 +356,7 @@ public class AI : MonoBehaviour
             }
             
         }
-        else if (NPCPreaera)
+        else if (NPCPrepera)
         {
             DoActing?.Invoke();
         }
@@ -417,9 +421,11 @@ public class AI : MonoBehaviour
 
     public void Skip()//跳過回合
     {
+        Am.Play("Idle");
         AP = 0;
-        Turn = false;
-        NPCPreaera = false;
+        EndTurn();
+        ResetBool();
+        NPCPrepera = false;
         DoActing = null;
     }
 
@@ -751,13 +757,13 @@ public class AI : MonoBehaviour
         }
         VisitedTiles.Clear();
     }
-    protected void InCurrentTile(Tile T)
+    public void InCurrentTile(Tile T)
     {
         CurrentTile = T;
         T.walkable = false;
         T.Cha = this;
     }
-    protected void OutCurrentTile()
+    public void OutCurrentTile()
     {
         CurrentTile.walkable = true;
         CurrentTile.Cha = null;
@@ -1030,7 +1036,7 @@ public class AI : MonoBehaviour
     {
         PreAttack = false;
         yield return new WaitForSecondsRealtime(1f);
-        NPCPreaera = true;
+        NPCPrepera = true;
         PreAttack = true;
     }
     public void ChangePreAttackIdle()
@@ -1085,7 +1091,7 @@ public class AI : MonoBehaviour
             {
                 TileCount = FindDirection(dir);
                 PreAttakeIdle = PreAtkHalfCover;
-                NPCPreaera = true;
+                NPCPrepera = true;
                 //StartCoroutine(AIWaitPreAtkChange());//todo
                 return;
             }
@@ -1104,7 +1110,7 @@ public class AI : MonoBehaviour
             {
                 PreAttakeIdle = PreAtkNoCover;
                 Am.SetBool("Aim", true);
-                NPCPreaera = true;
+                NPCPrepera = true;
                 //StartCoroutine(AIWaitPreAtkChange());
                 return;
             }
@@ -1336,7 +1342,7 @@ public class AI : MonoBehaviour
             //        Am.SetBool("Turn", false);
             //    }
             //}
-            else if(stateinfo.IsName("LeftToAttack")|| stateinfo.IsName("RightToAttack"))
+            else if(stateinfo.IsName("LeftToAttack")|| stateinfo.IsName("RightToAttack")&&!Am.GetBool("Aim"))
             {
                 if ((transform.position - AttackPosition).magnitude < 0.1f)
                 {
@@ -1476,6 +1482,7 @@ public class AI : MonoBehaviour
     public FWait FW;
     public IEnumerator FireWait()//攻擊後緩衝時間給下回合
     {
+        PreAttack = false;
         yield return new WaitUntil(() => Attack == false);
         yield return new WaitForSeconds(1f);
         EndTurn();
@@ -1507,6 +1514,7 @@ public class AI : MonoBehaviour
         ActionName = null;
         yield return new WaitForSeconds(1f);
         transform.forward = Direction(TileCount);
+        Am.SetBool("Aim", false);
         EndTurn();
         PreAttack = false;
         //ResetBool();
@@ -1709,9 +1717,11 @@ public class AI : MonoBehaviour
     protected void EndTurn()
     {
         Target = null;
+        UI.MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
         UI.per_but = false; //我方切換子彈預設為關
         NPC_Prefire = false;
         UI.MoveCam.att_cam_bool = false;
+        //checkevent
         if (AttakeTarget.Item1 != null)
         {
             AttakeTarget.Item1.BeAimed = false;
@@ -1827,7 +1837,7 @@ public class AI : MonoBehaviour
 
     /////AI
 
-    public virtual void FindSelectableTiles()
+    public virtual void FindSelectableTiles(int ap)
     {
         if (VisitedTiles.Count > 0)
             return;
@@ -1858,7 +1868,7 @@ public class AI : MonoBehaviour
                         }
                     }
                     adjT.distance = TDis + T.distance;
-                    if (adjT.distance > Cha.Mobility * 2) //移動距離不會超過上限
+                    if (adjT.distance > Cha.Mobility * ap) //移動距離不會超過上限
                     {
                         continue;
                     }
@@ -1936,10 +1946,11 @@ public class AI : MonoBehaviour
             }
             else
             {
-                Turn = false;
                 PreAttack = false;
-                NPCPreaera = false;
+                NPCPrepera = false;
+                RoundSysytem.GetInstance().EndChecked = true;
                 ResetBool();
+                EndTurn();
             }
         }
     }
@@ -1951,7 +1962,7 @@ public class AI : MonoBehaviour
     protected ISkill Acting2;
     protected (AI, int, int) AttakeTarget;
     protected float BestPoint;
-    internal bool NPCPreaera = false;
+    internal bool NPCPrepera = false;
     internal bool NPC_Prefire;
     internal ISkill[] Skills;
 
@@ -1990,55 +2001,58 @@ public class AI : MonoBehaviour
         ISkill Sec = null ;
         ISkill Sec2 = null;
         float SecPoint = 0;
-
-        if (T.distance < Cha.Mobility)
+        if (Skills != null) 
         {
-            if (T.distance != 0)
+            if (T.distance < Cha.Mobility)
             {
-                aim = AttakeableDetect(T);
-                foreach (var skill in Skills)
+                if (T.distance != 0)
                 {
-                    if (skill.CheckUseable(aim.Item1))
+                    aim = AttakeableDetect(T);
+                    foreach (var skill in Skills)
                     {
-                        float TmpPoint = skill.Point;
-                        TmpPoint += aim.Item3 * skill.AimPoint;
-                        if (SecPoint < TmpPoint)
+                        if (skill.CheckUseable(aim.Item1))
                         {
-                            Sec2 = skill;
-                            SecPoint = TmpPoint;
+                            float TmpPoint = skill.Point;
+                            TmpPoint += aim.Item3 * skill.AimPoint;
+                            if (SecPoint < TmpPoint)
+                            {
+                                Sec2 = skill;
+                                SecPoint = TmpPoint;
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                int ap = 2;
-                aim = AttakeableDetect(T);
-                foreach (var skill in Skills)
+                else
                 {
-                    if (skill.CheckUseable(aim.Item1))
+                    int ap = 2;
+                    aim = AttakeableDetect(T);
+
+                    foreach (var skill in Skills)
                     {
-                        float TmpPoint = skill.Point;
-                        TmpPoint += aim.Item3 * skill.AimPoint;
-                        if (ap - skill.AP > 0)
+                        if (skill.CheckUseable(aim.Item1))
                         {
-                            foreach(var skill2 in Skills)
+                            float TmpPoint = skill.Point;
+                            TmpPoint += aim.Item3 * skill.AimPoint;
+                            if (ap - skill.AP > 0)
                             {
-                                if (skill == skill2) { continue; }
-                                TmpPoint += skill.Point;
-                                TmpPoint += aim.Item3 * skill.AimPoint;
-                                if (SecPoint < TmpPoint)
+                                foreach (var skill2 in Skills)
                                 {
-                                    Sec = skill;
-                                    Sec2 = skill2;
-                                    SecPoint = TmpPoint;
+                                    if (skill == skill2) { continue; }
+                                    TmpPoint += skill.Point;
+                                    TmpPoint += aim.Item3 * skill.AimPoint;
+                                    if (SecPoint < TmpPoint)
+                                    {
+                                        Sec = skill;
+                                        Sec2 = skill2;
+                                        SecPoint = TmpPoint;
+                                    }
                                 }
                             }
-                        }
-                        else if (SecPoint < TmpPoint)
-                        {
-                            Sec = skill;
-                            SecPoint = TmpPoint;
+                            else if (SecPoint < TmpPoint)
+                            {
+                                Sec = skill;
+                                SecPoint = TmpPoint;
+                            }
                         }
                     }
                 }
@@ -2171,7 +2185,7 @@ public class AI : MonoBehaviour
         ChangeTarget = true;
         ChangePreAttakeIdle(TargetDir);
         PreAttack = true;
-        NPCPreaera = false;
+        NPCPrepera = false;
         DoActing = Fire;//method.invoke
     }
 
@@ -2239,7 +2253,7 @@ public class AI : MonoBehaviour
         }
         Attack = true;
         DoActing = null;
-        NPCPreaera = false;
+        NPCPrepera = false;
         AttakeTarget.Item1.BeAim(this);
         //AP = 0;
         //AttakeableList.Clear();
@@ -2271,7 +2285,7 @@ public class AI : MonoBehaviour
             //ChangePreAttakeIdle();
         //}//else if (Acting2==reload)
 
-        NPCPreaera = true;
+        NPCPrepera = true;
     }
 
 
@@ -2292,9 +2306,9 @@ public class AI : MonoBehaviour
         }
         else
         {
-            Turn = false;
+            EndTurn();
             PreAttack = false;
-            NPCPreaera = false;
+            NPCPrepera = false;
             ResetBool();
         }
     }
@@ -2308,7 +2322,7 @@ public class AI : MonoBehaviour
         ChangeTarget = true;
         ChangePreAttakeIdle(TargetDir);
         PreAttack = true;
-        NPCPreaera = false;
+        NPCPrepera = false;
         DoActing = MindControl;
     }
 
@@ -2356,7 +2370,7 @@ public class AI : MonoBehaviour
         MindControlAI = AttakeTarget.Item1;
         Attack = true;
         DoActing = null;
-        NPCPreaera = false;
+        NPCPrepera = false;
         AttakeTarget.Item1.BeAim(this);
         
     }

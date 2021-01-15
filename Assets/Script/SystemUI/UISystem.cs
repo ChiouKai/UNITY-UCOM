@@ -16,8 +16,8 @@ public class UISystem : MonoBehaviour
     Thread Round;
     public Action TurnRun;
     public Action RunUI;
-
     public GameObject menu;
+    public Tile StartTile;
 
     static public UISystem getInstance()
     {
@@ -59,6 +59,14 @@ public class UISystem : MonoBehaviour
         RunUI?.Invoke();//控制UI
 
         onEscapeKeyed();  //退出選單
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            m_Roundsystem.testevent();
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            TurnCha.Skip();
+        }
     }
     private void LateUpdate()
     {
@@ -204,6 +212,7 @@ public class UISystem : MonoBehaviour
 
     public void PlayerStartTurn()
     {
+
         TurnCha.MoveRange();
         TurnCha.AttakeableDetect();
         TurnCha.CountCD();
@@ -214,8 +223,10 @@ public class UISystem : MonoBehaviour
     }
     public void EnemyStartTurn()
     {
+        TurnCha.Turn = true;
+        TurnCha.AP = 2;
         TurnCha.CountCD();
-        TurnCha.FindSelectableTiles();
+        TurnCha.FindSelectableTiles(2);
         TurnCha.ConfirmAction();
         TurnRun = null;
     }
@@ -774,11 +785,11 @@ public class UISystem : MonoBehaviour
         for (int i = 0; i < Sequence.Count-1; ++i)
         {
             Cha = Cha.Next;
-            GameObject ChaLogo = Resources.Load<GameObject>(Cha.Value.Cha.name);
+            GameObject ChaLogo = Resources.Load<GameObject>(Cha.Value.Cha.name+ "Logo");
             TLine.NewLogo(Cha.Value.Cha, ChaLogo, i);
             yield return new WaitForSecondsRealtime(0.3f);
         }
-        GameObject EndLogo = Resources.Load<GameObject>("End");
+        GameObject EndLogo = Resources.Load<GameObject>("EndLogo");
         TLine.NewLogo(Sequence.First.Value.Cha, EndLogo, Sequence.Count-1);
         Round.Start();
         yield return 0;
@@ -810,6 +821,32 @@ public class UISystem : MonoBehaviour
     {
         TLine.ChangeLogo(Cha);
     }
+
+
+    AI Newcome;
+    public void NewCome()
+    {
+        AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy")).GetComponent<AI>();
+        Enemy.name = "Enemy";
+        Newcome = Enemy;
+        int i = m_Roundsystem.NewCome(Enemy);
+        GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name + "Logo");
+        TLine.NewLogo(Enemy, ChaLogo, i);
+        CreateHP_Bar(Enemy, Enemy.Cha.MaxHP, Enemy.Cha.HP);
+        Enemy.InCurrentTile(StartTile);
+        TurnRun = NewAct;
+    }
+    public void NewAct()
+    {
+        Newcome.Skills = null;
+        Newcome.Turn = true;
+        Newcome.FindSelectableTiles(1);
+        Newcome.ConfirmAction();
+        Newcome.Skills = GetComponents<ISkill>();
+        MoveCam.ChaTurn(Newcome);
+        TurnRun = null;
+    }
+
 
 
 
@@ -859,15 +896,14 @@ public class UISystem : MonoBehaviour
 
     public bool per_but;
     public GameObject[] camera_point;
-    float[] cam_dir;
+    float[] cam_dir = new float[9];
     float max_dis;
     bool change_point;
 
     public void Attack_camera()
     {
         Vector3 Target_position; //目標點
-        //Vector3 sce_cam_pos = MoveCam.scene_camera.transform.position; //攝影機位置
-        cam_dir = new float[9];
+        Vector3 sce_cam_pos = MoveCam.scene_camera.transform.position; //攝影機位置
         cam_dir[0] = 0.0f;
         max_dis = 0;
         if (TurnCha.Cha.tag == "Human" && per_but == true)
@@ -877,6 +913,7 @@ public class UISystem : MonoBehaviour
             Target_position = TurnCha.Cha.transform.position + dir * dis / 2 + new Vector3(0, 1.2f, 0f); //目標點位置
             if (dis > 50f)
             {
+
                 MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
                 MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime);//標的物往目標點移動
                 float Gg = Vector3.Distance(MoveCam.transform.position, Target_position);//如果movecam與目標點距離小於0.02 位置直接等於目標點
@@ -905,10 +942,10 @@ public class UISystem : MonoBehaviour
                 if (f != -1)
                 {
                     RaycastHit hit;
-                    Vector3 eni_dir = Target_position - camera_point[f].transform.position;
+                    Vector3 eni_dir = (Target_position - camera_point[f].transform.position).normalized;
                     MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime); //標的物到雙方中間
                     Debug.DrawRay(camera_point[f].transform.position, eni_dir);
-                    if (Physics.Raycast(camera_point[f].transform.position, eni_dir, out hit, 1.5f))
+                    if (Physics.Raycast(camera_point[f].transform.position, eni_dir, out hit, 1.5f, 1 << 11))
                     {
                         if (f == 1) f = 8;
                         Debug.DrawRay(camera_point[f - 1].transform.position, Target_position - camera_point[f - 1].transform.position);
@@ -927,6 +964,7 @@ public class UISystem : MonoBehaviour
             }
         }
 
+
         if (TurnCha.Cha.tag == "Alien" && TurnCha.NPC_Prefire == true)
         {
             MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
@@ -941,6 +979,7 @@ public class UISystem : MonoBehaviour
             {
                 MoveCam.transform.position = Target_position;
             }
+
             Vector3 scp = MoveCam.transform.position + -MoveCam.scene_camera.transform.forward * MoveCam.cam_dis;//攝影機為標的物加往後一個方向的距離                                                                                                                  
             MoveCam.scene_camera.transform.position = Vector3.Lerp(scp, MoveCam.scene_camera.transform.position, 5 * Time.deltaTime);
             float mg = Vector3.Distance(MoveCam.scene_camera.transform.position, scp);

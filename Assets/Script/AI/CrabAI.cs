@@ -42,7 +42,7 @@ public class CrabAI : AI
             }
 
         }
-        else if (NPCPreaera)
+        else if (NPCPrepera)
         {
             DoActing?.Invoke();
         }
@@ -102,7 +102,7 @@ public class CrabAI : AI
     }
 
 
-    public override void FindSelectableTiles()
+    public override void FindSelectableTiles(int ap)
     {
         if (VisitedTiles.Count > 0)
             return;
@@ -136,7 +136,7 @@ public class CrabAI : AI
                         }
                     }
                     adjT.distance = TDis + T.distance;
-                    if (adjT.distance > Cha.Mobility * 2) //移動距離不會超過上限
+                    if (adjT.distance > Cha.Mobility * ap) //移動距離不會超過上限
                     {
                         continue;
                     }
@@ -216,7 +216,7 @@ public class CrabAI : AI
             DoActing = PreMove;
         }
 
-        NPCPreaera = true;
+        NPCPrepera = true;
     }
 
     protected override void PreMove()
@@ -264,7 +264,7 @@ public class CrabAI : AI
             Moving = false;
             Turn = false;
             PreAttack = false;
-            NPCPreaera = false;
+            NPCPrepera = false;
         }
     }
 

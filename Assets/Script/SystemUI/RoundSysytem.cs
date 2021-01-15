@@ -26,6 +26,7 @@ public class RoundSysytem
     public List<AI> Aliens;
     UISystem UI;
     public bool EndChecked = true;
+    public Action Event;
 
     public void RoundPrepare(List<AI> humans, List<AI> aliens, Move_Camera MC, UISystem ui) //遊戲開始前 抓取每個單位資料
     {
@@ -86,7 +87,6 @@ public class RoundSysytem
             if (TurnCha.Cha.camp == 0)
             {
                 UI.TurnRun = UI.PlayerStartTurn;
-                
                 TurnCha.Turn = true;
                 TurnCha.AP = 2;
             }
@@ -117,14 +117,20 @@ public class RoundSysytem
                 {
                     UI.Bomb_Round++;
                 }
-                Sequence.RemoveFirst();
-                Sequence.AddLast(Current);
-                Current = Sequence.First;
 
                 while (TimeLine.Instance.Moved != true)
                 {
                     System.Threading.Thread.Sleep(1);
                 }
+                Event?.Invoke();
+                while (TimeLine.Instance.Moved != true|| EndChecked != true)
+                {
+                    System.Threading.Thread.Sleep(1);
+                }
+                Sequence.RemoveFirst();
+                Sequence.AddLast(Current);
+                Current = Sequence.First;
+
                 UI.TurnRun = UI.TurnEnd;
 
                 
@@ -134,7 +140,16 @@ public class RoundSysytem
         }
     }
 
-
+    public void testevent()
+    {
+        
+        Event = () => 
+        { 
+            EndChecked = false;
+            UI.TurnRun = UI.NewCome;
+            Event = null;
+        };
+    }
 
     void InsertCha((AI Chr, int speed) obj)//回合前排順序
     {
@@ -187,13 +202,14 @@ public class RoundSysytem
         }
 
     }
-    private void NewCome((AI Cha ,int speed) obj)
+    public int NewCome(AI Cha)
     {
+        var obj = (Cha, Cha.Cha.Speed);
         LinkedListNode<(AI Cha, int Speed)> current = Sequence.Last;
-
-        for (int Count = Sequence.Count; Count > 0; --Count)
+        int Count = Sequence.Count;
+        for (; Count > 0; --Count)
         {
-            if (obj.speed <= current.Value.Speed)
+            if (obj.Speed <= current.Value.Speed)
             {
                 Sequence.AddAfter(current, obj);
                 break;
@@ -201,6 +217,7 @@ public class RoundSysytem
             else
                 current = current.Previous;
         }
+        return Count; 
     }
 
 
