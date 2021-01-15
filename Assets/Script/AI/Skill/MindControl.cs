@@ -31,7 +31,7 @@ public class MindControl : MonoBehaviour,ISkill
 
     public bool CheckUseable(AI Target)
     {
-        if (CDCount > 0 || Target == null) 
+        if (ai.AP < AP ||CDCount > 0 || Target == null) 
         {
             return false;
         }

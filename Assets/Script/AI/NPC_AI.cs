@@ -22,7 +22,7 @@ public class NPC_AI : AI
         Enemies = RoundSysytem.GetInstance().Humans;
         Skills = GetComponents<ISkill>();
         AIState = NpcAI;
-
+        UI = UISystem.getInstance();
     }
 
     // Update is called once per frame

@@ -209,17 +209,18 @@ public class UISystem : MonoBehaviour
     List<Button> ADPButtonList = new List<Button>();
     List<GameObject> APPImageList = new List<GameObject>();
     List<Button> SButtonList = new List<Button>();
+    AI TrueTunCha = null;
 
     public void PlayerStartTurn()
     {
-
+        TurnCha.Turn = true;
         TurnCha.MoveRange();
         TurnCha.AttakeableDetect();
-        TurnCha.CountCD();
         ShowAttackableButton();
         FindSkillButton();
         RunUI = ShowActionUI;
         TurnRun = CheckMouse;
+        MoveCam.ChaTurn(TurnCha);
     }
     public void EnemyStartTurn()
     {
@@ -228,6 +229,7 @@ public class UISystem : MonoBehaviour
         TurnCha.CountCD();
         TurnCha.FindSelectableTiles(2);
         TurnCha.ConfirmAction();
+        MoveCam.ChaTurn(TurnCha);
         TurnRun = null;
     }
     public void FindSkillButton()
@@ -494,8 +496,8 @@ public class UISystem : MonoBehaviour
     public GameObject AimTarget;
     private Transform AimPos;
     public Button ActionButton;
-
-
+    AI AllyTarget;
+    int Index;
 
 
 
@@ -706,17 +708,24 @@ public class UISystem : MonoBehaviour
 
     public void PreCooperation()
     {
-        if (m_Roundsystem.Humans.Count < 1)
+        if (Humans.Count < 2)
         {
             return;
         }
         Prepera = false;
-        
+        Index= 0;
+        AllyTarget = Humans[Index];
+        if (Humans[Index] = TurnCha)
+        {
+            ++Index;
+        }
+        AllyTarget = Humans[Index];
+        MoveCam.ChaTurn(AllyTarget);
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
         //UI
-        ButtonText.text = "合作";
-        DescribeText.text = "提供資訊，使隊友獲得一個行動點。";
+        ButtonText.text = "指揮";
+        DescribeText.text = "指揮隊友，使隊友獲得一個行動點。";
         LeftText.text = "";
         RightText.text = "";
         ActionButton.onClick.RemoveAllListeners();
@@ -728,11 +737,17 @@ public class UISystem : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            HealTarget = HealTarget.Next;
-            if (HealTarget == null)
+            ++Index;
+            if (Humans[Index] == null)
             {
-                HealTarget = TurnCha.HealList.First;
+                Index = 0;
+                if (Humans[Index] == TurnCha)
+                {
+                    ++Index;
+                }
             }
+            AllyTarget = Humans[Index];
+            MoveCam.ChaTurn(AllyTarget);
         }
         Canceal();
     }
@@ -740,10 +755,57 @@ public class UISystem : MonoBehaviour
 
     private void Cooperation()
     {
+        AttPredictPanel.gameObject.SetActive(false);
+        DestroyADPButton();
+        DestroySkillButton();
+        LRDestory();
+        MoveCam.ChaTurn(TurnCha);
+        TrueTunCha = TurnCha;
+        TurnCha.PreCooperation(AllyTarget);
+        m_Roundsystem.EndChecked = false;
+        TurnRun = null;
+    }
+    public void CheckEvent()
+    {
+        if (TrueTunCha != null)
+        {
+            TurnCha = TrueTunCha;
+            TrueTunCha = null;
+            m_Roundsystem.EndChecked = true;
+            if (TurnCha.AP > 0)
+            {
+                PlayerStartTurn();
+            }
+        }
 
     }
 
 
+
+    public void PreBomb()
+    {
+        if (TurnCha.HealList.Count == 0)
+        {
+            return;
+        }
+        Prepera = false;
+        AttPredictPanel.gameObject.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        
+        ButtonText.text = "引爆";
+        DescribeText.text = "啟動電腦自爆程式。";
+        LeftText.text = "";
+        RightText.text = "";
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(() => Bomb());
+        TurnRun = null;
+    }
+    private void Bomb()
+    {
+        TurnCha.PreBomb();
+        DestroyADPButton();
+        DestroySkillButton();
+    }
 
 
     private void Canceal()
@@ -752,11 +814,10 @@ public class UISystem : MonoBehaviour
         {
             RT.anchoredPosition3D = new Vector3(0, 240, 0);
             AttDectPanel.gameObject.SetActive(true);
+            MoveCam.ChaTurn(TurnCha);
             TurnRun = CheckMouse;
         }
     }
-
-
 
 
 
@@ -824,6 +885,7 @@ public class UISystem : MonoBehaviour
 
 
     AI Newcome;
+    ISkill[] NewcomeSkills;
     public void NewCome()
     {
         AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy")).GetComponent<AI>();
@@ -838,12 +900,15 @@ public class UISystem : MonoBehaviour
     }
     public void NewAct()
     {
+        NewcomeSkills = Newcome.Skills;
         Newcome.Skills = null;
         Newcome.Turn = true;
         Newcome.FindSelectableTiles(1);
         Newcome.ConfirmAction();
-        Newcome.Skills = GetComponents<ISkill>();
         MoveCam.ChaTurn(Newcome);
+        Newcome.Skills = NewcomeSkills;
+        NewcomeSkills = null;
+        Newcome = null;
         TurnRun = null;
     }
 
@@ -893,6 +958,8 @@ public class UISystem : MonoBehaviour
         m_HP_Bar.Remove(HPBar);
         Destroy(HPBar.gameObject);
     }
+
+
 
     public bool per_but;
     public GameObject[] camera_point;
@@ -1007,6 +1074,7 @@ public class UISystem : MonoBehaviour
         explosion.SetActive(true);
     }
 
+    public Tile BombSite;
     public GameObject[] status_UI;
     public bool status_bool;
     public int demage;

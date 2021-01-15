@@ -731,6 +731,7 @@ GameObject:
   - component: {fileID: 1426806028832914518}
   - component: {fileID: 1935414094928773544}
   - component: {fileID: 6617018224542963758}
+  - component: {fileID: 4161283741708353477}
   m_Layer: 11
   m_Name: Soldier05
   m_TagString: Human
@@ -797,34 +798,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1902b3733c29cba40865b918eab8b24c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Am: {fileID: 0}
-  enemy: {fileID: 0}
   Cha: {fileID: 0}
-  AP: 0
-  AmTurn: 0
-  VisitedTiles: []
   CurrentTile: {fileID: 0}
-  Turn: 0
-  Moving: 0
-  Running: 0
   MoveSpeed: 4
-  End: 0
-  Heading: {x: 0, y: 0, z: 0}
-  UI: {fileID: 0}
-  Prepera: 0
-  Gun: {fileID: 0}
-  PreAttack: 0
-  Attack: 0
-  ChangeTarget: 0
-  Target: {fileID: 0}
   FirePoint: {fileID: 3483480868303362645}
   Bullet: {fileID: 5932418272359934296, guid: ac1c13cf9aeee464ab711f28cc2cb55b, type: 3}
   BeAttakePoint: {fileID: 7649818173635755050}
-  BeAimed: 0
   Rifle: {fileID: 7572346888974113117}
   Knife: {fileID: 2313054451397255025}
-  NPCPreaera: 0
-  NPC_Prefire: 0
 --- !u!114 &4709042252679627248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -842,6 +823,8 @@ MonoBehaviour:
   Mobility: 6
   Speed: 2
   BasicAim: 70
+  Energy: 0
+  MaxEnergy: 0
   camp: 0
   type: 0
 --- !u!114 &177668318653176371
@@ -1268,6 +1251,18 @@ MonoBehaviour:
     fillPass:
       shader: {fileID: 0}
       serializedProperties: []
+--- !u!114 &4161283741708353477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7647131940062633392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc004c5e2ba4394786016034dd260a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7647141159591516146
 GameObject:
   m_ObjectHideFlags: 0
@@ -4130,7 +4125,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1ee2e74d8bd00af40a8f906311e6ffa3, type: 3}
+  - {fileID: 2100000, guid: e1e1e573a8c95a5499a99b6834e55af0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4626,12 +4621,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 434d3225433cccb4b902688ae47e9726, type: 3}
---- !u!23 &2326182731809420125 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 23987141250661936, guid: 434d3225433cccb4b902688ae47e9726,
-    type: 3}
-  m_PrefabInstance: {fileID: 2314140968662191469}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2313054451397255025 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1376827010617884, guid: 434d3225433cccb4b902688ae47e9726,
@@ -4647,6 +4636,12 @@ Transform:
 --- !u!23 &2327411630677824535 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 23039713080498554, guid: 434d3225433cccb4b902688ae47e9726,
+    type: 3}
+  m_PrefabInstance: {fileID: 2314140968662191469}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2326182731809420125 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 23987141250661936, guid: 434d3225433cccb4b902688ae47e9726,
     type: 3}
   m_PrefabInstance: {fileID: 2314140968662191469}
   m_PrefabAsset: {fileID: 0}

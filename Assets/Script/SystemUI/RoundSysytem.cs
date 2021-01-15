@@ -86,18 +86,15 @@ public class RoundSysytem
             }
             if (TurnCha.Cha.camp == 0)
             {
-                UI.TurnRun = UI.PlayerStartTurn;
-                TurnCha.Turn = true;
                 TurnCha.AP = 2;
+                TurnCha.CountCD();
+                UI.TurnRun = UI.PlayerStartTurn;
             }
             else
             {
                 TurnCha.Turn = true;
                 UI.TurnRun = UI.EnemyStartTurn;
             }
-
-
-            MoveCam.ChaTurn(TurnCha);
 
 
             while (TurnCha.Turn!= false|| EndChecked!= true|| TimeLine.Instance.Moved != true)

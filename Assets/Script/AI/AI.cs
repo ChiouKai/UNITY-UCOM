@@ -415,6 +415,7 @@ public class AI : MonoBehaviour
         Am.SetBool("Left", false);
         Am.SetBool("Right", false);
         Am.SetBool("Aim", false);
+        Am.SetBool("Run", false);
         Target = null;
     }
 
@@ -1562,13 +1563,17 @@ public class AI : MonoBehaviour
     {
         MoveToTile(MeleeTarget.Value.Item2);
         ResetBool();
+        if (Path.Count != 0)
+        {
+            Am.SetBool("Run", true);
+        }
         Idle = NoCover;
         Moving = true;
         RemoveVisitedTiles();//重置Tile狀態
         Attack = true;
         Target = MeleeTarget.Value.Item1;
         Am.SetBool("Melee",true);
-        Am.SetBool("Run", true);
+
         UI.LRDestory();
     }
 
@@ -1576,7 +1581,6 @@ public class AI : MonoBehaviour
     public void PutRifle()
     {
         Rifle.SetActive(false);
-        Am.Play("RunToMelee");
     }
     public void GrabRifle()
     {
@@ -1686,33 +1690,50 @@ public class AI : MonoBehaviour
                 break;
             }
         }
-        PreAttakeIdle = Heal;
+
         ResetBool();
+        Am.Play("Heal");
+
         Target = Cha;
-        ChangeTarget = true;
+        transform.forward = Target.transform.position - transform.position;
     }
 
     protected void Heal()
     {
-        if (ChangeTarget)
-        { 
-            FaceTarget();
-        }
-        else
+        Target.Cha.HP += 3;
+        if (Target.Cha.HP > Target.Cha.MaxHP)
         {
-            //am.settrigger(
+            Target.Cha.HP = Target.Cha.MaxHP;
         }
+        UI.HpControl(Target, Target.Cha.HP);
     }
 
 
 
 
-
-
-
-
-
-
+    public void PreCooperation(AI Cha)
+    {
+        foreach (var Skill in Skills)
+        {
+            if (Skill.Name == "Cooperation")
+            {
+                Skill.EnterCD();
+                AP -= Skill.AP;
+                break;
+            }
+        }
+        ResetBool();
+        Am.Play("Point");
+        RemoveVisitedTiles();//重置Tile狀態
+        Target = Cha;
+        transform.forward = Target.transform.position - transform.position;
+    }
+    public void Cooperation()
+    {
+        Target.AP += 1;
+        UI.TurnCha = Target;
+        UI.PlayerStartTurn();
+    }
 
     protected void EndTurn()
     {
@@ -1735,6 +1756,7 @@ public class AI : MonoBehaviour
             }
         }
         AttakeableList.Clear();
+        UI.CheckEvent();
         Turn = false;
     }
 
@@ -1816,6 +1838,17 @@ public class AI : MonoBehaviour
     }
 
 
+    public void PreBomb()
+    {
+        Am.SetTrigger("Bomb");
+        transform.forward = Vector3.right;
+    }
+    public void Bomb()
+    {
+        UI.Bomb_button();
+        ResetBool();
+        EndTurn();
+    }
 
 
 
@@ -1988,10 +2021,10 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        float i = 8 / (MinDis + 1);
-        if (i > 4)
+        float i = 9 / (MinDis);
+        if (i > 3)
         {
-            Point += 2;
+            Point += 3;
         }
         else
         {

@@ -31,7 +31,7 @@ public class Cooperation : MonoBehaviour , ISkill
 
     public bool CheckUseable(AI Target)
     {
-        if (CDCount > 0 && RoundSysytem.GetInstance().Humans.Count > 1)
+        if (CDCount > 0 || RoundSysytem.GetInstance().Humans.Count < 2)
         {
             return false;
         }

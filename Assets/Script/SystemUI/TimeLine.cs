@@ -104,11 +104,11 @@ public class TimeLine : MonoBehaviour
             }
             if (Cha.Cha.camp == Character.Camp.Alien)
             {
-                newlogo = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy"+Cha.name)).GetComponent<LogoScript>();
+                newlogo = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy"+Cha.name+"Logo")).GetComponent<LogoScript>();
             }
             else
             {
-                newlogo = Instantiate<GameObject>(Resources.Load<GameObject>(Cha.name)).GetComponent<LogoScript>();
+                newlogo = Instantiate<GameObject>(Resources.Load<GameObject>(Cha.name+"Logo")).GetComponent<LogoScript>();
             }
             newlogo.transform.SetParent(transform, false);
             newlogo.GetComponent<RectTransform>().anchoredPosition = new Vector2(140, -50 - 110 * i);
