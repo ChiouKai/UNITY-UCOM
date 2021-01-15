@@ -1708,6 +1708,7 @@ public class AI : MonoBehaviour
 
     protected void EndTurn()
     {
+        Target = null;
         UI.per_but = false; //我方切換子彈預設為關
         NPC_Prefire = false;
         UI.MoveCam.att_cam_bool = false;
