@@ -772,9 +772,11 @@ public class UISystem : MonoBehaviour
         m_Roundsystem.EndChecked = false;
         TurnRun = null;
     }
+
+    //每回合檢查
     public void CheckEvent()
     {
-        if (TrueTunCha != null)
+        if (TrueTunCha != null)//指揮技能有關，可無視
         {
             TurnCha = TrueTunCha;
             TrueTunCha = null;
@@ -784,7 +786,10 @@ public class UISystem : MonoBehaviour
                 PlayerStartTurn();
             }
         }
-
+        if (Humans.Count == 0)
+        {
+            //todo 遊戲結束
+        }
     }
 
 
@@ -897,8 +902,8 @@ public class UISystem : MonoBehaviour
     ISkill[] NewcomeSkills;
     public void NewCome()
     {
-        AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy")).GetComponent<AI>();
-        Enemy.name = "Enemy";
+        AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy2")).GetComponent<AI>();
+        Enemy.name = "Enemy2";
         Newcome = Enemy;
         int i = m_Roundsystem.NewCome(Enemy);
         GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name + "Logo");
@@ -967,6 +972,17 @@ public class UISystem : MonoBehaviour
         m_HP_Bar.Remove(HPBar);
         Destroy(HPBar.gameObject);
     }
+
+    public void CleanGarbage()
+    {
+        Resources.UnloadUnusedAssets();
+        TurnRun = null;
+    }
+
+
+
+
+
 
 
 

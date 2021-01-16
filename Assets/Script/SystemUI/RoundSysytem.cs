@@ -26,7 +26,7 @@ public class RoundSysytem
     public List<AI> Aliens;
     UISystem UI;
     public bool EndChecked = true;
-    public Action Event;
+    public List<Action> EventList;
 
     public void RoundPrepare(List<AI> humans, List<AI> aliens, Move_Camera MC, UISystem ui) //遊戲開始前 抓取每個單位資料
     {
@@ -63,6 +63,7 @@ public class RoundSysytem
         }
         UI.Sequence = Sequence;
         UI.UIAnima = UI.PrepareTimeLine;
+        EventList = new List<Action>();
     }
     public void RoundStart()
     {
@@ -112,16 +113,17 @@ public class RoundSysytem
 
             if (Current.Value.Speed == 99) //回合結束
             {
+                UI.RunUI = UI.CleanGarbage;
                 if (UI.Bomb_start)
                 {
                     UI.Bomb_Round++;
                 }
-
+                NewEvent();//條件觸發則增加Event;
                 while (TimeLine.Instance.Moved != true)
                 {
                     System.Threading.Thread.Sleep(1);
                 }
-                Event?.Invoke();
+                DoEventList();
                 while (TimeLine.Instance.Moved != true|| EndChecked != true)
                 {
                     System.Threading.Thread.Sleep(1);
@@ -139,16 +141,43 @@ public class RoundSysytem
         }
     }
 
+    
+    public void DoEventList()
+    {
+        foreach(var Event in EventList)
+        {
+            Event?.Invoke();
+            while (TimeLine.Instance.Moved != true || EndChecked != true)
+            {
+                System.Threading.Thread.Sleep(1);
+            }
+        }
+    }
     public void testevent()
     {
-        
-        Event = () => 
+        Action Event = () => 
         { 
             EndChecked = false;
             UI.TurnRun = UI.NewCome;
             Event = null;
         };
+        EventList.Add(Event);
     }
+    public void NewEvent()
+    {
+        if (Aliens.Count < 2)
+        {
+            Action Event = () =>
+            {
+                EndChecked = false;
+                UI.TurnRun = UI.NewCome;
+                Event = null;
+            };
+            EventList.Add(Event);
+        }
+    }
+
+
 
     void InsertCha((AI Chr, int speed) obj)//回合前排順序
     {
