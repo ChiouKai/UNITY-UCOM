@@ -366,7 +366,7 @@ public class UISystem : MonoBehaviour
                     GameObject GLR = Instantiate(LR);
                     LineRenderer color = GLR.GetComponent<LineRenderer>();
                     color.positionCount = 2;
-                    Vector3 middle = T.transform.position + div / 2 + Vector3.up * 0.05f;
+                    Vector3 middle = T.transform.position + div / 2 + Vector3.up * 0.1f;
                     if (T.transform.rotation != Quaternion.Euler(90, 0, 0))
                     {
                         if (TurnCha.FindDirection(div) % 2 == 0)

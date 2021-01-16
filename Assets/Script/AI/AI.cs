@@ -1267,7 +1267,7 @@ public class AI : MonoBehaviour
         {
             TargetDir = AttackPoint - CurrentTile.transform.position;
             TargetDir.y = 0;
-            if (Vector3.Dot(transform.forward, TargetDir.normalized) > 0.98f)
+            if (Vector3.Dot(transform.forward, TargetDir.normalized) > 0.97f)
             {
                 Am.SetBool("Aim", true);
                 transform.forward = TargetDir;
@@ -1281,7 +1281,6 @@ public class AI : MonoBehaviour
                     PreAttack = false;
                     StartCoroutine(FireWait());
                 }
-
             }
             else 
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.08f);
@@ -1335,14 +1334,7 @@ public class AI : MonoBehaviour
                 //}
                 //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
             }
-            //else if (Am.GetBool("Turn")&&!stateinfo.IsName("RunToAttack"))
-            //{
-            //    if (stateinfo.normalizedTime > 0.9f)
-            //    {
-            //        Am.SetBool("Aim", true);
-            //        Am.SetBool("Turn", false);
-            //    }
-            //}
+
             else if(stateinfo.IsName("LeftToAttack")|| stateinfo.IsName("RightToAttack")&&!Am.GetBool("Aim"))
             {
                 if ((transform.position - AttackPosition).magnitude < 0.1f)
@@ -1352,7 +1344,6 @@ public class AI : MonoBehaviour
                     Am.SetBool("Run", false);
                     Am.SetBool("Aim", true);
                     transform.forward = TargetDir;
-
                 }
                 else
                 {
@@ -1416,13 +1407,13 @@ public class AI : MonoBehaviour
                 if (Physics.Raycast(ShotPoint, (Target.transform.position
                     + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f))) - ShotPoint,out RH))
                 {
-                    if (RH.collider.tag == "En")
+                    if (RH.collider.tag == "En" || RH.collider.tag == "Wall")
                     {
                         AttackPoint = RH.point;
 
-                        var RHObsetacle = RH.transform.GetComponent<Obstacle>();
-                        if (RHObsetacle != null)
-                            RHObsetacle.TakeDamage(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
+                        //var RHObsetacle = RH.transform.GetComponent<Obstacle>();
+                        //if (RHObsetacle != null)
+                            //RHObsetacle.TakeDamage(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
                         break;
                     }
                 }
@@ -1657,6 +1648,7 @@ public class AI : MonoBehaviour
         }
         else
         {
+            Miss = false;
             Moving = false;
             Attack = false;
             Target.BeDamaged(3);
@@ -2029,10 +2021,10 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        float i = 6 / (MinDis);
-        if (i > 3)
+        float i = 8 / (MinDis);
+        if (i > 4)
         {
-            Point += 3;
+            Point += 4;
         }
         else
         {
@@ -2249,9 +2241,9 @@ public class AI : MonoBehaviour
                     {
                         AttackPoint = RH.point;
 
-                        var RHObsetacle = RH.transform.GetComponent<Obstacle>();
-                        if (RHObsetacle != null)
-                            RHObsetacle.TakeDamage(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
+                        //var RHObsetacle = RH.transform.GetComponent<Obstacle>();
+                        //if (RHObsetacle != null)
+                            //RHObsetacle.TakeDamage(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
                         break;
                     }
                 }
