@@ -1820,7 +1820,7 @@ public class AI : MonoBehaviour
         Gun.bullet = Gun.MaxBullet;
         AP -= 1;
         Am.SetTrigger("Reload");
-
+        RemoveVisitedTiles();
         StartCoroutine( WaitNextAction());
     }
     protected IEnumerator WaitNextAction()
@@ -1841,6 +1841,14 @@ public class AI : MonoBehaviour
     public void PreBomb()
     {
         Am.SetTrigger("Bomb");
+        //transform.forward = Direction(3);
+        RemoveVisitedTiles();
+        UI.LRDestory();
+        StartCoroutine(ForwardToBomb());
+    }
+    IEnumerator ForwardToBomb()
+    {
+        yield return new WaitForSeconds(0.1f);
         transform.forward = Vector3.right;
     }
     public void Bomb()
@@ -1918,8 +1926,8 @@ public class AI : MonoBehaviour
     protected virtual void PreMove()
     {
         MoveToTile(BestT);
-        Am.SetBool("Run", true);
         ResetBool();
+        Am.SetBool("Run", true);
         Idle = NoCover;
         Moving = true;
         RemoveVisitedTiles();//重置Tile狀態
@@ -2021,7 +2029,7 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        float i = 9 / (MinDis);
+        float i = 6 / (MinDis);
         if (i > 3)
         {
             Point += 3;

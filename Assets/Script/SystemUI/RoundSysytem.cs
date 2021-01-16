@@ -87,6 +87,8 @@ public class RoundSysytem
             if (TurnCha.Cha.camp == 0)
             {
                 TurnCha.AP = 2;
+
+                TurnCha.Turn = true;
                 TurnCha.CountCD();
                 UI.TurnRun = UI.PlayerStartTurn;
             }

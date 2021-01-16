@@ -213,7 +213,6 @@ public class UISystem : MonoBehaviour
 
     public void PlayerStartTurn()
     {
-        TurnCha.Turn = true;
         TurnCha.MoveRange();
         TurnCha.AttakeableDetect();
         ShowAttackableButton();
@@ -703,6 +702,7 @@ public class UISystem : MonoBehaviour
         TurnCha.PreHeal(HealTarget.Value);
         DestroyADPButton();
         DestroySkillButton();
+        LRDestory();
         TurnRun = null;
     }
 
@@ -784,27 +784,29 @@ public class UISystem : MonoBehaviour
 
     public void PreBomb()
     {
-        if (TurnCha.HealList.Count == 0)
-        {
-            return;
-        }
+        //if (TurnCha.HealList.Count == 0)
+        //{
+        //    return;
+        //}
         Prepera = false;
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
-        
+        MoveCam.ChaTurn(TurnCha);
         ButtonText.text = "引爆";
         DescribeText.text = "啟動電腦自爆程式。";
         LeftText.text = "";
         RightText.text = "";
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Bomb());
-        TurnRun = null;
+        TurnRun = Canceal;
     }
     private void Bomb()
     {
         TurnCha.PreBomb();
         DestroyADPButton();
         DestroySkillButton();
+        LRDestory();
+        TurnRun = null;
     }
 
 
