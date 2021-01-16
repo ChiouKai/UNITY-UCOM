@@ -1405,7 +1405,7 @@ public class AI : MonoBehaviour
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (Target.transform.position
-                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f), Random.Range(-0.67f, 0.67f))) - ShotPoint,out RH))
+                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f))) - ShotPoint,out RH))
                 {
                     if (RH.collider.tag == "En" || RH.collider.tag == "Wall")
                     {
@@ -1836,11 +1836,9 @@ public class AI : MonoBehaviour
         //transform.forward = Direction(3);
         RemoveVisitedTiles();
         UI.LRDestory();
-        StartCoroutine(ForwardToBomb());
     }
-    IEnumerator ForwardToBomb()
+    public void ForwardToBomb()
     {
-        yield return new WaitForSeconds(0.1f);
         transform.forward = Vector3.right;
     }
     public void Bomb()
@@ -2235,7 +2233,7 @@ public class AI : MonoBehaviour
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (AttakeTarget.Item1.transform.position
-                    + new Vector3(Random.Range(-1f, 1f), Random.Range(-0.67f, 0.67f), Random.Range(-1f, 1f))) - ShotPoint, out RH))
+                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f))) - ShotPoint, out RH))
                 {
                     if (RH.collider.tag == "En"|| RH.collider.tag =="Wall" )
                     {

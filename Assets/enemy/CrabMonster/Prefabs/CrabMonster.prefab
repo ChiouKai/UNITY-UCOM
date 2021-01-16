@@ -4013,7 +4013,7 @@ Transform:
   m_GameObject: {fileID: 1923844301298724}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.4, y: 0.6, z: 0.4}
   m_Children:
   - {fileID: 4234121403294674}
   - {fileID: 4189193232110286}
@@ -4032,7 +4032,7 @@ Animator:
   m_GameObject: {fileID: 1923844301298724}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 5779b1a41ccf45b45bfc238034373133, type: 3}
-  m_Controller: {fileID: 9100000, guid: 62f12fab7442c5b40bb95b8331dd9001, type: 2}
+  m_Controller: {fileID: 9100000, guid: a4337352440d9a645802b6de56846d9c, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -4053,32 +4053,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab8914bfe39c9ad4f916fe1e4cc5f11d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Am: {fileID: 0}
-  enemy: {fileID: 0}
   Cha: {fileID: 0}
-  AP: 0
-  AmTurn: 0
-  VisitedTiles: []
   CurrentTile: {fileID: 0}
-  Turn: 0
-  Moving: 0
-  Running: 0
   MoveSpeed: 4
-  End: 0
-  Heading: {x: 0, y: 0, z: 0}
-  UI: {fileID: 0}
-  Prepera: 0
-  Gun: {fileID: 0}
-  PreAttack: 0
-  Attack: 0
-  ChangeTarget: 0
-  Target: {fileID: 0}
   FirePoint: {fileID: 0}
   Bullet: {fileID: 0}
   BeAttakePoint: {fileID: 402724848175036054}
-  BeAimed: 0
-  NPCPreaera: 0
-  NPC_Prefire: 0
+  Rifle: {fileID: 0}
+  Knife: {fileID: 0}
 --- !u!114 &7154555018010834703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4096,6 +4078,8 @@ MonoBehaviour:
   Mobility: 6
   Speed: 7
   BasicAim: 100
+  Energy: 0
+  MaxEnergy: 0
   camp: 1
   type: 1
 --- !u!114 &5480942384249066731
@@ -4755,7 +4739,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1956968327794809616}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.081, y: 1.526, z: 0.714}
+  m_LocalPosition: {x: -0.081, y: 1.934, z: 0.714}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4337506518477218}
@@ -4786,5 +4770,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.72, y: 1.72, z: 0.71}
-  m_Center: {x: 0, y: 0, z: -0.33}
+  m_Size: {x: 0.72, y: 1.75, z: 0.71}
+  m_Center: {x: 0, y: -0.28, z: -0.33}

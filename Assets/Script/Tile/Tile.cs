@@ -82,7 +82,7 @@ public class Tile : MonoBehaviour
     public void Reset()
     {
         //adjacencyList.Clear();
-        GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
+        //GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
         target = false;
         selectable = false;
 

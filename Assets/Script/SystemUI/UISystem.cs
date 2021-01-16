@@ -139,14 +139,21 @@ public class UISystem : MonoBehaviour
         //}
         //else
         //{
-           MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.06f;
+           MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
            MouseOnTile.GetComponent<Renderer>().enabled = true;
         //}
         if (T.selectable && TurnCha.Moving != true)
         {
             ShowPredictAttable(T);
             var path = TurnCha.MoveToTile(T);
-            DrawHeadingLine(path);
+            if (T.distance > TurnCha.Cha.Mobility)
+            {
+                DrawHeadingLine(path,Yellow);
+            }
+            else
+            {
+                DrawHeadingLine(path, Blue);
+            }
             Prepera = true;
         }
 
@@ -446,9 +453,9 @@ public class UISystem : MonoBehaviour
         }
     }
 
-    public void DrawHeadingLine(Stack<(Tile, AI.MoveWay)> path)//畫移動路徑線
+    public void DrawHeadingLine(Stack<(Tile, AI.MoveWay)> path,GameObject Color)//畫移動路徑線
     {
-        GLR = Instantiate(Blue);
+        GLR = Instantiate(Color);
         LineRenderer LR = GLR.GetComponent<LineRenderer>();
         LR.positionCount = path.Count;
         int Count = 0;
