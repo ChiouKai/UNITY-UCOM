@@ -19,6 +19,7 @@ public class Move_Camera : MonoBehaviour
     //bool rot_cam = false; //旋轉攝影機
     public GameObject Enemy_star;
     public GameObject Our_star;
+    public GameObject Now_man;
     public Material[] enstar;
     public Material[] ourstar;
     public float cam_dis;
@@ -71,7 +72,7 @@ public class Move_Camera : MonoBehaviour
                     if (i >= enstar.Length) i = 0;
                 }
                 b.material = enstar[i];
-
+                Now_man.transform.position = Target.transform.position + new Vector3(0, 3f, 0);
                 Enemy_star.transform.position = Target.transform.position + new Vector3(0, 0.05f, 0);
             }
             if (Target.tag == "Human")
@@ -87,6 +88,7 @@ public class Move_Camera : MonoBehaviour
                 b.material = ourstar[i];
                 Enemy_star.SetActive(false);
                 Our_star.SetActive(true);
+                Now_man.transform.position = Target.transform.position + new Vector3(0, 3f, 0);
                 Our_star.transform.position = Target.transform.position + new Vector3(0, 0.05f, 0);
             }
             if (att_cam_bool == false)
