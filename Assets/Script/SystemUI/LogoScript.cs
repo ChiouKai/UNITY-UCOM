@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class LogoScript : MonoBehaviour
 {
     public Vector2 InsertLocation, LeaveLocation;
@@ -35,7 +36,7 @@ public class LogoScript : MonoBehaviour
 
     }
 
-    public void LogoUP()
+    public void LogoMove()
     {
         if ((RT.anchoredPosition - InsertLocation).magnitude > 0.5f)
         {

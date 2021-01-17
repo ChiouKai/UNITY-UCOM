@@ -152,6 +152,7 @@ public class RoundSysytem
                 System.Threading.Thread.Sleep(1);
             }
         }
+        EventList.Clear();
     }
     public void testevent()
     {

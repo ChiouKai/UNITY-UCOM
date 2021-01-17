@@ -40,7 +40,28 @@ public class TimeLine : MonoBehaviour
         LogoList.AddLast(logo);
         LogoDic.Add(Cha, logo);
     }
+    public void NewComeLogo(AI Cha, GameObject Logo, int Count)
+    {
+        LogoScript logo = Instantiate<GameObject>(Logo).GetComponent<LogoScript>();
+        logo.transform.SetParent(transform, false);
+        logo.GetComponent<RectTransform>().anchoredPosition = new Vector2(140, -50 - 110 * Count);
+        var Current = LogoList.First;
+        for(int i = 0; i < Count; ++i)
+        {
+            Current = Current.Next;
+        }
+        LogoList.AddBefore(Current, logo);
+        LogoDic.Add(Cha, logo);
+        while (Current != null)
+        {
+            logo = Current.Value;
+            logo.InsertLocation += new Vector2(0, -110);
+            logo.LogoUpdate = logo.LogoMove;
+            Current = Current.Next;
+        }
 
+
+    }
 
     public void TEndLogo(AI Cha, int Count)
     {
@@ -62,7 +83,7 @@ public class TimeLine : MonoBehaviour
         {
             logo = Current.Value;
             logo.InsertLocation += new Vector2(0, 110);
-            logo.LogoUpdate = logo.LogoUP;
+            logo.LogoUpdate = logo.LogoMove;
             Current = Current.Next;
         }
 
@@ -79,7 +100,7 @@ public class TimeLine : MonoBehaviour
             {
                 logo = Current.Value;
                 logo.InsertLocation += new Vector2(0, 110);
-                logo.LogoUpdate = logo.LogoUP;
+                logo.LogoUpdate = logo.LogoMove;
                 Current = Current.Next;
             }
         }

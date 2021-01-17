@@ -46,14 +46,21 @@ public class HumanAI : AI
         if (!BeAimed)
         {
             float MinDis = 99f;
-            foreach (AI EnCha in Enemies)
+            if (Enemies.Count > 0)
             {
-                float dis = (EnCha.transform.position - transform.position).magnitude;
-                if (dis < MinDis)
+                foreach (AI EnCha in Enemies)//
                 {
-                    MinDis = dis;
-                    enemy = EnCha.transform;
+                    float dis = (EnCha.transform.position - transform.position).magnitude;
+                    if (dis < MinDis)
+                    {
+                        MinDis = dis;
+                        enemy = EnCha.transform;
+                    }
                 }
+            }
+            else
+            {
+                enemy = null;
             }
         }
     }

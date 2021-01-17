@@ -19,6 +19,7 @@ public class CrabAI : AI
         EnemyLayer = 1 << 11;
         Enemies = RoundSysytem.GetInstance().Humans;
         Skills = GetComponents<ISkill>();
+        Idle = NoCover;
     }
 
     // Update is called once per frame
@@ -28,7 +29,7 @@ public class CrabAI : AI
 
         if (!Turn)
         {
-            NoCover();
+            Idle();
         }
         else if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
         {
@@ -36,7 +37,7 @@ public class CrabAI : AI
             {
                 Melee();
             }
-            else 
+            else
             {
                 Move2();
             }
@@ -71,7 +72,7 @@ public class CrabAI : AI
             Ediv = (enemy.position - transform.position).normalized;
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Ediv), 0.05f);
             float FoB = Vector3.Dot(transform.forward, Ediv);
-            if (FoB > 0.99f) 
+            if (FoB > 0.99f)
             {
                 transform.forward = Ediv;
                 Am.SetBool("Turn", false);
@@ -93,7 +94,7 @@ public class CrabAI : AI
             {
                 return;
             }
-            else 
+            else
             {
                 Am.SetBool("Turn", true);
                 AmTurn = true;
@@ -109,7 +110,7 @@ public class CrabAI : AI
         //BFS 寬度優先使用Queue
         BestPoint = 0;
         Queue<Tile> Process = new Queue<Tile>();
-        if (CalPointAction(CurrentTile)) 
+        if (CalPointAction(CurrentTile))
         {
             return;
         }
@@ -160,11 +161,11 @@ public class CrabAI : AI
         Vector3 Location = T.transform.position;
 
         float MinDis = 99;
-        
+
         foreach (AI enemy in Enemies)
         {
             Vector3 Edir = enemy.transform.position - Location;
-            
+
             if (MinDis > Edir.magnitude)
             {
                 MinDis = Edir.magnitude;
@@ -181,9 +182,9 @@ public class CrabAI : AI
         }
         //可用能力巡一遍，選擇得分高的能力 再拿出來加分
         float SecPoint = 0;
-        for (i = 0; i < 4; ++i) 
+        for (i = 0; i < 4; ++i)
         {
-            if (T.AdjList[i].Cha != null && EnemyLayer != T.AdjList[i].Cha.EnemyLayer) 
+            if (T.AdjList[i].Cha != null && EnemyLayer != T.AdjList[i].Cha.EnemyLayer)
             {
                 Target = T.AdjList[i].Cha;
                 SecPoint += 3;
@@ -211,7 +212,7 @@ public class CrabAI : AI
         {
             DoActing = PreMelee2;
         }
-        else 
+        else
         {
             DoActing = PreMove;
         }
@@ -318,7 +319,7 @@ public class CrabAI : AI
         else
         {
             Target.BeDamaged(3);
-            Am.SetBool("Run",false);
+            Am.SetBool("Run", false);
             Vector3 TargetDir = Target.transform.position - transform.position;
             TargetDir.y = 0;
             transform.forward = TargetDir;
@@ -333,7 +334,7 @@ public class CrabAI : AI
     {
         yield return new WaitForSeconds(0.5f);
         Target.Hurt(transform.forward);
-        UI.status("Demage",this);
+        UI.status("Demage", this);
         yield return new WaitForSeconds(1f);//
         EndTurn();
     }
@@ -354,6 +355,29 @@ public class CrabAI : AI
             Am.SetBool("Turn", false);
             AmTurn = false;
             Am.Play("Hurt");
+        }
+    }
+    protected override void AIDeath()
+    {
+        OutCurrentTile();
+        Am.Play("Death");
+        RoundSysytem.GetInstance().DeathKick(this);
+        TimeLine.Instance.Moved = false;
+        UI.DeathKick(this);
+        Destroy(GetComponent<EPOOutline.Outlinable>());
+        Destroy(Cha);
+        Idle = DeathIdle;
+    }
+    private void DeathIdle()
+    {
+        transform.Rotate(transform.right, -50f * Time.deltaTime);
+        if (transform.position.y < 1f)
+        {
+            transform.position += Vector3.up * Time.deltaTime;
+        }
+        if (transform.rotation.eulerAngles.x < 180f)
+        {
+            Destroy(this);
         }
     }
 }

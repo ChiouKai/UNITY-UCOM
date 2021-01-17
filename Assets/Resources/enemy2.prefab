@@ -601,7 +601,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac28dc84127cd2240b6907061310fa73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cha: {fileID: 0}
+  Cha: {fileID: 4601679437271865934}
   CurrentTile: {fileID: 0}
   MoveSpeed: 4
   FirePoint: {fileID: 9018965238496134339}

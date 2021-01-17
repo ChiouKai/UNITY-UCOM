@@ -32,6 +32,7 @@ public class AI : MonoBehaviour
             {
                 return;
             }
+            TileCount = FindDirection(transform.forward);
             transform.forward = Direction(TileCount);
             Ediv = (enemy.position - transform.position).normalized;
             float FoB = Vector3.Dot(transform.forward, Ediv);
@@ -136,6 +137,10 @@ public class AI : MonoBehaviour
     {
         if (!AmTurn && stateinfo.IsName("Crouch"))//
         {
+            if (enemy == null)
+            {
+                return;
+            }
             Ediv = (enemy.position - transform.position).normalized;
             int EDir = FindDirection(Ediv);
             float CFoB = Vector3.Dot(Direction(TileCount), Ediv);
@@ -237,6 +242,10 @@ public class AI : MonoBehaviour
         if (stateinfo.IsName("LeftCover")|| stateinfo.IsName("RightCover")|| stateinfo.IsName("Idle"))
         {
             transform.forward = Direction(TileCount);
+            if (enemy == null)
+            {
+                return;
+            }
             Ediv = (enemy.position - transform.position).normalized;
             Vector3 CDir = Direction(TileCount);
             float CFoB = Vector3.Dot(CDir, Ediv);
@@ -751,7 +760,10 @@ public class AI : MonoBehaviour
     }
     public void RemoveVisitedTiles()
     {
-
+        if (VisitedTiles.Count == 0)
+        {
+            return;
+        }
         foreach (Tile tile in VisitedTiles)
         {
             tile.Reset();
@@ -1221,7 +1233,7 @@ public class AI : MonoBehaviour
             }
         }
 
-         if (stateinfo.IsName("RightTurn") || stateinfo.IsName("LeftTurn")&& Am.GetBool("Turn"))
+         if ( (stateinfo.IsName("RightTurn") || stateinfo.IsName("LeftTurn"))&& Am.GetBool("Turn"))
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.03f);
         }
@@ -1335,7 +1347,7 @@ public class AI : MonoBehaviour
                 //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(TargetDir), 0.05f);
             }
 
-            else if(stateinfo.IsName("LeftToAttack")|| stateinfo.IsName("RightToAttack")&&!Am.GetBool("Aim"))
+            else if(!Am.GetBool("Aim")&& (stateinfo.IsName("LeftToAttack")|| stateinfo.IsName("RightToAttack")))
             {
                 if ((transform.position - AttackPosition).magnitude < 0.1f)
                 {
@@ -1453,6 +1465,7 @@ public class AI : MonoBehaviour
         ActionName = "Fire";
     }
 
+    public ParticleSystem FireLight;
     public void FireBullet()
     {
         GameObject B = Instantiate(Bullet,FirePoint.transform.position,Quaternion.identity);
@@ -1467,6 +1480,10 @@ public class AI : MonoBehaviour
             B.GetComponent<bullet>().SetAttackPoint(FirePoint.position, Target.BeAttakePoint.position);
         }
         B.transform.forward = TargetDir;
+        if (FireLight != null)
+        {
+            FireLight.Play();
+        }
         Attack = false;
     }
 
@@ -1564,7 +1581,7 @@ public class AI : MonoBehaviour
         Attack = true;
         Target = MeleeTarget.Value.Item1;
         Am.SetBool("Melee",true);
-
+        MeleeableList.Clear();
         UI.LRDestory();
     }
 
@@ -1651,7 +1668,7 @@ public class AI : MonoBehaviour
             Miss = false;
             Moving = false;
             Attack = false;
-            Target.BeDamaged(3);
+            Target.BeDamaged(4);
             StartCoroutine(FaceMeleeTarget());
         }
     }
@@ -1660,6 +1677,7 @@ public class AI : MonoBehaviour
     {
         yield return new WaitUntil(() => stateinfo.IsName("Armed"));
         Vector3 TargetDir = Target.transform.position - transform.position;
+        TargetDir.y = 0;
         transform.forward = TargetDir;
     }
     protected void EndMelee()
@@ -1698,6 +1716,8 @@ public class AI : MonoBehaviour
             Target.Cha.HP = Target.Cha.MaxHP;
         }
         UI.HpControl(Target, Target.Cha.HP);
+        ResetBool();
+        EndTurn();
     }
 
 
@@ -1762,11 +1782,11 @@ public class AI : MonoBehaviour
         Cha.HP -= damage;//todo ?
         UI.demage = damage;
     }
-    protected void AIDeath()
+    protected virtual void AIDeath()
     {
         if (MindControlAI != null)
         {
-            StartCoroutine(MindControlAI.RecoverMind());
+            UI.TurnRun = () => { StartCoroutine(MindControlAI.RecoverMind()); UI.TurnRun = null; };
         }
         OutCurrentTile();
         Am.Play("Death");
@@ -1775,7 +1795,7 @@ public class AI : MonoBehaviour
         UI.DeathKick(this);
         Destroy(GetComponent<EPOOutline.Outlinable>());
         Destroy(Cha);
-        //Destroy(this);
+        Destroy(this);
     }
 
     public virtual void Hurt(Vector3 dir)
@@ -1832,8 +1852,11 @@ public class AI : MonoBehaviour
 
     public void PreBomb()
     {
+        --AP;
         Am.SetTrigger("Bomb");
-        //transform.forward = Direction(3);
+        AmTurn = true;
+        transform.forward = Vector3.right;
+        TileCount = FindDirection(Vector3.right);
         RemoveVisitedTiles();
         UI.LRDestory();
     }
@@ -1843,9 +1866,9 @@ public class AI : MonoBehaviour
     }
     public void Bomb()
     {
+        AmTurn = false;
         UI.Bomb_button();
-        ResetBool();
-        EndTurn();
+        StartCoroutine(WaitNextAction());
     }
 
 
@@ -1899,12 +1922,14 @@ public class AI : MonoBehaviour
                         }
                     }
                     adjT.distance = TDis + T.distance;
+                    AddVisited(adjT);
+                    adjT.Parent = T;  //visited過的就被設為 parent
                     if (adjT.distance > Cha.Mobility * ap) //移動距離不會超過上限
                     {
                         continue;
                     }
-                    adjT.Parent = T;  //visited過的就被設為 parent
-                    AddVisited(adjT);
+
+
                     CalPointAction(adjT);
                     Process.Enqueue(adjT);
                 }
@@ -2008,11 +2033,11 @@ public class AI : MonoBehaviour
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                Point += 2f;
+                Point += 3f;
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
-                Point += 1f;
+                Point += 2f;
             }
             if (MinDis > Edir.magnitude)
             {

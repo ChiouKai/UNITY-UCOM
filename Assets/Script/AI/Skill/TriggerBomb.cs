@@ -31,7 +31,7 @@ public class TriggerBomb : MonoBehaviour , ISkill
 
     public bool CheckUseable(AI Target)
     {
-        if (ai.CurrentTile!=UISystem.getInstance().BombSite)
+        if (ai.CurrentTile!=UISystem.getInstance().BombSite|| UISystem.getInstance().Bomb_start)
         {
             return false;
         }

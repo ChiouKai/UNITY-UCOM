@@ -18,6 +18,8 @@ public class UISystem : MonoBehaviour
     public Action RunUI;
     public GameObject menu;
     public Tile StartTile;
+    public List<Tile> LeaveTile = new List<Tile>();
+    public List<MeshRenderer> ActionTile = new List<MeshRenderer>();
 
     static public UISystem getInstance()
     {
@@ -49,6 +51,7 @@ public class UISystem : MonoBehaviour
         LRList = new List<GameObject>();
        
         RT = BelowButtonAndText.GetComponent<RectTransform>();
+        JoinActionTile(BombSite);
         Round = new System.Threading.Thread(m_Roundsystem.RoundStart);
     }
 
@@ -59,6 +62,8 @@ public class UISystem : MonoBehaviour
         RunUI?.Invoke();//控制UI
 
         onEscapeKeyed();  //退出選單
+
+
         if (Input.GetKeyDown(KeyCode.P))
         {
             m_Roundsystem.testevent();
@@ -67,6 +72,11 @@ public class UISystem : MonoBehaviour
         {
             TurnCha.Skip();
         }
+        if (ActionTile.Count > 0)
+        {
+            UpdateActionTile();
+        }
+
     }
     private void LateUpdate()
     {
@@ -127,21 +137,42 @@ public class UISystem : MonoBehaviour
         RunUI = null;
     }
 
+    float AlphaValve=0.6f;
+    float AdjustValve = 0.1f;
+    private void UpdateActionTile()
+    {
+        if (AlphaValve > 0.6f)
+        {
+            AdjustValve = -AdjustValve;
+        }
+        else if (AlphaValve < 0.2f)
+        {
+            AdjustValve = -AdjustValve;
+        }
+        AlphaValve += AdjustValve * Time.deltaTime;
+        for(int i = 0; i < ActionTile.Count; ++i)
+        {
+            Color color = ActionTile[i].material.color;
+            color.a = AlphaValve;
+            ActionTile[i].material.color = color;
+        }
+    }
+    public void JoinActionTile(Tile T)
+    {
+        ActionTile.Add(T.GetComponent<MeshRenderer>());
+    }
+    public void LeaveActionTile(Tile T)
+    {
+        ActionTile.Remove(T.GetComponent<MeshRenderer>());
+        T.Recover();
+    }
+
 
 
     public void MouseInTile(Tile T)
     {
-        //if (T.transform.rotation != Quaternion.Euler(90, 0, 0))
-        //{
-        //    //變形
-        //    MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.06f;
-        //    MouseOnTile.GetComponent<Renderer>().enabled = true;
-        //}
-        //else
-        //{
            MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
            MouseOnTile.GetComponent<Renderer>().enabled = true;
-        //}
         if (T.selectable && TurnCha.Moving != true)
         {
             ShowPredictAttable(T);
@@ -318,6 +349,7 @@ public class UISystem : MonoBehaviour
     }
     public void ShowPredictAttable(Tile T)
     {
+        AttPred.Clear();
         AttPred = TurnCha.AttackablePredict(T);
         foreach(AI ai in AttPred)
         {
@@ -336,7 +368,6 @@ public class UISystem : MonoBehaviour
     }
     public void DestroyAPPImage()
     {
-        AttPred.Clear();
         if (APPImageList.Count > 0)
         {
             foreach (GameObject go in APPImageList)
@@ -618,16 +649,18 @@ public class UISystem : MonoBehaviour
         foreach (var T in TurnCha.MeleeableList)
         {
             T.Item2.MeleePos();
+            JoinActionTile(T.Item2);
         }
         MeleeTarget = TurnCha.MeleeableList.First;
         MeleeTarget.Value.Item2.ChoMeleePos();
+        MoveCam.ChaTurn(MeleeTarget.Value.Item1);
         AimTarget.SetActive(true);
         AimPos = MeleeTarget.Value.Item1.BeAttakePoint;
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
         ButtonText.text = "斬殺";
         DescribeText.text = "用長劍攻擊一名在你移動範圍的敵人。";
-        LeftText.text = "傷害：3 ～ 4 ";
+        LeftText.text = "傷害： 4 ";
         RightText.text = "命中率：90 %";
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Melee());
@@ -645,6 +678,7 @@ public class UISystem : MonoBehaviour
                 MeleeTarget = TurnCha.MeleeableList.First;
             }
             MeleeTarget.Value.Item2.ChoMeleePos();
+            MoveCam.ChaTurn(MeleeTarget.Value.Item1);
             AimPos = MeleeTarget.Value.Item1.BeAttakePoint;
         }
         //ifcheckmouse
@@ -652,7 +686,7 @@ public class UISystem : MonoBehaviour
         {
             foreach (var T in TurnCha.MeleeableList)
             {
-                T.Item2.Recover();
+                LeaveActionTile(T.Item2);
             }
             AimTarget.SetActive(false);
             RT.anchoredPosition3D = new Vector3(0, 240, 0);
@@ -663,8 +697,16 @@ public class UISystem : MonoBehaviour
 
     public void Melee()
     {
+        var current = TurnCha.MeleeableList.First;
+        for (int i = 0; i< TurnCha.MeleeableList.Count; ++i)
+        {
+            var T = current.Value;
+            LeaveActionTile(T.Item2);
+            current = current.Next;
+        }
         AimTarget.SetActive(false);
         TurnCha.PreMelee(MeleeTarget);
+        MoveCam.ChaTurn(TurnCha);
         DestroyADPButton();
         DestroySkillButton();
         TurnRun = null;
@@ -679,6 +721,7 @@ public class UISystem : MonoBehaviour
         }
         Prepera = false;
         HealTarget = TurnCha.HealList.First;
+        MoveCam.ChaTurn(HealTarget.Value);
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
         //UI
@@ -700,6 +743,7 @@ public class UISystem : MonoBehaviour
             {
                 HealTarget = TurnCha.HealList.First;
             }
+            MoveCam.ChaTurn(HealTarget.Value);
         }
         Canceal();
     }
@@ -745,13 +789,14 @@ public class UISystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             ++Index;
-            if (Humans[Index] == null)
+            if (Index>Humans.Count-1)
             {
                 Index = 0;
-                if (Humans[Index] == TurnCha)
-                {
-                    ++Index;
-                }
+
+            }
+            if (Humans[Index] == TurnCha)
+            {
+                ++Index;
             }
             AllyTarget = Humans[Index];
             MoveCam.ChaTurn(AllyTarget);
@@ -815,6 +860,7 @@ public class UISystem : MonoBehaviour
     private void Bomb()
     {
         TurnCha.PreBomb();
+
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
@@ -907,7 +953,7 @@ public class UISystem : MonoBehaviour
         Newcome = Enemy;
         int i = m_Roundsystem.NewCome(Enemy);
         GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name + "Logo");
-        TLine.NewLogo(Enemy, ChaLogo, i);
+        TLine.NewComeLogo(Enemy, ChaLogo, i);
         CreateHP_Bar(Enemy, Enemy.Cha.MaxHP, Enemy.Cha.HP);
         Enemy.InCurrentTile(StartTile);
         TurnRun = NewAct;
@@ -976,7 +1022,7 @@ public class UISystem : MonoBehaviour
     public void CleanGarbage()
     {
         Resources.UnloadUnusedAssets();
-        TurnRun = null;
+        RunUI = null;
     }
 
 
@@ -1091,6 +1137,7 @@ public class UISystem : MonoBehaviour
     public Sprite[] mission_Images;
     public void Bomb_button()
     {
+        LeaveActionTile(BombSite);
         Bomb_start = true;
         Debug.Log("安裝炸彈");
         toggle[1].SetActive(true);
