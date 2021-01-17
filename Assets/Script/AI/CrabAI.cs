@@ -31,17 +31,13 @@ public class CrabAI : AI
         {
             Idle();
         }
+        else if (Attack)
+        {
+            Melee();
+        }
         else if (stateinfo.IsName("Run") || stateinfo.IsName("Stop"))
         {
-            if (Attack)
-            {
-                Melee();
-            }
-            else
-            {
-                Move2();
-            }
-
+            Move2();
         }
         else if (NPCPrepera)
         {
@@ -137,12 +133,14 @@ public class CrabAI : AI
                         }
                     }
                     adjT.distance = TDis + T.distance;
+                    adjT.Parent = T;  //visited過的就被設為 parent
+                    AddVisited(adjT);
+
                     if (adjT.distance > Cha.Mobility * ap) //移動距離不會超過上限
                     {
                         continue;
                     }
-                    adjT.Parent = T;  //visited過的就被設為 parent
-                    AddVisited(adjT);
+
                     if (CalPointAction(adjT))
                     {
                         return;
@@ -279,10 +277,14 @@ public class CrabAI : AI
     public override void PreMelee2()
     {
         MoveToTile(BestT);
-        Am.SetBool("Run", true);
+        if (Path.Count != 0)
+        {
+            Am.SetBool("Run", true);
+            Moving = true;
+        }
         AmTurn = false;
         Am.SetBool("Turn", false);
-        Moving = true;
+
         RemoveVisitedTiles();//重置Tile狀態
         OutCurrentTile();
         InCurrentTile(BestT);
@@ -318,7 +320,7 @@ public class CrabAI : AI
         }
         else
         {
-            Target.BeDamaged(3);
+
             Am.SetBool("Run", false);
             Vector3 TargetDir = Target.transform.position - transform.position;
             TargetDir.y = 0;
@@ -333,6 +335,8 @@ public class CrabAI : AI
     protected IEnumerator WaitMelee2()
     {
         yield return new WaitForSeconds(0.5f);
+
+        Target.BeDamaged(3);
         Target.Hurt(transform.forward);
         UI.status("Demage", this);
         yield return new WaitForSeconds(1f);//
@@ -370,14 +374,12 @@ public class CrabAI : AI
     }
     private void DeathIdle()
     {
-        transform.Rotate(transform.right, -50f * Time.deltaTime);
-        if (transform.position.y < 1f)
-        {
-            transform.position += Vector3.up * Time.deltaTime;
-        }
-        if (transform.rotation.eulerAngles.x < 180f)
+
+        transform.localScale = transform.localScale * 0.8f;
+        if (stateinfo.normalizedTime >=1f)
         {
             Destroy(this);
         }
+
     }
 }

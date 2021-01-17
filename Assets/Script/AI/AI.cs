@@ -476,9 +476,7 @@ public class AI : MonoBehaviour
             UI.DrawMRLine(Process,UI.Blue,1.0f);          //畫線
             Process = FindSelectableTiles(Process,2);   //return的是之後畫線要的格子，格子畫好後又會塞給FindSelectableTiles
             UI.DrawMRLine(Process, UI.Yellow,2.0f);
-            Process.Clear();
-            CurrentTile.selectable = false;
-            ArrangeMeleeList();
+
         }
         else if (AP == 1)
         {
@@ -488,10 +486,9 @@ public class AI : MonoBehaviour
             Process = FindSelectableTiles(Process, 1);
             UI.DrawMRLine(Process, UI.Yellow,1.0f);
             Process.Clear();
+        }
             CurrentTile.selectable = false;
             ArrangeMeleeList();
-        }
-
 
     }
     public Queue<Tile> FindSelectableTiles(Queue<Tile> Process, int i)
@@ -1414,6 +1411,7 @@ public class AI : MonoBehaviour
             Miss = true;
             RaycastHit RH;
             Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(FireTarget.location);
+            
             while (true)
             {
                 if (Physics.Raycast(ShotPoint, (Target.transform.position
@@ -1522,7 +1520,6 @@ public class AI : MonoBehaviour
         Am.SetBool(ActionName, false);
         ActionName = null;
         yield return new WaitForSeconds(1f);
-        transform.forward = Direction(TileCount);
         Am.SetBool("Aim", false);
         EndTurn();
         PreAttack = false;
@@ -1653,7 +1650,7 @@ public class AI : MonoBehaviour
                 //Tile center reached
                 if (Path.Count == 1)
                 {
-                    Am.SetBool("Melee", false);
+
                     Am.SetBool("Run", false);
                     Am.Play("RunToStop");
                     OutCurrentTile();
@@ -1668,7 +1665,7 @@ public class AI : MonoBehaviour
             Miss = false;
             Moving = false;
             Attack = false;
-            Target.BeDamaged(4);
+
             StartCoroutine(FaceMeleeTarget());
         }
     }
@@ -1682,11 +1679,13 @@ public class AI : MonoBehaviour
     }
     protected void EndMelee()
     {
+        Am.SetBool("Melee", false);
         ResetBool();
         EndTurn();
     }
     public void Meleeing()
-    {
+    {            
+        Target.BeDamaged(4);
         Target.Hurt(transform.forward);
     }
 
@@ -2533,5 +2532,6 @@ public class AI : MonoBehaviour
             skill.CountCD();
         }
     }
+
 }
 

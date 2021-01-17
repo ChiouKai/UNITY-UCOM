@@ -138,7 +138,7 @@ public class UISystem : MonoBehaviour
     }
 
     float AlphaValve=0.6f;
-    float AdjustValve = 0.1f;
+    float AdjustValve = 0.2f;
     private void UpdateActionTile()
     {
         if (AlphaValve > 0.6f)
@@ -766,7 +766,7 @@ public class UISystem : MonoBehaviour
         Prepera = false;
         Index= 0;
         AllyTarget = Humans[Index];
-        if (Humans[Index] = TurnCha)
+        if (Humans[Index] == TurnCha)
         {
             ++Index;
         }
@@ -797,6 +797,11 @@ public class UISystem : MonoBehaviour
             if (Humans[Index] == TurnCha)
             {
                 ++Index;
+                if (Index > Humans.Count - 1)
+                {
+                    Index = 0;
+
+                }
             }
             AllyTarget = Humans[Index];
             MoveCam.ChaTurn(AllyTarget);
@@ -1041,7 +1046,6 @@ public class UISystem : MonoBehaviour
     public void Attack_camera()
     {
         Vector3 Target_position; //目標點
-        Vector3 sce_cam_pos = MoveCam.scene_camera.transform.position; //攝影機位置
         cam_dir[0] = 0.0f;
         max_dis = 0;
         if (TurnCha.Cha.tag == "Human" && per_but == true)

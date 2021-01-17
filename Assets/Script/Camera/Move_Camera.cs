@@ -104,10 +104,10 @@ public class Move_Camera : MonoBehaviour
                     }
                 }
             }
-            if (att_cam_bool)
-            {
-                US.Attack_camera();
-            }
+            //if (att_cam_bool)
+            //{
+            //    US.Attack_camera();
+            //}
 
         }
 
