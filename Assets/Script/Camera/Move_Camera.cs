@@ -40,8 +40,8 @@ public class Move_Camera : MonoBehaviour
         float fH = Input.GetAxis("Horizontal");
         float fV = Input.GetAxis("Vertical");
         //增加以45度角面向目標
-        US.final_text.text = (7 - US.Bomb_Round).ToString();
-        if (US.Bomb_Round == 5)
+        US.final_text.text = (5 - US.Bomb_Round).ToString();
+        if (US.Bomb_Round == 3)
         {
             US.toggle[2].SetActive(true);
             US.toggle[1].transform.GetChild(1).GetComponent<Text>().color = Color.green;

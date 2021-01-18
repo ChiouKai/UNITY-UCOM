@@ -18,6 +18,8 @@ public class UISystem : MonoBehaviour
     public Action RunUI;
     public GameObject menu;
     public Tile StartTile;
+
+    bool ssstart;
     public List<Tile> LeaveTile = new List<Tile>();
     public List<MeshRenderer> ActionTile = new List<MeshRenderer>();
 
@@ -47,17 +49,46 @@ public class UISystem : MonoBehaviour
         {
             Aliens.Add(GAliens[count].GetComponent<AI>());
         }
-        m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
+        /*將對話寫在這 對話完再執行*/
+        //m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
         LRList = new List<GameObject>();
        
         RT = BelowButtonAndText.GetComponent<RectTransform>();
         JoinActionTile(BombSite);
         Round = new System.Threading.Thread(m_Roundsystem.RoundStart);
+        dialog_01.SetActive(false);
+        b_mission.SetActive(false);
+        dialog_02.SetActive(false);
     }
-
-
+    float time;
+    float time2;
+    bool time_mis = true;
     private void Update()
     {
+        time += Time.deltaTime;
+        if (time_mis)
+        {
+            if (time > 1.5f)
+                dialog_01.SetActive(true);
+            if (time > 2.5f)
+                b_mission.SetActive(true);
+        }
+        
+        if (Bomb_start)
+        {
+            time2 += Time.deltaTime;
+            dialog_02.SetActive(true);
+            if (time2 > 2f)
+            {
+                dialog_02.SetActive(false);
+                Bomb_start = false;
+            }
+        }
+        if (ssstart)
+        {
+            m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
+            ssstart = false;
+        }
         TurnRun?.Invoke();//控制角色UI
         RunUI?.Invoke();//控制UI
 
@@ -1148,7 +1179,7 @@ public class UISystem : MonoBehaviour
         toggle[0].transform.GetChild(1).GetComponent<Text>().color = Color.green;
         toggle[0].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
         explosion.SetActive(true);
-    }
+}
 
     public Tile BombSite;
     public GameObject[] status_UI;
@@ -1190,5 +1221,15 @@ public class UISystem : MonoBehaviour
             Destroy(go, 2f);
         }
         status_bool = false;
+    }
+    public GameObject dialog_01;
+    public GameObject b_mission;
+    public GameObject dialog_02;
+    public void gamestart()
+    {
+        ssstart = true;
+        dialog_01.SetActive(false);
+        b_mission.SetActive(false);
+        time_mis = false;
     }
 }
