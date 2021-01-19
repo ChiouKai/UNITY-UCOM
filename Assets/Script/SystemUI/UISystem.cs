@@ -279,6 +279,7 @@ public class UISystem : MonoBehaviour
     List<GameObject> APPImageList = new List<GameObject>();
     List<Button> SButtonList = new List<Button>();
     AI TrueTunCha = null;
+    public Transform Frame;
 
     public void PlayerStartTurn()
     {
@@ -363,7 +364,7 @@ public class UISystem : MonoBehaviour
             button.transform.SetParent(AttDectPanel);
             AI ai = Attackable.Value.Item1;
 
-            button.onClick.AddListener(() =>ChangeAttakeTargetButton(ai));
+            button.onClick.AddListener(() => { ChangeAttakeTargetButton(ai);Frame.SetParent(button.transform); });
             Attackable = Attackable.Next;
         }     
     }
@@ -583,6 +584,11 @@ public class UISystem : MonoBehaviour
         per_but = true;
         TurnCha.ChangePreAttackIdle();
         TurnCha.ChaChangeTarget(Target.Value.Item1);
+        Index = 0;
+        Frame = Instantiate<GameObject>(Resources.Load<GameObject>("Frame")).transform;
+        Frame.SetParent(ADPButtonList[Index].transform);
+        Frame.localPosition = Vector3.zero;
+
         Target.Value.Item1.BeAim(TurnCha);
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
@@ -614,6 +620,13 @@ public class UISystem : MonoBehaviour
             {
                 Target = TurnCha.AttakeableList.First;
             }
+            ++Index;
+            if (Index >= ADPButtonList.Count)
+            {
+                Index = 0;
+            }
+            Frame.SetParent(ADPButtonList[Index].transform);
+            Frame.localPosition = Vector3.zero;
             MoveCam.att_cam_bool = true;
             AimPos = Target.Value.Item1.BeAttakePoint;
             TurnCha.ChaChangeTarget(Target.Value.Item1);
@@ -629,6 +642,7 @@ public class UISystem : MonoBehaviour
             TurnCha.Target = null;
             MoveCam.att_cam_bool = false;
             TurnRun = CheckMouse;
+            Destroy(Frame.gameObject);
             //StartCoroutine(WaitMove());
             per_but = false;
         }
@@ -640,6 +654,7 @@ public class UISystem : MonoBehaviour
         {
             Target = Target.Next;
         }
+        Destroy(Frame.gameObject);
         AimPos = Target.Value.Item1.BeAttakePoint;
         TurnCha.ChaChangeTarget(Target.Value.Item1);
         LeftText.text = "傷害：" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
@@ -866,6 +881,11 @@ public class UISystem : MonoBehaviour
             {
                 PlayerStartTurn();
             }
+            else
+            {
+                TurnCha.Turn = false;
+                ChaTurnEnd();
+            }
         }
         if (Humans.Count == 0)
         {
@@ -897,6 +917,29 @@ public class UISystem : MonoBehaviour
     {
         TurnCha.PreBomb();
 
+        DestroyADPButton();
+        DestroySkillButton();
+        LRDestory();
+        TurnRun = null;
+    }
+
+    public void PreLeave()
+    {
+        Prepera = false;
+        AttPredictPanel.gameObject.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        MoveCam.ChaTurn(TurnCha);
+        ButtonText.text = "撤離";
+        DescribeText.text = "撤離現場。";
+        LeftText.text = "";
+        RightText.text = "";
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(() => Leave());
+        TurnRun = Canceal;
+    }
+    private void Leave()
+    {
+        TurnCha.Leave();
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
@@ -1034,6 +1077,7 @@ public class UISystem : MonoBehaviour
         createhp bar = Bar.GetComponent<createhp>();
         bar.MaxHP = MaxHP;
         bar.HP = HP;
+        bar.MaxEng = target.Cha.MaxEnergy;
         bar.followedTarget = target.transform; //血條的位置 = 角色的位置
         Bar.transform.SetParent(HPCanvas.transform);
         HPBarDic.Add(target, bar);
@@ -1044,7 +1088,14 @@ public class UISystem : MonoBehaviour
     {
         createhp bar;
         HPBarDic.TryGetValue(Target,out bar);
-        bar.HPControl(valve);
+        if (Target.Cha.MaxEnergy != 0)
+        {
+            bar.HPControl(valve, Target.Cha.Energy);
+        }
+        else
+        {
+            bar.HPControl(valve);
+        }
     }
     public void DestroyHPBar(AI Cha)
     {

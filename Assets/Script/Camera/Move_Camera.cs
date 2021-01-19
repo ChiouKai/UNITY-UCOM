@@ -37,7 +37,6 @@ public class Move_Camera : MonoBehaviour
     }
     private void LateUpdate()
     {
-        Debug.Log(att_cam_bool);
         float fH = Input.GetAxis("Horizontal");
         float fV = Input.GetAxis("Vertical");
         //增加以45度角面向目標
@@ -105,10 +104,10 @@ public class Move_Camera : MonoBehaviour
                     }
                 }
             }
-            if (att_cam_bool)
-            {
-                US.Attack_camera();
-            }
+            //if (att_cam_bool)
+            //{
+            //    US.Attack_camera();
+            //}
 
         }
 

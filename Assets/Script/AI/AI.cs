@@ -729,26 +729,6 @@ public class AI : MonoBehaviour
         }
     }
 
-    void Across()
-    {
-
-    }
-    void Jump()
-    {
-
-    }
-    void Ladder()
-    {
-
-    }
-    void Climbup()
-    {
-
-    }
-    void ClimbDown()
-    {
-
-    }
 
     public void AddVisited(Tile T)
     {
@@ -1685,6 +1665,7 @@ public class AI : MonoBehaviour
     }
     public void Meleeing()
     {            
+
         Target.BeDamaged(4);
         Target.Hurt(transform.forward);
     }
@@ -1702,7 +1683,7 @@ public class AI : MonoBehaviour
 
         ResetBool();
         Am.Play("Heal");
-
+        RemoveVisitedTiles();
         Target = Cha;
         transform.forward = Target.transform.position - transform.position;
     }
@@ -1741,7 +1722,7 @@ public class AI : MonoBehaviour
     }
     public void Cooperation()
     {
-        Target.AP += 1;
+        Target.AP = 1;
         UI.TurnCha = Target;
         UI.PlayerStartTurn();
     }
@@ -1776,7 +1757,7 @@ public class AI : MonoBehaviour
 
     
     
-    public void BeDamaged(int damage)
+    public virtual void BeDamaged(int damage)
     {
         Cha.HP -= damage;//todo ?
         UI.demage = damage;
@@ -1871,7 +1852,14 @@ public class AI : MonoBehaviour
     }
 
 
-
+    public void Leave()
+    {
+        OutCurrentTile();
+        RoundSysytem.GetInstance().DeathKick(this);
+        TimeLine.Instance.Moved = false;
+        UI.DeathKick(this);
+        Destroy(gameObject);
+    }
 
 
 
