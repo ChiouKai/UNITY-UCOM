@@ -51,7 +51,7 @@ public class Leave : MonoBehaviour ,ISkill
         }
         else
         {
-            return UISystem.getInstance().PreFire;
+            return UISystem.getInstance().PreLeave;
         }
     }
 

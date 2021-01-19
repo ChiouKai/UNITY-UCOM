@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/MagicEffectsLightningVol01/Materials.meta
+guid: 6081dd0bd13b6a544a0e7d468ef7679d
+=======
 guid: 7c49d31460d9c7b48b6fbc9c3dc59087
+>>>>>>> d2ae9c91fa172d268307b33501baef56262d8d3f:Assets/PolygonParticles/Materials.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

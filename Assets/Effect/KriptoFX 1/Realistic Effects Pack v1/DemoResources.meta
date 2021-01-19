@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Effect/KriptoFX 1/Realistic Effects Pack v1.meta
+guid: 20c755a510929d440ab016a7320a2780
+=======
 guid: daad997f363fdff478440503e00b9817
+>>>>>>> d2ae9c91fa172d268307b33501baef56262d8d3f:Assets/Effect/KriptoFX 1/Realistic Effects Pack v1/DemoResources.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

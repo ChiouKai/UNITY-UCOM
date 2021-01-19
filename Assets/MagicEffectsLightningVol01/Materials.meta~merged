@@ -1,9 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
+guid: 6081dd0bd13b6a544a0e7d468ef7679d
+=======
 <<<<<<< HEAD:Assets/Effect/KriptoFX 1/Realistic Effects Pack v1/Materials.meta
 guid: a5e36896e66375549a627515c4d8402b
 =======
 guid: 6081dd0bd13b6a544a0e7d468ef7679d
 >>>>>>> d2ae9c91fa172d268307b33501baef56262d8d3f:Assets/MagicEffectsLightningVol01/Materials.meta
+>>>>>>> d2ae9c91fa172d268307b33501baef56262d8d3f
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
