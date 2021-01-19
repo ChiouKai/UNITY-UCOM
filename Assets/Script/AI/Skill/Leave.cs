@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Leave : MonoBehaviour
+public class Leave : MonoBehaviour ,ISkill
 {
     public int AP { get; private set; }
 
@@ -31,7 +31,7 @@ public class Leave : MonoBehaviour
 
     public bool CheckUseable(AI Target)
     {
-        if (ai.CurrentTile==UISystem.getInstance().LeaveTile[0]|| ai.CurrentTile == UISystem.getInstance().LeaveTile[1])//&&bool
+        if (UISystem.getInstance().Bomb_start&&(ai.CurrentTile==UISystem.getInstance().LeaveTile[0]|| ai.CurrentTile == UISystem.getInstance().LeaveTile[1]))
         {
             return true;
         }
@@ -51,7 +51,7 @@ public class Leave : MonoBehaviour
         }
         else
         {
-            return UISystem.getInstance().PreCooperation;
+            return UISystem.getInstance().PreLeave;
         }
     }
 

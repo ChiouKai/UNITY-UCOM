@@ -202,8 +202,8 @@ public class UISystem : MonoBehaviour
 
     public void MouseInTile(Tile T)
     {
-           MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
-           MouseOnTile.GetComponent<Renderer>().enabled = true;
+        MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
+        //MouseOnTile.GetComponent<Renderer>().enabled = true;
         if (T.selectable && TurnCha.Moving != true)
         {
             ShowPredictAttable(T);
@@ -218,11 +218,25 @@ public class UISystem : MonoBehaviour
             }
             Prepera = true;
         }
-
+        for (int i = 0; i < 4; ++i)
+        {
+            if (T.AdjCoverList[i] == Tile.Cover.FullC)
+            {
+                MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("FullCover");
+            }
+            else if(T.AdjCoverList[i] == Tile.Cover.HalfC)
+            {
+                MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("HalfCover");
+            }
+            else
+            {
+                MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("NoCover");
+            }
+        }
     }
     public void MouseOutTile(Tile T)
     {
-        MouseOnTile.GetComponent<Renderer>().enabled = false;
+        //MouseOnTile.GetComponent<Renderer>().enabled = false;
         if (T.selectable && TurnCha.Moving != true)
         {
             DestroyAPPImage();
@@ -279,9 +293,17 @@ public class UISystem : MonoBehaviour
     List<GameObject> APPImageList = new List<GameObject>();
     List<Button> SButtonList = new List<Button>();
     AI TrueTunCha = null;
+    public Transform Frame;
 
     public void PlayerStartTurn()
     {
+        if (TurnCha.Coma)
+        {
+            TurnCha.Wake();
+            StartCoroutine(TurnCha.WaitEndturn());
+        }
+        else
+        {
         TurnCha.MoveRange();
         TurnCha.AttakeableDetect();
         ShowAttackableButton();
@@ -289,6 +311,7 @@ public class UISystem : MonoBehaviour
         RunUI = ShowActionUI;
         TurnRun = CheckMouse;
         MoveCam.ChaTurn(TurnCha);
+        }
     }
     public void EnemyStartTurn()
     {
@@ -363,7 +386,7 @@ public class UISystem : MonoBehaviour
             button.transform.SetParent(AttDectPanel);
             AI ai = Attackable.Value.Item1;
 
-            button.onClick.AddListener(() =>ChangeAttakeTargetButton(ai));
+            button.onClick.AddListener(() => { ChangeAttakeTargetButton(ai);Frame.SetParent(button.transform); });
             Attackable = Attackable.Next;
         }     
     }
@@ -583,6 +606,11 @@ public class UISystem : MonoBehaviour
         per_but = true;
         TurnCha.ChangePreAttackIdle();
         TurnCha.ChaChangeTarget(Target.Value.Item1);
+        Index = 0;
+        Frame = Instantiate<GameObject>(Resources.Load<GameObject>("Frame")).transform;
+        Frame.SetParent(ADPButtonList[Index].transform);
+        Frame.localPosition = Vector3.zero;
+
         Target.Value.Item1.BeAim(TurnCha);
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
@@ -614,7 +642,15 @@ public class UISystem : MonoBehaviour
             {
                 Target = TurnCha.AttakeableList.First;
             }
+            ++Index;
+            if (Index >= ADPButtonList.Count)
+            {
+                Index = 0;
+            }
+            Frame.SetParent(ADPButtonList[Index].transform);
+            Frame.localPosition = Vector3.zero;
             MoveCam.att_cam_bool = true;
+            Target.Value.Item1.BeAim(TurnCha);
             AimPos = Target.Value.Item1.BeAttakePoint;
             TurnCha.ChaChangeTarget(Target.Value.Item1);
             LeftText.text = "傷害:" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
@@ -629,6 +665,7 @@ public class UISystem : MonoBehaviour
             TurnCha.Target = null;
             MoveCam.att_cam_bool = false;
             TurnRun = CheckMouse;
+            Destroy(Frame.gameObject);
             //StartCoroutine(WaitMove());
             per_but = false;
         }
@@ -640,6 +677,7 @@ public class UISystem : MonoBehaviour
         {
             Target = Target.Next;
         }
+        Destroy(Frame.gameObject);
         AimPos = Target.Value.Item1.BeAttakePoint;
         TurnCha.ChaChangeTarget(Target.Value.Item1);
         LeftText.text = "傷害：" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
@@ -870,6 +908,11 @@ public class UISystem : MonoBehaviour
             {
                 PlayerStartTurn();
             }
+            else
+            {
+                TurnCha.Turn = false;
+                ChaTurnEnd();
+            }
         }
         if (Humans.Count == 0)//我方角色全都不再場上時
         {
@@ -915,6 +958,29 @@ public class UISystem : MonoBehaviour
     {
         TurnCha.PreBomb();
 
+        DestroyADPButton();
+        DestroySkillButton();
+        LRDestory();
+        TurnRun = null;
+    }
+
+    public void PreLeave()
+    {
+        Prepera = false;
+        AttPredictPanel.gameObject.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        MoveCam.ChaTurn(TurnCha);
+        ButtonText.text = "撤離";
+        DescribeText.text = "撤離現場。";
+        LeftText.text = "";
+        RightText.text = "";
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(() => Leave());
+        TurnRun = Canceal;
+    }
+    private void Leave()
+    {
+        TurnCha.Leave();
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
@@ -1006,6 +1072,7 @@ public class UISystem : MonoBehaviour
         Enemy.name = "Enemy2";
         Newcome = Enemy;
         int i = m_Roundsystem.NewCome(Enemy);
+        Aliens.Add(Enemy);
         GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name + "Logo");
         TLine.NewComeLogo(Enemy, ChaLogo, i);
         CreateHP_Bar(Enemy, Enemy.Cha.MaxHP, Enemy.Cha.HP);
@@ -1052,6 +1119,7 @@ public class UISystem : MonoBehaviour
         createhp bar = Bar.GetComponent<createhp>();
         bar.MaxHP = MaxHP;
         bar.HP = HP;
+        bar.MaxEng = target.Cha.MaxEnergy;
         bar.followedTarget = target.transform; //血條的位置 = 角色的位置
         Bar.transform.SetParent(HPCanvas.transform);
         HPBarDic.Add(target, bar);
@@ -1062,7 +1130,14 @@ public class UISystem : MonoBehaviour
     {
         createhp bar;
         HPBarDic.TryGetValue(Target,out bar);
-        bar.HPControl(valve);
+        if (Target.Cha.MaxEnergy != 0)
+        {
+            bar.HPControl(valve, Target.Cha.Energy);
+        }
+        else
+        {
+            bar.HPControl(valve);
+        }
     }
     public void DestroyHPBar(AI Cha)
     {
@@ -1200,7 +1275,15 @@ public class UISystem : MonoBehaviour
         toggle[0].transform.GetChild(1).GetComponent<Text>().color = Color.green;
         toggle[0].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
         explosion.SetActive(true);
-}
+    }
+
+    public void StartLeave()
+    {
+        LeaveTile[0].MissionPos();
+        LeaveTile[1].MissionPos();
+        JoinActionTile(LeaveTile[0]);
+        JoinActionTile(LeaveTile[1]);
+    }
 
     public Tile BombSite;
     public GameObject[] status_UI;

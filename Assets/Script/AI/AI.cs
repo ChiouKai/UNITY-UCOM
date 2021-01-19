@@ -729,26 +729,6 @@ public class AI : MonoBehaviour
         }
     }
 
-    void Across()
-    {
-
-    }
-    void Jump()
-    {
-
-    }
-    void Ladder()
-    {
-
-    }
-    void Climbup()
-    {
-
-    }
-    void ClimbDown()
-    {
-
-    }
 
     public void AddVisited(Tile T)
     {
@@ -799,8 +779,10 @@ public class AI : MonoBehaviour
     internal bool BeAimed = false;
     internal LinkedList<(AI, Tile)> MeleeableList = new LinkedList<(AI, Tile)>();
     internal LinkedList<AI> HealList = new LinkedList<AI>();
+    internal LinkedList<AI> ComaList = new LinkedList<AI>();
     public GameObject Rifle;
     public GameObject Knife;
+    internal bool Coma = false;
     public void GetTargets(List<AI> enemy)
     {
         Enemies = enemy;
@@ -1685,6 +1667,7 @@ public class AI : MonoBehaviour
     }
     public void Meleeing()
     {            
+
         Target.BeDamaged(4);
         Target.Hurt(transform.forward);
     }
@@ -1701,15 +1684,26 @@ public class AI : MonoBehaviour
         }
 
         ResetBool();
+        if (Cha == this)
+        {
+            Am.SetTrigger("SelfHeal");
+            Target = this;
+        }
+        else
+        {
         Am.Play("Heal");
-
         Target = Cha;
         transform.forward = Target.transform.position - transform.position;
+        }
+
+        RemoveVisitedTiles();
+
     }
 
-    protected void Heal()
+    public void Heal()
     {
         Target.Cha.HP += 3;
+        Destroy(Instantiate<GameObject>(Resources.Load<GameObject>("HealEffect"), Target.transform.position, Quaternion.identity), 2.0f);
         if (Target.Cha.HP > Target.Cha.MaxHP)
         {
             Target.Cha.HP = Target.Cha.MaxHP;
@@ -1741,7 +1735,7 @@ public class AI : MonoBehaviour
     }
     public void Cooperation()
     {
-        Target.AP += 1;
+        Target.AP = 1;
         UI.TurnCha = Target;
         UI.PlayerStartTurn();
     }
@@ -1776,7 +1770,7 @@ public class AI : MonoBehaviour
 
     
     
-    public void BeDamaged(int damage)
+    public virtual void BeDamaged(int damage)
     {
         Cha.HP -= damage;//todo ?
         UI.demage = damage;
@@ -1788,7 +1782,6 @@ public class AI : MonoBehaviour
             UI.TurnRun = () => { StartCoroutine(MindControlAI.RecoverMind()); UI.TurnRun = null; };
         }
         OutCurrentTile();
-        Am.Play("Death");
         RoundSysytem.GetInstance().DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);
@@ -1804,6 +1797,7 @@ public class AI : MonoBehaviour
         {
             transform.forward = -dir;
             UI.HpControl(this, Cha.HP);
+            Am.Play("Death");
             AIDeath();
         }
         else
@@ -1815,6 +1809,28 @@ public class AI : MonoBehaviour
             Idle = NoCover;
         }
     }
+    public void Hurt2(Vector3 dir)
+    {
+        dir.y = 0;
+        if (Cha.HP <= 0)
+        {
+            transform.forward = -dir;
+            UI.HpControl(this, Cha.HP);
+            Am.Play("Twitch");
+            Am.SetBool("Death",true);
+            AIDeath();
+        }
+        else
+        {
+            transform.forward = -dir;
+            UI.HpControl(this, Cha.HP);
+            ResetBool();
+            Am.Play("Twitch");
+            Idle = NoCover;
+        }
+    }
+
+
 
     public void BeAim(AI Attacker)
     {
@@ -1871,11 +1887,34 @@ public class AI : MonoBehaviour
     }
 
 
+    public void Leave()
+    {
+        OutCurrentTile();
+        RoundSysytem.GetInstance().DeathKick(this);
+        TimeLine.Instance.Moved = false;
+        UI.DeathKick(this);
+        Destroy(gameObject);
+    }
+
+    public void BeComa()
+    {
+        Instantiate<GameObject>(Resources.Load<GameObject>("ComaEffect"),transform.position+ new Vector3(0,1.34f,0),Quaternion.identity).transform.SetParent(transform);  
+    }
+
+    public void Wake()
+    {
+        Coma = false;
+        Am.SetTrigger("Wake");
+        ResetBool();
+    }
 
 
-
-
-
+    public IEnumerator WaitEndturn()
+    {
+        yield return new WaitForSeconds(1f);
+        AP = 0;
+        EndTurn();//todo UI跳過回合
+    }
 
 
 
@@ -2043,10 +2082,10 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        float i = 8 / (MinDis);
-        if (i > 4)
+        float i = 6 / (MinDis);
+        if (i > 3)
         {
-            Point += 4;
+            Point += 3;
         }
         else
         {
@@ -2310,13 +2349,7 @@ public class AI : MonoBehaviour
         DoActing = null;
         NPCPrepera = false;
         AttakeTarget.Item1.BeAim(this);
-        //AP = 0;
-        //AttakeableList.Clear();
-        //UI.LRDestory();
-        //Am.SetBool("Fire", true);
-        //RemoveVisitedTiles();
-        //StartCoroutine(FireWait());
-        //PreAttack = false;
+
     }
 
 
