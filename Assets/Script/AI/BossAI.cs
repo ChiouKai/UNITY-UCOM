@@ -187,8 +187,10 @@ public class BossAI : AI
         }
         else
         {
-            Target.Am.Play("Twitch");
-            //Target.
+            Target.BeDamaged(Random.Range(2, 3));
+            Vector3 dir = Target.transform.position - transform.position;
+            dir.y = 0;
+            Target.Hurt2(dir);
             chain.SetPosition(1, Target.BeAttakePoint.position);
             go2 = Instantiate(Bullet, Target.BeAttakePoint.position, Quaternion.identity);
         }

@@ -202,8 +202,8 @@ public class UISystem : MonoBehaviour
 
     public void MouseInTile(Tile T)
     {
-           MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
-           MouseOnTile.GetComponent<Renderer>().enabled = true;
+        MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
+        //MouseOnTile.GetComponent<Renderer>().enabled = true;
         if (T.selectable && TurnCha.Moving != true)
         {
             ShowPredictAttable(T);
@@ -218,11 +218,25 @@ public class UISystem : MonoBehaviour
             }
             Prepera = true;
         }
-
+        for (int i = 0; i < 4; ++i)
+        {
+            if (T.AdjCoverList[i] == Tile.Cover.FullC)
+            {
+                MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("FullCover");
+            }
+            else if(T.AdjCoverList[i] == Tile.Cover.HalfC)
+            {
+                MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("HalfCover");
+            }
+            else
+            {
+                MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("NoCover");
+            }
+        }
     }
     public void MouseOutTile(Tile T)
     {
-        MouseOnTile.GetComponent<Renderer>().enabled = false;
+        //MouseOnTile.GetComponent<Renderer>().enabled = false;
         if (T.selectable && TurnCha.Moving != true)
         {
             DestroyAPPImage();
@@ -283,6 +297,13 @@ public class UISystem : MonoBehaviour
 
     public void PlayerStartTurn()
     {
+        if (TurnCha.Coma)
+        {
+            TurnCha.Wake();
+            StartCoroutine(TurnCha.WaitEndturn());
+        }
+        else
+        {
         TurnCha.MoveRange();
         TurnCha.AttakeableDetect();
         ShowAttackableButton();
@@ -290,6 +311,7 @@ public class UISystem : MonoBehaviour
         RunUI = ShowActionUI;
         TurnRun = CheckMouse;
         MoveCam.ChaTurn(TurnCha);
+        }
     }
     public void EnemyStartTurn()
     {
@@ -628,6 +650,7 @@ public class UISystem : MonoBehaviour
             Frame.SetParent(ADPButtonList[Index].transform);
             Frame.localPosition = Vector3.zero;
             MoveCam.att_cam_bool = true;
+            Target.Value.Item1.BeAim(TurnCha);
             AimPos = Target.Value.Item1.BeAttakePoint;
             TurnCha.ChaChangeTarget(Target.Value.Item1);
             LeftText.text = "傷害:" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
@@ -1031,6 +1054,7 @@ public class UISystem : MonoBehaviour
         Enemy.name = "Enemy2";
         Newcome = Enemy;
         int i = m_Roundsystem.NewCome(Enemy);
+        Aliens.Add(Enemy);
         GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name + "Logo");
         TLine.NewComeLogo(Enemy, ChaLogo, i);
         CreateHP_Bar(Enemy, Enemy.Cha.MaxHP, Enemy.Cha.HP);
@@ -1230,7 +1254,15 @@ public class UISystem : MonoBehaviour
         toggle[0].transform.GetChild(1).GetComponent<Text>().color = Color.green;
         toggle[0].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
         explosion.SetActive(true);
-}
+    }
+
+    public void StartLeave()
+    {
+        LeaveTile[0].MissionPos();
+        LeaveTile[1].MissionPos();
+        JoinActionTile(LeaveTile[0]);
+        JoinActionTile(LeaveTile[1]);
+    }
 
     public Tile BombSite;
     public GameObject[] status_UI;

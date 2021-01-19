@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Lightning : MonoBehaviour
+public class Lightning : MonoBehaviour, ISkill
 {
     public int AP { get; private set; }
 

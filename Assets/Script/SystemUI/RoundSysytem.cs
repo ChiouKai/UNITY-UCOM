@@ -176,6 +176,16 @@ public class RoundSysytem
             };
             EventList.Add(Event);
         }
+        if (UI.Bomb_Round == 3) 
+        {
+            Action Event = () =>
+            {
+                EndChecked = false;
+                UI.RunUI = UI.StartLeave;
+                Event = null;
+            };
+            EventList.Add(Event);
+        }
     }
 
 

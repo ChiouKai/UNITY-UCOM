@@ -47,6 +47,10 @@ public class Tile : MonoBehaviour
     {
         GetComponent<Renderer>().material = Resources.Load<Material>("ChoMeleePos");
     }
+    public void MissionPos()
+    {
+        GetComponent<Renderer>().material = Resources.Load<Material>("MissionTile");
+    }
     public void Recover()
     {
         GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
@@ -55,6 +59,7 @@ public class Tile : MonoBehaviour
     private void OnMouseEnter()
     {
         UISystem.getInstance().MouseInTile(this);
+
     }
     private void OnMouseExit()
     {
