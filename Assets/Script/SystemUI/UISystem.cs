@@ -912,8 +912,7 @@ public class UISystem : MonoBehaviour
             }
             else
             {
-                TurnCha.Turn = false;
-                ChaTurnEnd();
+                TurnCha.EndTurn();
             }
         }
         if (Humans.Count == 0)//我方角色全都不再場上時

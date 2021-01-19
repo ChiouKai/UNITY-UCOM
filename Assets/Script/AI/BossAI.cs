@@ -201,6 +201,22 @@ public class BossAI : AI
         Destroy(go2, 0.4f);
     }
 
-
+    public override void PreMindControl()
+    {
+        Vector3 pos = new Vector3();
+        foreach(AI target in Enemies)
+        {
+            pos += target.transform.position;
+        }
+        pos = pos / Enemies.Count;
+        TargetDir = pos - transform.position;
+        TargetDir.y = 0;
+        PreAttack = true;
+        NPCPrepera = false;
+        DoActing = MindControl;
+    }
+    public void Ultimate()
+    {
+        }
 
 }

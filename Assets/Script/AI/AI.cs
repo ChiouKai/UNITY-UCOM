@@ -1760,7 +1760,7 @@ public class AI : MonoBehaviour
         UI.PlayerStartTurn();
     }
 
-    protected void EndTurn()
+    public void EndTurn()
     {
         Target = null;
         UI.MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
@@ -2444,7 +2444,7 @@ public class AI : MonoBehaviour
     }
 
 
-    public void PreMindControl ()
+    public virtual void PreMindControl ()
     {
         Target = AttakeTarget.Item1;
         TargetDir = Target.transform.position - transform.position;
