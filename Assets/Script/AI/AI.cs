@@ -1027,7 +1027,7 @@ public class AI : MonoBehaviour
     protected IEnumerator AIWaitPreAtkChange()
     {
         PreAttack = false;
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
         NPCPrepera = true;
         PreAttack = true;
     }
@@ -1095,6 +1095,25 @@ public class AI : MonoBehaviour
             PreAttakeIdle = PreAtkHalfCover;
             ChangeTarget = true;
             Idle = HalfCover;
+            float FoB = Vector3.Dot(transform.forward, TargetDir.normalized);
+            Vector3 LoR = Vector3.Cross(transform.forward, TargetDir);
+            if (!(FoB > 1 / Mathf.Sqrt(2) - 0.01f))
+
+            {
+                if (LoR.y > 0)
+                {
+                    Am.SetBool("Right", true);
+                }
+                else
+                {
+                    Am.SetBool("Left", true);
+                }
+                Am.SetBool("Turn", true);
+            }
+
+
+
+
         }
         else
         {
@@ -2102,7 +2121,7 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        float i = 6 / (MinDis);
+        float i = 12 / (MinDis);
         if (i > 3)
         {
             Point += 3;

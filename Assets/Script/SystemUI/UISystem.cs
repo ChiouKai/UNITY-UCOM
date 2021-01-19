@@ -1327,6 +1327,7 @@ public class UISystem : MonoBehaviour
         LeaveTile[1].MissionPos();
         JoinActionTile(LeaveTile[0]);
         JoinActionTile(LeaveTile[1]);
+        m_Roundsystem.EndChecked = true;
     }
 
     public Tile BombSite;

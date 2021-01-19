@@ -280,8 +280,9 @@ public class CrabAI : AI
         if (Path.Count != 0)
         {
             Am.SetBool("Run", true);
-            Moving = true;
+
         }
+        Moving = true;
         AmTurn = false;
         Am.SetBool("Turn", false);
 
@@ -375,8 +376,8 @@ public class CrabAI : AI
     private void DeathIdle()
     {
 
-        transform.localScale = transform.localScale * 0.8f;
-        if (stateinfo.normalizedTime >=1f)
+        transform.localScale = transform.localScale * 0.85f;
+        if (stateinfo.normalizedTime >=0.9f)
         {
             Destroy(this);
         }
