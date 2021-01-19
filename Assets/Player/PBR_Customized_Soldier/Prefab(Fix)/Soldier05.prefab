@@ -734,6 +734,7 @@ GameObject:
   - component: {fileID: 6617018224542963758}
   - component: {fileID: 4161283741708353477}
   - component: {fileID: -5603266156250117050}
+  - component: {fileID: -3333062908933639276}
   m_Layer: 11
   m_Name: Soldier05
   m_TagString: Human
@@ -1276,6 +1277,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 768e3f913f1c20d4e84b8e88e2d08708, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-3333062908933639276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7647131940062633392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92f4a3826b5011a47a4f1ce88d1cf6d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7647141159591516146
@@ -4648,15 +4661,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2314140968662191469}
   m_PrefabAsset: {fileID: 0}
---- !u!23 &2327411630677824535 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 23039713080498554, guid: 434d3225433cccb4b902688ae47e9726,
-    type: 3}
-  m_PrefabInstance: {fileID: 2314140968662191469}
-  m_PrefabAsset: {fileID: 0}
 --- !u!23 &2326182731809420125 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 23987141250661936, guid: 434d3225433cccb4b902688ae47e9726,
+    type: 3}
+  m_PrefabInstance: {fileID: 2314140968662191469}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2327411630677824535 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 23039713080498554, guid: 434d3225433cccb4b902688ae47e9726,
     type: 3}
   m_PrefabInstance: {fileID: 2314140968662191469}
   m_PrefabAsset: {fileID: 0}

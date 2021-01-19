@@ -972,7 +972,7 @@ public class AI : MonoBehaviour
 
     int CalculateAim(AI Enemy,Vector3 Location)
     {
-        Vector3 div = Location - Enemy.CurrentTile.transform.position;
+        Vector3 div = Location - Enemy.CurrentTile.transform.position; 
         div.y = 0;
         Tile.Cover[] cover;
         float dis = div.magnitude;
@@ -988,7 +988,7 @@ public class AI : MonoBehaviour
             {
                 if (cover[1] == Tile.Cover.FullC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 + (int)(20f * AimAngle / 45f);
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 + (int)(20f * (45f-AimAngle) / 45f);
                 }
                 else if(cover[1] == Tile.Cover.HalfC)
                 {
@@ -996,18 +996,18 @@ public class AI : MonoBehaviour
                 }
                 else
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20 + (int)(10 * AimAngle / 45f);
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20 + (int)(10 * (45f - AimAngle)/ 45f);
                 }
             }
             else
             {
                 if(cover[1] == Tile.Cover.FullC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 + (int)(40f * AimAngle / 45f);
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 40 + (int)(40f * (45f - AimAngle )/ 45f);
                 }
                 else if(cover[1] == Tile.Cover.HalfC)
                 {
-                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20 + (int)(20f * AimAngle / 45f);
+                    return Cha.BasicAim + Gun.atkRange[Mathf.CeilToInt(dis)] - 20 + (int)(20f * (45f - AimAngle) / 45f);
                 }
                 else
                 {
@@ -1691,9 +1691,9 @@ public class AI : MonoBehaviour
         }
         else
         {
-        Am.Play("Heal");
-        Target = Cha;
-        transform.forward = Target.transform.position - transform.position;
+            Am.Play("Heal");
+            Target = Cha;
+            transform.forward = Target.transform.position - transform.position;
         }
 
         RemoveVisitedTiles();
@@ -1818,6 +1818,7 @@ public class AI : MonoBehaviour
             transform.forward = -dir;
             UI.HpControl(this, Cha.HP);
             Am.Play("Twitch");
+            Coma = true;
             Am.SetBool("Death",true);
             AIDeath();
         }
@@ -1826,6 +1827,7 @@ public class AI : MonoBehaviour
             transform.forward = -dir;
             UI.HpControl(this, Cha.HP);
             ResetBool();
+            Coma = true;
             Am.Play("Twitch");
             Idle = NoCover;
         }
@@ -1902,22 +1904,39 @@ public class AI : MonoBehaviour
         Instantiate<GameObject>(Resources.Load<GameObject>("ComaEffect"),transform.position+ new Vector3(0,1.34f,0),Quaternion.identity).transform.SetParent(transform);  
     }
 
-    public void Wake()
+    public void WakeUp()
     {
         Coma = false;
         Am.SetTrigger("Wake");
+        Destroy(transform.Find("ComaEffect(Clone)").gameObject);
         ResetBool();
     }
 
 
     public IEnumerator WaitEndturn()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         AP = 0;
         EndTurn();//todo UI跳過回合
     }
 
+    public void PreWake(AI Cha)
+    {
+        ResetBool();
+        AmTurn = true;
+        Am.SetTrigger("Wake");
+        Target = Cha;
+        transform.forward = Target.transform.position - transform.position;
 
+
+        RemoveVisitedTiles(); 
+    }
+     public void Wake()
+    {
+        AmTurn = false;
+        Target.WakeUp();
+        StartCoroutine(WaitNextAction());
+    }
 
 
 

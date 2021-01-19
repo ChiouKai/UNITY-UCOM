@@ -143,11 +143,26 @@ public class Tile : MonoBehaviour
         Cover[] cover = new Cover[2];
         float angel = Vector3.Angle(Vector3.forward, div.normalized);
         float LoR = Vector3.Cross(Vector3.forward, div).y;
-        if (LoR < 0)
+        if (Mathf.Abs(angel) < 1)
         {
-            if (Mathf.Abs(90f- angel)<1)
+            cover[0] = AdjCoverList[0];
+            cover[1] = Cover.None;
+            AimAngle = 0;
+            return cover;
+        }
+        else if (Mathf.Abs(180f - angel) < 1)
+        {
+            cover[0] = AdjCoverList[2];
+            cover[1] = Cover.None;
+            AimAngle = 0;
+            return cover;
+        }
+        else if (LoR > 0)
+        {
+            angel = 360f - angel;
+            if (Mathf.Abs(270f- angel)<1)
             {
-                cover[0] = AdjCoverList[1];
+                cover[0] = AdjCoverList[3];
                 cover[1] = Cover.None;
                 AimAngle = 0;
                 return cover;
@@ -159,13 +174,13 @@ public class Tile : MonoBehaviour
                 if (i % 2 == 0)
                 {
                     cover[0] = AdjCoverList[j];
-                    cover[1] = AdjCoverList[j + 1];
+                    cover[1] = AdjCoverList[(j+1)%4];
                     AimAngle = (int)angel % 45;
                     return cover;
                 }
                 else
                 {
-                    cover[0] = AdjCoverList[j+1];
+                    cover[0] = AdjCoverList[(j+1)%4];
                     cover[1] = AdjCoverList[j];
                     AimAngle = 90 * (j + 1) - (int)angel;
                     return cover;
@@ -173,11 +188,11 @@ public class Tile : MonoBehaviour
 
             }
         }
-        else if (LoR > 0)
+        else
         {
             if (Mathf.Abs(90f - angel) < 1)
             {
-                cover[0] = AdjCoverList[3];
+                cover[0] = AdjCoverList[1];
                 cover[1] = Cover.None;
                 AimAngle = 0;
                 return cover;
@@ -188,37 +203,19 @@ public class Tile : MonoBehaviour
                 int j = (int)angel / 90;
                 if (i % 2 == 0)
                 {
-                    cover[0] = AdjCoverList[(4 - j) % 4];
-                    cover[1] = AdjCoverList[3 - j];
+                    cover[0] = AdjCoverList[j];
+                    cover[1] = AdjCoverList[j+1];
                     AimAngle = (int)angel % 45;
                     return cover;
                 }
                 else
                 {
-                    cover[0] = AdjCoverList[3 - j];
-                    cover[1] = AdjCoverList[(4 - j) % 4];
+                    cover[0] = AdjCoverList[j+1];
+                    cover[1] = AdjCoverList[j];
                     AimAngle = 90 * (j + 1) - (int)angel;
                     return cover;
                 }
             }
-
-        }else
-        {
-            if (Mathf.Abs(angel) < 1)
-            {
-                cover[0] = AdjCoverList[0];
-                cover[1] = Cover.None;
-                AimAngle = 0;
-                return cover;
-            }
-            else
-            {
-                cover[0] = AdjCoverList[2];
-                cover[1] = Cover.None;
-                AimAngle = 0;
-                return cover;
-            }
         }
     }
-
 }

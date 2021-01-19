@@ -56,18 +56,6 @@ public class bullet : MonoBehaviour
             Destroy(fire, 0.7f); //一秒後刪除火花效果
 
         }
-        else if (other.tag == "Shield")
-        {
-            Vector3 DIV = -transform.forward; //子彈前進方向的反方向
-            if (wall_par == null)
-            {
-                return;
-            }
-            GameObject fire = Instantiate(wall_par, transform.position, new Quaternion());
-            fire.transform.forward = DIV;//火花方向 = 子彈的反方向
-            fire.SetActive(true); //讓火花顯示
-            Destroy(fire, 0.7f); //一秒後刪除火花效果
-            Destroy(gameObject);
-        }
+       
     }
 }

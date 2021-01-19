@@ -17,6 +17,10 @@ public class ColliderTrigger : MonoBehaviour
             blood.transform.forward = -DIV;//火花方向 = 子彈的反方向
             blood.SetActive(true); //讓火花顯示
             Destroy(blood, 0.7f); //一秒後刪除火花效果
+            if (ai.Cha.Energy > 0)
+            {
+                Destroy(other.gameObject);
+            }
             if (ai.Cha.HP <= 0)
             {
                 Destroy(this);

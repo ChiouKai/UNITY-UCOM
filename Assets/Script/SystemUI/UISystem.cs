@@ -300,7 +300,9 @@ public class UISystem : MonoBehaviour
         if (TurnCha.Coma)
         {
             TurnCha.Wake();
+            MoveCam.ChaTurn(TurnCha);
             StartCoroutine(TurnCha.WaitEndturn());
+            TurnRun = null;
         }
         else
         {
@@ -985,6 +987,48 @@ public class UISystem : MonoBehaviour
         DestroySkillButton();
         LRDestory();
         TurnRun = null;
+    }
+
+    public void PreWake()
+    {
+        if (TurnCha.ComaList.Count == 0)
+        {
+            return;
+        }
+        Prepera = false;
+        HealTarget = TurnCha.ComaList.First;
+        MoveCam.ChaTurn(HealTarget.Value);
+        AttPredictPanel.gameObject.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        //UI
+        ButtonText.text = "喚醒";
+        DescribeText.text = "拍醒暈眩的友軍單位。";
+        LeftText.text = "";
+        RightText.text = "";
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(() => Wake());
+        TurnRun = ChangeWakeTarget;
+    }
+    private void Wake()
+    {
+        TurnCha.PreWake(HealTarget.Value);
+        DestroyADPButton();
+        DestroySkillButton();
+        LRDestory();
+        TurnRun = null;
+    }
+    private void ChangeWakeTarget()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            HealTarget = HealTarget.Next;
+            if (HealTarget == null)
+            {
+                HealTarget = TurnCha.ComaList.First;
+            }
+            MoveCam.ChaTurn(HealTarget.Value);
+        }
+        Canceal();
     }
 
 

@@ -56,11 +56,11 @@ public class Wake : MonoBehaviour, ISkill
     {
         if (ai.Cha.camp == Character.Camp.Alien)
         {
-            return ai.PreFire;
+            return null;
         }
         else
         {
-            return UISystem.getInstance().PreFire;
+            return UISystem.getInstance().PreWake;
         }
     }
 
