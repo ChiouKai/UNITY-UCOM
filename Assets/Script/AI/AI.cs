@@ -1708,6 +1708,7 @@ public class AI : MonoBehaviour
         {
             Target.Cha.HP = Target.Cha.MaxHP;
         }
+        UI.status("heal", this);
         UI.HpControl(Target, Target.Cha.HP);
         ResetBool();
         EndTurn();

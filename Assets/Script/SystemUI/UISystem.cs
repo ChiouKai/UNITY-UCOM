@@ -1293,7 +1293,18 @@ public class UISystem : MonoBehaviour
     public void status(string a,AI target)
     {
         int judge = 0;
-        if (TurnCha.Cha.tag == "Human")
+        if (a == "heal")
+        {
+            judge = 4;
+            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(target.Target.Cha.transform.position);
+            vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
+            GameObject go = Instantiate(status_UI[judge]) as GameObject;
+            go.transform.position = vScreenPos;
+
+            go.transform.SetParent(this.transform);
+            Destroy(go, 2f);
+        }
+        if (TurnCha.Cha.tag == "Human" && judge!=4)
         {
             if (a == "Demage") judge = 0;
             else if (a == "Miss") judge = 1;
