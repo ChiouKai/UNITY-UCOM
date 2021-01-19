@@ -22,7 +22,7 @@ public class BossAI : AI
         Skills = GetComponents<ISkill>();
         AIState = NpcAI;
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -57,24 +57,34 @@ public class BossAI : AI
 
 
 
+    public void PreCharge()
+    {
+        ResetBool();
+        Am.SetTrigger("Charge");
+        NPCPrepera = false;
+    }
 
 
-    private void Charge()
+    public void Charge()
     {
         Cha.Energy += 3;
         if (Cha.Energy > Cha.MaxEnergy)
         {
             Cha.Energy = Cha.MaxEnergy;
         }
-        //am.settriger
-        NPCPrepera = false;
+        if (!Shield.activeSelf)
+        {
+            Shield.SetActive(true);
+        }
+        UI.HpControl(this, Cha.HP);
 
+        StartCoroutine(AfterCharge());
     }//ui ConfirmAction2()
 
-    public void AfterCharge()
+    public IEnumerator AfterCharge()
     {
-        //UI
-        //confirmaction2
+        yield return new WaitForSeconds(1.5f);
+        ConfirmAction2();
     }
     
 
@@ -98,7 +108,15 @@ public class BossAI : AI
 
     public override void ConfirmAction()
     {
-        DoActing = Charge;
+        if (Cha.Energy == Cha.MaxEnergy)
+        {
+            ConfirmAction2();
+        }
+        else
+        {
+            DoActing = PreCharge;
+        }
+        NPCPrepera = true;
     }
     private void ConfirmAction2()
     {
@@ -113,19 +131,75 @@ public class BossAI : AI
             Acting.EnterCD();
             Acting = null;
         }
-        //if (Acting2 == PreFire)//Target!=null
-        //{
-        //ChangePreAttakeIdle();
-        //}//else if (Acting2==reload)
         NPCPrepera = true;
     }
 
 
 
+    public override void BeDamaged(int damage)
+    {
+        Cha.Energy -= damage;
+        if (Cha.Energy < 0)
+        {
+            Cha.HP += Cha.Energy;
+            Shield.SetActive(false);
+            Cha.Energy = 0;
+        }
+        UI.demage = damage;
+    }
 
+    public override void Hurt(Vector3 dir)
+    {
+        dir.y = 0;
+        if (Cha.HP <= 0)
+        {
+            transform.forward = -dir;
+            UI.HpControl(this, Cha.HP);
+            AIDeath();
+        }
+        else
+        {
 
+            UI.HpControl(this, Cha.HP);
+            ResetBool();
+            if (Cha.Energy == 0)
+            {
+                transform.forward = -dir;
+                Am.Play("Hurt");
+                Idle = NoCover;
+            }
+        }
+    }
 
+    public GameObject Chain;
 
+    public void Lightning()
+    {
+        GameObject go = Instantiate(Bullet, FirePoint.position, Quaternion.identity);
+        GameObject go2;
+        LineRenderer chain = Instantiate<GameObject>(Chain).GetComponent<LineRenderer>();
+        chain.positionCount = 2;
+        chain.SetPosition(0, FirePoint.position);
+        if (Miss)
+        {
+            chain.SetPosition(1, AttackPoint);
+            go2 = Instantiate(Bullet, AttackPoint, Quaternion.identity);
+        }
+        else
+        {
+            Target.BeDamaged(Random.Range(2, 3));
+            Vector3 dir = Target.transform.position - transform.position;
+            dir.y = 0;
+            Target.Hurt2(dir);
+            chain.SetPosition(1, Target.BeAttakePoint.position);
+            go2 = Instantiate(Bullet, Target.BeAttakePoint.position, Quaternion.identity);
+        }
+        Attack = false;
+
+        Destroy(chain.gameObject, 0.4f);
+        Destroy(go, 0.4f);
+        Destroy(go2, 0.4f);
+    }
 
 
 

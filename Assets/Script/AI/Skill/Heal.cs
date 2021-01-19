@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Heal : MonoBehaviour
+public class Heal : MonoBehaviour ,ISkill
 {
     public int AP { get; private set; }
 
@@ -36,6 +36,10 @@ public class Heal : MonoBehaviour
             return false;
         }
         ai.HealList.Clear();
+        if (ai.Cha.HP < ai.Cha.MaxHP)
+        {
+            ai.HealList.AddLast(ai);
+        }
         foreach (Tile T in ai.CurrentTile.AdjList)
         {
             AI Cha= T.Cha;

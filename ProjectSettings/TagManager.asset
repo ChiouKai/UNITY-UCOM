@@ -10,6 +10,7 @@ TagManager:
   - En
   - Bullet
   - Wall
+  - Shield
   layers:
   - Default
   - TransparentFX

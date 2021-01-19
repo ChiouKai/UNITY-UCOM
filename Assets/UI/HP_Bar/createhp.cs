@@ -12,13 +12,17 @@ public class createhp : MonoBehaviour
     public Transform followedTarget;      //血條跟隨目標座標    
     public int MaxHP;
     public int HP;
+    public int MaxEng;
+    public int Eng;
     public Image hp_tiles;
     Image[] LiHP_Tiles;
+    Image[] LiEn_Tiles;
     public Sprite full_HP_Tile; //該格有血量時顯示
     public Sprite empty_HP_Tile; //該格沒血時顯示
     // Start is called before the first frame update
     void Start()
     {
+        LiEn_Tiles = new Image[MaxEng];
         LiHP_Tiles = new Image[MaxHP];
         Create_HPBAR();
         HPControl(HP);
@@ -48,6 +52,37 @@ public class createhp : MonoBehaviour
         }
         if (HP <= 0) { Destroy(gameObject); }
     }
+    public void HPControl(int valve,int eng)
+    {
+        HP = valve;
+        if (HP > MaxHP) { HP = MaxHP; }
+
+        for (int i = 1; i < LiHP_Tiles.Length; i++)
+        {
+            if (i < HP)
+            {
+                LiHP_Tiles[i].sprite = full_HP_Tile;
+            }
+            else
+            {
+                LiHP_Tiles[i].sprite = empty_HP_Tile;
+            }
+        }
+        if (HP <= 0) { Destroy(gameObject); }
+        Eng = eng;
+        for (int i = 1; i < LiEn_Tiles.Length; i++)
+        {
+            if (i < eng)
+            {
+                LiEn_Tiles[i].sprite = full_HP_Tile;
+            }
+            else
+            {
+                LiEn_Tiles[i].sprite = empty_HP_Tile;
+            }
+        }
+    }
+
 
 
 
@@ -63,6 +98,20 @@ public class createhp : MonoBehaviour
             LiHP_Tiles[i].transform.position = transform.position +new Vector3(x,-20,0);
             LiHP_Tiles[i].sprite = full_HP_Tile;
             //,new Vector3(x, -40, 0), Quaternion.Euler(0,0,0)
+        }
+        if (MaxEng > 0)
+        {
+            for (int i = 0; i < LiEn_Tiles.Length; i++)
+            {
+                int j = i;
+                j = i / 5;
+                int y = 16;
+                int x = -40 + y * i + 10 * j; //血條位置
+                LiEn_Tiles[i] = Instantiate(hp_tiles, transform);
+                LiEn_Tiles[i].transform.position = transform.position + new Vector3(x, 25, 0);
+                LiEn_Tiles[i].sprite = full_HP_Tile;
+                //,new Vector3(x, -40, 0), Quaternion.Euler(0,0,0)
+            }
         }
     }
 }
