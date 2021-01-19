@@ -929,8 +929,10 @@ public class UISystem : MonoBehaviour
             }
             if (Bomb_Round >= 3) //安裝炸彈且超過三回合且人走光
             {
+                Debug.Log("786453AS");
                 win_check = true;
             }
+            Debug.Log("AAAAAAAAAAAAAAAAAAAAA");
             //安裝炸彈超過三回合全都逃出
             //安裝炸彈後在場上超過五回合 ->就算角色都在但也成功
         }

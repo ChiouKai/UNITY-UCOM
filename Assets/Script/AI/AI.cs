@@ -1915,7 +1915,10 @@ public class AI : MonoBehaviour
         RoundSysytem.GetInstance().DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);
+        EndTurn();
         Destroy(gameObject);
+
+
     }
 
     public void BeComa()
