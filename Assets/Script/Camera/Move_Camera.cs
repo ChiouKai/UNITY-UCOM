@@ -37,7 +37,6 @@ public class Move_Camera : MonoBehaviour
     }
     private void LateUpdate()
     {
-        Debug.Log(att_cam_bool);
         float fH = Input.GetAxis("Horizontal");
         float fV = Input.GetAxis("Vertical");
         //增加以45度角面向目標
@@ -48,6 +47,18 @@ public class Move_Camera : MonoBehaviour
             US.toggle[1].transform.GetChild(1).GetComponent<Text>().color = Color.green;
             US.toggle[1].transform.GetChild(0).GetComponent<Image>().sprite = US.mission_Images[1];
         }
+        if (US.Bomb_Round >= 5) //安裝炸彈且稱超過5回合
+            US.win_check=true;
+
+        if (US.lose_check) //
+            US.mission_failure.SetActive(true);
+        if (US.win_check)
+        {
+            US.mission_success.SetActive(true);
+            US.CAM.SetActive(false);
+            US.CAM_TIMELINE.SetActive(true);
+        }
+
         scene_camera.transform.LookAt(transform);
         if (att_cam_bool == false)
         {

@@ -14,9 +14,4 @@ public class Bomb : MonoBehaviour
         Bomb_start = false;
         Bomb_round = 0;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
 }

@@ -36,6 +36,7 @@ public class UISystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         m_Roundsystem = RoundSysytem.GetInstance();
         GameObject[] GHumans = GameObject.FindGameObjectsWithTag("Human");
         Humans = new List<AI>();
@@ -81,7 +82,6 @@ public class UISystem : MonoBehaviour
             if (time2 > 2f)
             {
                 dialog_02.SetActive(false);
-                Bomb_start = false;
             }
         }
         if (ssstart)
@@ -855,6 +855,10 @@ public class UISystem : MonoBehaviour
     }
 
     //每回合檢查
+    public bool lose_check = false;
+    public bool win_check = false;
+    public GameObject CAM;
+    public GameObject CAM_TIMELINE;
     public void CheckEvent()
     {
         if (TrueTunCha != null)//指揮技能有關，可無視
@@ -867,9 +871,23 @@ public class UISystem : MonoBehaviour
                 PlayerStartTurn();
             }
         }
-        if (Humans.Count == 0)
+        if (Humans.Count == 0)//我方角色全都不再場上時
         {
-            //todo 遊戲結束
+            if (!Bomb_start)//沒按裝炸彈但都不在場上 ->死光時
+            {
+                lose_check = true;
+                Debug.Log("我方角色死光");
+            }
+            if (Bomb_Round < 3)//安裝炸彈但還沒超過堅守回合 ->失敗
+            {
+                lose_check = true;
+            }
+            if (Bomb_Round >= 3) //安裝炸彈且超過三回合且人走光
+            {
+                win_check = true;
+            }
+            //安裝炸彈超過三回合全都逃出
+            //安裝炸彈後在場上超過五回合 ->就算角色都在但也成功
         }
     }
 
@@ -1164,6 +1182,9 @@ public class UISystem : MonoBehaviour
     }
 
     public bool Bomb_start;
+    public bool Bomb_explosion;
+    public GameObject mission_success;
+    public GameObject mission_failure;
     public int Bomb_Round;
     //public Text fr;
     public Text final_text;
@@ -1231,5 +1252,11 @@ public class UISystem : MonoBehaviour
         dialog_01.SetActive(false);
         b_mission.SetActive(false);
         time_mis = false;
+    }
+    public GameObject option;
+    public void b_option()
+    {
+        menu.SetActive(false);
+        option.SetActive(true);
     }
 }

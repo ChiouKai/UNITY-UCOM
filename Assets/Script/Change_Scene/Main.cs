@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class Main : MonoBehaviour
             Debug.Log("開始換場景");
             StartCoroutine(m_ScManager.ChangeSceneAsync(scene_name, LoadCustomData()));
             b_change = false;
-            button_canvas.SetActive(false);
+            //button_canvas.SetActive(false);
         }
         else if (m_ScManager.m_bLoadingScene==false) //當進度條跑到100時為false
         {
@@ -88,5 +89,10 @@ public class Main : MonoBehaviour
             fProgress += 1f;
             yield return 0;
         }
+    }
+    public void reload_scene()
+    {
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
     }
 }
