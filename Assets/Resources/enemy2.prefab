@@ -1327,13 +1327,13 @@ GameObject:
   m_Component:
   - component: {fileID: 6719912088173591314}
   - component: {fileID: 6719912088173591317}
+  - component: {fileID: 1190430156794551282}
   - component: {fileID: 8019003800130855932}
   - component: {fileID: 4026700690989098477}
-  - component: {fileID: 1190430156794551282}
   - component: {fileID: 8794203437819925794}
   - component: {fileID: 4846551356848808515}
   m_Layer: 10
-  m_Name: enemy2
+  m_Name: Enemy2
   m_TagString: Alien
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1374,6 +1374,27 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1190430156794551282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6719912088173591316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac28dc84127cd2240b6907061310fa73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Cha: {fileID: 4026700690989098477}
+  CurrentTile: {fileID: 0}
+  MoveSpeed: 4
+  FirePoint: {fileID: 8436377869556267872}
+  Bullet: {fileID: 2844128879817275946, guid: ab2f0460474d1bf4fa0249c301767cff, type: 3}
+  BeAttakePoint: {fileID: 6719912087888029552}
+  Rifle: {fileID: 0}
+  Knife: {fileID: 0}
+  FireLight: {fileID: 0}
 --- !u!114 &8019003800130855932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1413,27 +1434,6 @@ MonoBehaviour:
   MaxEnergy: 0
   camp: 0
   type: 0
---- !u!114 &1190430156794551282
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6719912088173591316}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac28dc84127cd2240b6907061310fa73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Cha: {fileID: 0}
-  CurrentTile: {fileID: 0}
-  MoveSpeed: 4
-  FirePoint: {fileID: 8436377869556267872}
-  Bullet: {fileID: 2844128879817275946, guid: ab2f0460474d1bf4fa0249c301767cff, type: 3}
-  BeAttakePoint: {fileID: 6719912087888029552}
-  Rifle: {fileID: 0}
-  Knife: {fileID: 0}
-  FireLight: {fileID: 0}
 --- !u!114 &8794203437819925794
 MonoBehaviour:
   m_ObjectHideFlags: 0

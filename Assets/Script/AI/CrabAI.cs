@@ -259,11 +259,14 @@ public class CrabAI : AI
         }
         else
         {
+
             Am.SetBool("Run", false);
             Moving = false;
             Turn = false;
             PreAttack = false;
             NPCPrepera = false;
+            AP = 0;
+            StartCoroutine(WaitNextAction());
         }
     }
 

@@ -176,7 +176,7 @@ public class RoundSysytem
             Action Event = () =>
             {
                 EndChecked = false;
-                UI.RunUI = UI.NewCome;
+                UI.TurnRun = UI.NewCome;
                 Event = null;
             };
             EventList.Add(Event);

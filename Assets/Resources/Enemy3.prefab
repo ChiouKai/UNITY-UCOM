@@ -3998,7 +3998,7 @@ GameObject:
   - component: {fileID: 5480942384249066731}
   - component: {fileID: 5428859598813492518}
   m_Layer: 10
-  m_Name: CrabMonster
+  m_Name: Enemy3
   m_TagString: Alien
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4053,7 +4053,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab8914bfe39c9ad4f916fe1e4cc5f11d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cha: {fileID: 0}
+  Cha: {fileID: 7154555018010834703}
   CurrentTile: {fileID: 0}
   MoveSpeed: 4
   FirePoint: {fileID: 0}
@@ -4061,6 +4061,7 @@ MonoBehaviour:
   BeAttakePoint: {fileID: 402724848175036054}
   Rifle: {fileID: 0}
   Knife: {fileID: 0}
+  FireLight: {fileID: 0}
 --- !u!114 &7154555018010834703
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1179,7 +1179,7 @@ public class UISystem : MonoBehaviour
         Newcome = Enemy;
         i = m_Roundsystem.NewCome(Enemy);
         Aliens.Add(Enemy);
-        GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name+i + "Logo");
+        GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name + "Logo");
         TLine.NewComeLogo(Enemy, ChaLogo, i);
         CreateHP_Bar(Enemy, Enemy.Cha.MaxHP, Enemy.Cha.HP);
         Enemy.InCurrentTile(StartTile);

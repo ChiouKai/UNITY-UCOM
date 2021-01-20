@@ -1877,13 +1877,14 @@ public class AI : MonoBehaviour
     }
     protected IEnumerator WaitNextAction()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
         if (AP != 0)
         {
             UI.PlayerStartTurn();
         }
         else
         {
+            RoundSysytem.GetInstance().EndChecked = true;
             EndTurn();
             PreAttack = false;
         }
@@ -2089,9 +2090,9 @@ public class AI : MonoBehaviour
             {
                 PreAttack = false;
                 NPCPrepera = false;
-                RoundSysytem.GetInstance().EndChecked = true;
                 ResetBool();
-                EndTurn();
+                AP = 0;
+                StartCoroutine(WaitNextAction());
             }
         }
     }
