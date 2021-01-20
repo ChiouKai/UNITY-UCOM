@@ -967,6 +967,8 @@ public class UISystem : MonoBehaviour
             if (Bomb_Round >= 3) //安裝炸彈且超過三回合且人走光
             {
                 Debug.Log("786453AS");
+                toggle[2].transform.GetChild(1).GetComponent<Text>().color = Color.green;
+                toggle[2].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
                 win_check = true;
             }
             Debug.Log("AAAAAAAAAAAAAAAAAAAAA");

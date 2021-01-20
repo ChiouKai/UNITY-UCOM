@@ -35,6 +35,7 @@ public class Move_Camera : MonoBehaviour
         Enemy_star.SetActive(false);
         Our_star.SetActive(false);
     }
+    float T_Explosion;
     private void LateUpdate()
     {
         float fH = Input.GetAxis("Horizontal");
@@ -48,15 +49,21 @@ public class Move_Camera : MonoBehaviour
             US.toggle[1].transform.GetChild(0).GetComponent<Image>().sprite = US.mission_Images[1];
         }
         if (US.Bomb_Round >= 5) //安裝炸彈且稱超過5回合
-            US.win_check=true;
+            US.win_check = true;
 
         if (US.lose_check) //
             US.mission_failure.SetActive(true);
         if (US.win_check)
         {
-            US.mission_success.SetActive(true);
-            US.CAM.SetActive(false);
-            US.CAM_TIMELINE.SetActive(true);
+            T_Explosion += Time.deltaTime;
+            if (T_Explosion >= 3f)
+            {
+                US.explosion.SetActive(false);
+                US.mission_success.SetActive(true);
+                US.CAM.SetActive(false);
+                US.CAM_TIMELINE.SetActive(true);
+                US.HPCanvas.gameObject.SetActive(false);
+            }
         }
 
         scene_camera.transform.LookAt(transform);
