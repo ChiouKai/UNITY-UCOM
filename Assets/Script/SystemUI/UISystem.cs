@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class UISystem : MonoBehaviour
@@ -17,8 +18,15 @@ public class UISystem : MonoBehaviour
     public Action TurnRun;
     public Action RunUI;
     public GameObject menu;
+    public GameObject menuOption;
+    internal SoundManager sManager;
+    public Slider Volume;
+    public GameObject menuCheck;
+    public GameObject missionDialogue;
+    public GameObject menuQuit;
     public Tile[] StartTile;
     bool acting = false;
+
 
     bool ssstart;
     public List<Tile> LeaveTile = new List<Tile>();
@@ -92,7 +100,6 @@ public class UISystem : MonoBehaviour
         }
         TurnRun?.Invoke();//控制角色UI
         RunUI?.Invoke();//控制UI
-
         onEscapeKeyed();  //退出選單
 
 
@@ -138,7 +145,11 @@ public class UISystem : MonoBehaviour
     //press Esc button
     public void onEscapeKeyed()
     {
+        if (Input.GetKeyDown(KeyCode.Escape) && missionDialogue.activeInHierarchy) { menu.SetActive(true); missionDialogue.SetActive(false); }
         if (Input.GetKeyDown(KeyCode.Escape)) { menu.SetActive(!menu.activeInHierarchy); }
+        if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy) { menu.SetActive(true); menuOption.SetActive(false); }
+        if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy && menuCheck.activeInHierarchy) { menu.SetActive(true); menuCheck.SetActive(false); }
+
     }
 
     //menu buttons
@@ -153,6 +164,11 @@ public class UISystem : MonoBehaviour
         Round.Abort();
         Application.Quit();
     }
+
+   public void BackToMain()
+    {
+        SceneManager.LoadScene(0);
+    }       
 
     public void ShowActionUI()
     {

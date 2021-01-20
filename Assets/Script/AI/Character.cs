@@ -12,6 +12,15 @@ public  class Character :MonoBehaviour
     string Weapon;
     public int Energy;
     public int MaxEnergy ;
+
+    //voices
+    public string affirmative;
+    public string takeHit;
+    public string die;
+    public string MindControlled;
+    public string reload;
+    public string skill;
+
     public enum Camp
     {
         Human = 0,

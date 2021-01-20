@@ -339,7 +339,7 @@ public class CrabAI : AI
     {
 
         yield return new WaitForSeconds(0.5f);
-
+        FindObjectOfType<SoundManager>().Play(Cha.affirmative);
         Target.BeDamaged(3);
         Target.Hurt(transform.forward);
         UI.status("Demage", this);

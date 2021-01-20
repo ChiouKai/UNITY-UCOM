@@ -566,6 +566,7 @@ public class AI : MonoBehaviour
         RemoveVisitedTiles();//重置Tile狀態
         Am.Play("Run");
         AttakeableList.Clear();
+        FindObjectOfType<SoundManager>().Play(Cha.affirmative);
     }
 
     public Stack<(Tile, MoveWay)> MoveToTile(Tile T)//從T的Parent往回推路徑
@@ -1487,6 +1488,7 @@ public class AI : MonoBehaviour
             FireLight.Play();
         }
         Attack = false;
+        FindObjectOfType<SoundManager>().Play(Gun.weapon1);
     }
 
     public delegate IEnumerator FWait();
@@ -1581,9 +1583,9 @@ public class AI : MonoBehaviour
         RemoveVisitedTiles();//重置Tile狀態
         Attack = true;
         Target = MeleeTarget.Value.Item1;
-        Am.SetBool("Melee",true);
+        Am.SetBool("Melee",true);        
         MeleeableList.Clear();
-        UI.LRDestory();
+        UI.LRDestory();        
     }
 
 
@@ -1602,6 +1604,7 @@ public class AI : MonoBehaviour
     }
     public void GrabKnife()
     {
+        FindObjectOfType<SoundManager>().Play(Gun.preAttack);
         BeAttakePoint.Find("BackKnife").gameObject.SetActive(false);
         Knife.SetActive(true);
     }
@@ -1688,10 +1691,10 @@ public class AI : MonoBehaviour
         EndTurn();
     }
     public void Meleeing()
-    {            
-
+    {
         Target.BeDamaged(4);
         Target.Hurt(transform.forward);
+        FindObjectOfType<SoundManager>().Play(Gun.weapon2);
     }
 
     public void PreHeal(AI Cha)
@@ -1709,7 +1712,7 @@ public class AI : MonoBehaviour
         if (Cha == this)
         {
             Am.SetTrigger("SelfHeal");
-            Target = this;
+            Target = this;            
         }
         else
         {
@@ -1724,6 +1727,7 @@ public class AI : MonoBehaviour
 
     public void Heal()
     {
+        FindObjectOfType<SoundManager>().Play(Cha.skill);
         Target.Cha.HP += 3;
         Destroy(Instantiate<GameObject>(Resources.Load<GameObject>("HealEffect"), Target.transform.position, Quaternion.identity), 2.0f);
         if (Target.Cha.HP > Target.Cha.MaxHP)
@@ -1821,6 +1825,7 @@ public class AI : MonoBehaviour
             transform.forward = -dir;
             UI.HpControl(this, Cha.HP);
             Am.Play("Death");
+            FindObjectOfType<SoundManager>().Play(Cha.die);
             AIDeath();
         }
         else
@@ -1830,6 +1835,7 @@ public class AI : MonoBehaviour
             ResetBool();
             Am.Play("Hurt");
             Idle = NoCover;
+            FindObjectOfType<SoundManager>().Play(Cha.takeHit);
         }
     }
     public void Hurt2(Vector3 dir)
@@ -1872,6 +1878,7 @@ public class AI : MonoBehaviour
         Gun.bullet = Gun.MaxBullet;
         AP -= 1;
         Am.SetTrigger("Reload");
+        FindObjectOfType<SoundManager>().Play(Cha.reload);
         RemoveVisitedTiles();
         UI.LRDestory();
         StartCoroutine( WaitNextAction());
@@ -2465,6 +2472,7 @@ public class AI : MonoBehaviour
         PreAttack = true;
         NPCPrepera = false;
         DoActing = MindControl;
+        FindObjectOfType<SoundManager>().Play(Gun.weapon2);
     }
 
 
@@ -2518,10 +2526,10 @@ public class AI : MonoBehaviour
     public void CreatMindC()
     {
         RoundSysytem.GetInstance().EndChecked = false;
-        GameObject GO = Instantiate<GameObject>(Resources.Load<GameObject>("MindControl"));
+        GameObject GO = Instantiate<GameObject>(Resources.Load<GameObject>("MindControl"));        
         GO.transform.position = FirePoint.position;
         GO.transform.SetParent(FirePoint);
-        StartCoroutine(ShotMindC(GO));
+        StartCoroutine(ShotMindC(GO));        
     }
     public IEnumerator ShotMindC(GameObject go)
     {
