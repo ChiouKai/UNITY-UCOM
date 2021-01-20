@@ -376,8 +376,8 @@ public class CrabAI : AI
     private void DeathIdle()
     {
 
-        transform.localScale = transform.localScale * 0.85f;
-        if (stateinfo.normalizedTime >=0.9f)
+        transform.localScale = transform.localScale * 0.9f;
+        if (transform.localScale.x<0.3)
         {
             Destroy(this);
         }

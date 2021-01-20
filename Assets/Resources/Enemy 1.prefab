@@ -1210,8 +1210,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.3, y: 1.13, z: 0.3}
-  m_Center: {x: 0, y: 0.12, z: 0}
+  m_Size: {x: 0.3, y: 1.07, z: 0.3}
+  m_Center: {x: 0, y: -0.06, z: 0}
 --- !u!114 &9084580414226038285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1613,7 +1613,7 @@ GameObject:
   - component: {fileID: 8096873058704215738}
   - component: {fileID: 7752306214394360249}
   m_Layer: 10
-  m_Name: Enemy
+  m_Name: Enemy 1
   m_TagString: Alien
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1666,7 +1666,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac28dc84127cd2240b6907061310fa73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cha: {fileID: 3181660201966367009}
+  Cha: {fileID: 0}
   CurrentTile: {fileID: 0}
   MoveSpeed: 4
   FirePoint: {fileID: 9180771876627362521}
@@ -1674,6 +1674,7 @@ MonoBehaviour:
   BeAttakePoint: {fileID: 8498292573919531213}
   Rifle: {fileID: 0}
   Knife: {fileID: 0}
+  FireLight: {fileID: 0}
 --- !u!114 &3181660201966367008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1690,8 +1691,8 @@ MonoBehaviour:
   Damage: 0400000005000000
   DamageRange: 2
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000
-  MaxBullet: 4
-  bullet: 4
+  MaxBullet: 99
+  bullet: 99
 --- !u!114 &3181660201966367009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1704,8 +1705,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f716625bc427f4892e763f19d66117, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 5
-  HP: 5
+  MaxHP: 4
+  HP: 4
   Mobility: 6
   Speed: 3
   BasicAim: 60
@@ -1720,7 +1721,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6847276895815141289}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe91dc294731a9428c0941ea7579110, type: 3}
   m_Name: 

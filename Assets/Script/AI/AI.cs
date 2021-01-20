@@ -2130,9 +2130,9 @@ public class AI : MonoBehaviour
             }
         }
         float i = 12 / (MinDis);
-        if (i > 3)
+        if (i > 4)
         {
-            Point += 3;
+            Point += 4;
         }
         else
         {

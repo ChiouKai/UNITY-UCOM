@@ -1171,10 +1171,11 @@ public class UISystem : MonoBehaviour
     ISkill[] NewcomeSkills;
     public void NewCome()
     {
-        AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy2")).GetComponent<AI>();
-        Enemy.name = "Enemy2";
+        int i = Random.Range(1, 3);
+        AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy"+i)).GetComponent<AI>();
+        Enemy.name = "Enemy"+i;
         Newcome = Enemy;
-        int i = m_Roundsystem.NewCome(Enemy);
+        i = m_Roundsystem.NewCome(Enemy);
         Aliens.Add(Enemy);
         GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name + "Logo");
         TLine.NewComeLogo(Enemy, ChaLogo, i);
