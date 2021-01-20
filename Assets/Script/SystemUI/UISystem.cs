@@ -18,6 +18,7 @@ public class UISystem : MonoBehaviour
     public Action RunUI;
     public GameObject menu;
     public Tile StartTile;
+    bool acting = false;
 
     bool ssstart;
     public List<Tile> LeaveTile = new List<Tile>();
@@ -203,6 +204,10 @@ public class UISystem : MonoBehaviour
 
     public void MouseInTile(Tile T)
     {
+        if (acting)
+        {
+            return;
+        }
         MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
         //MouseOnTile.GetComponent<Renderer>().enabled = true;
         if (T.selectable && TurnCha.Moving != true)
@@ -237,6 +242,7 @@ public class UISystem : MonoBehaviour
     }
     public void MouseOutTile(Tile T)
     {
+
         //MouseOnTile.GetComponent<Renderer>().enabled = false;
         if (T.selectable && TurnCha.Moving != true)
         {
@@ -640,6 +646,7 @@ public class UISystem : MonoBehaviour
         {
             return;
         }
+        acting = true;
         Prepera = false;
         Target = TurnCha.AttakeableList.First;
         MoveCam.att_cam_bool = true;
@@ -656,6 +663,7 @@ public class UISystem : MonoBehaviour
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
         AimPos = Target.Value.Item1.BeAttakePoint;
         AimTarget.SetActive(true);
+        AimTarget.transform.GetChild(0).GetComponent<Text>().text= Target.Value.Item3 + "%";
         ButtonText.text = "開火";
         DescribeText.text = "朝向目標開火。";
         LeftText.text = "傷害:" + TurnCha.Gun.Damage[0]+"~"+TurnCha.Gun.Damage[1];
@@ -667,9 +675,11 @@ public class UISystem : MonoBehaviour
     public void Fire()//button
     {
         AimTarget.SetActive(false);
+        AimTarget.transform.GetChild(0).GetComponent<Text>().text = "";
         TurnCha.Fire(Target.Value);
         DestroyADPButton();
         DestroySkillButton();
+        acting = false;
         TurnRun = null;
     }
 
@@ -687,6 +697,7 @@ public class UISystem : MonoBehaviour
             {
                 Index = 0;
             }
+            AimTarget.transform.GetChild(0).GetComponent<Text>().text = Target.Value.Item3 + "%";
             Frame.SetParent(ADPButtonList[Index].transform);
             Frame.localPosition = Vector3.zero;
             MoveCam.att_cam_bool = true;
@@ -698,6 +709,7 @@ public class UISystem : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(1))
         {
+            AimTarget.transform.GetChild(0).GetComponent<Text>().text = "";
             AimTarget.SetActive(false);
             RT.anchoredPosition3D = new Vector3(0, 240, 0);
             TurnCha.PreAttack = false;
@@ -708,6 +720,7 @@ public class UISystem : MonoBehaviour
             Destroy(Frame.gameObject);
             //StartCoroutine(WaitMove());
             per_but = false;
+            acting = false;
         }
     }
     public void ChangeAttakeTargetButton(AI ai)

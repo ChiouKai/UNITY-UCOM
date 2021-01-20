@@ -4708,7 +4708,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a65312fc3c9de1a48a7c616dbf5570ab, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4742,10 +4742,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall_par: {fileID: 7385863959060986845, guid: b028571f62bf21545aca6a0c630da2bd,
-    type: 3}
-  HumanBlood: {fileID: 4423328451969313578, guid: 5127a230e1f07344e9c98d3cf3add6d8,
-    type: 3}
-  AlienBlood: {fileID: 5300149042388398765, guid: 4935192bae04bbb4c907cbb7f334cdfc,
     type: 3}
   AttackPoint: {x: 0, y: 0, z: 0}
   FirePoint: {x: 0, y: 0, z: 0}

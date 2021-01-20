@@ -20,6 +20,7 @@ public class CrabAI : AI
         Enemies = RoundSysytem.GetInstance().Humans;
         Skills = GetComponents<ISkill>();
         Idle = NoCover;
+        UI = UISystem.getInstance();
     }
 
     // Update is called once per frame

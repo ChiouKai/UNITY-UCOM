@@ -1279,7 +1279,7 @@ public class AI : MonoBehaviour
         {
             TargetDir = AttackPoint - CurrentTile.transform.position;
             TargetDir.y = 0;
-            if (Vector3.Dot(transform.forward, TargetDir.normalized) > 0.97f)
+            if (Vector3.Dot(transform.forward, TargetDir.normalized) > 0.96f)
             {
                 Am.SetBool("Aim", true);
                 transform.forward = TargetDir;
