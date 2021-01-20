@@ -1408,7 +1408,7 @@ public class AI : MonoBehaviour
     public void Fire((AI target, int location, int aim) FireTarget)
     {
         Gun.bullet -= 1;
-        int i =  Random.Range(0, 100);
+        int i =  Random.Range(0, 101);
         if (FireTarget.aim < i)//Miss
         {
             Miss = true;
@@ -1436,7 +1436,7 @@ public class AI : MonoBehaviour
         {
             Miss = false;
             AttackPoint = Target.BeAttakePoint.position;
-            Target.BeDamaged(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
+            Target.BeDamaged(Gun.Damage[Random.Range(0, Gun.DamageRange)]);
         }
         if (Am.GetBool("FCover"))
         {
@@ -2332,7 +2332,7 @@ public class AI : MonoBehaviour
 
     public void Fire()
     {
-        int i = Random.Range(0, 100);
+        int i = Random.Range(0, 101);
         NPC_Prefire = true;
         UI.MoveCam.att_cam_bool = true;
         if (AttakeTarget.Item3 < i)//Miss
@@ -2361,7 +2361,7 @@ public class AI : MonoBehaviour
         {
             Miss = false;
             AttackPoint = AttakeTarget.Item1.BeAttakePoint.position;
-            Target.BeDamaged(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
+            Target.BeDamaged(Gun.Damage[Random.Range(0, Gun.DamageRange)]);
         }
 
 
