@@ -18,6 +18,8 @@ public class Fire : MonoBehaviour,ISkill
 
     public string Name { get; private set; }
 
+    public int type { get; private set; }
+
     private void Start()
     {
         Name = "Fire";
@@ -27,6 +29,7 @@ public class Fire : MonoBehaviour,ISkill
         CDCount = 0;
         AimPoint = 1f/10f;
         Point = 2;
+        type = 0;
     }
 
     public bool CheckUseable(AI Target)

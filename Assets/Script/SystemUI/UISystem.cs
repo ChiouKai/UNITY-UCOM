@@ -328,37 +328,60 @@ public class UISystem : MonoBehaviour
     }
     private void TurnChaSkip()
     {
-        TurnCha.Skip();
         LRDestory();
         DestroyADPButton();
         DestroySkillButton();
+        TurnCha.Skip();
     }
 
 
 
     public void FindSkillButton()
     {
-        foreach(var skill in TurnCha.Skills)
+        foreach (var skill in TurnCha.Skills)
         {
             AI target = null;
             if (TurnCha.AttakeableList.Count > 0)
             {
                 target = TurnCha.AttakeableList.First.Value.Item1;
             }
-            if(skill.CheckUseable(target))
+            if (skill.type == 0)
             {
                 Button go = Instantiate<GameObject>(Resources.Load<GameObject>(skill.Name)).GetComponent<Button>();
                 go.transform.SetParent(SkillsPanel);
                 SButtonList.Add(go);
-                Type type = typeof(UISystem);
-                MethodInfo method = type.GetMethod("Pre" + skill.Name);
-                go.onClick.AddListener(() => method.Invoke(this, null));//todo CD
+                if (skill.CheckUseable(target))
+                {
+                    Type type = typeof(UISystem);
+                    MethodInfo method = type.GetMethod("Pre" + skill.Name);
+                    go.onClick.AddListener(() => method.Invoke(this, null));//todo CD
+                }
+                else
+                {
+                    go.interactable = false;
+                    if (skill.CDCount > 0)
+                    {
+                        go.transform.GetChild(0).GetComponent<Text>().text = "T-" + skill.CDCount;
+                    }
+                }
+            }
+            else
+            {
+                if (skill.CheckUseable(target))
+                {
+                    Button go = Instantiate<GameObject>(Resources.Load<GameObject>(skill.Name)).GetComponent<Button>();
+                    go.transform.SetParent(SkillsPanel);
+                    SButtonList.Add(go);
+                    Type type = typeof(UISystem);
+                    MethodInfo method = type.GetMethod("Pre" + skill.Name);
+                    go.onClick.AddListener(() => method.Invoke(this, null));//todo CD
+                }
             }
         }
-        Button go = Instantiate<GameObject>(Resources.Load<GameObject>("Standby")).GetComponent<Button>();
-        go.transform.SetParent(SkillsPanel);
-        SButtonList.Add(go);
-        go.onClick.AddListener(() => method.Invoke(this, null));//todo CD
+        Button SB = Instantiate<GameObject>(Resources.Load<GameObject>("Standby")).GetComponent<Button>();
+        SB.transform.SetParent(SkillsPanel);
+        SButtonList.Add(SB);
+        SB.onClick.AddListener(() => PreStandby());//todo CD
     }
     public void DestroySkillButton()
     {
@@ -1062,9 +1085,6 @@ public class UISystem : MonoBehaviour
     }
     public void Standby()
     {
-        DestroyADPButton();
-        DestroySkillButton();
-        LRDestory();
         TurnRun = null;
         TurnChaSkip();
     }

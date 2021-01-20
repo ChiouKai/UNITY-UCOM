@@ -17,6 +17,7 @@ public class TriggerBomb : MonoBehaviour , ISkill
     public AI ai { get; private set; }
 
     public string Name { get; private set; }
+    public int type { get; private set; }
 
     private void Start()
     {
@@ -27,6 +28,7 @@ public class TriggerBomb : MonoBehaviour , ISkill
         CDCount = 0;
         AimPoint = 0;
         Point = 2;
+        type = 1;
     }
 
     public bool CheckUseable(AI Target)

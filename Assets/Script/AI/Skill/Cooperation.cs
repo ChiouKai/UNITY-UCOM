@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cooperation : MonoBehaviour , ISkill
+public class Cooperation : MonoBehaviour, ISkill
 {
     public int AP { get; private set; }
 
@@ -18,6 +18,8 @@ public class Cooperation : MonoBehaviour , ISkill
 
     public string Name { get; private set; }
 
+    public int type {get;private set;}
+
     private void Start()
     {
         Name = "Cooperation";
@@ -27,6 +29,7 @@ public class Cooperation : MonoBehaviour , ISkill
         CDCount = 0;
         AimPoint = 0;
         Point = 2;
+        type = 0;
     }
 
     public bool CheckUseable(AI Target)

@@ -17,6 +17,7 @@ public class Ultimate : MonoBehaviour , ISkill
     public AI ai { get; private set; }
 
     public string Name { get; private set; }
+    public int type { get; private set; }
 
     private void Start()
     {
@@ -27,6 +28,7 @@ public class Ultimate : MonoBehaviour , ISkill
         CDCount = 0;
         AimPoint = 0;
         Point = 10;
+        type = 0;
     }
 
     public bool CheckUseable(AI Target)

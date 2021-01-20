@@ -18,6 +18,8 @@ public class Heal : MonoBehaviour ,ISkill
 
     public string Name { get; private set; }
 
+    public int type { get; private set; }
+
     private void Start()
     {
         Name = "Heal";
@@ -27,6 +29,7 @@ public class Heal : MonoBehaviour ,ISkill
         CDCount = 0;
         AimPoint = 0;
         Point = 2;
+        type = 0;
     }
 
     public bool CheckUseable(AI Target)

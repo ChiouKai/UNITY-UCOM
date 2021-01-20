@@ -433,11 +433,12 @@ public class AI : MonoBehaviour
     {
         Am.Play("Idle");
         AP = 0;
-        EndTurn();
+
         ResetBool();
         RemoveVisitedTiles();
         NPCPrepera = false;
         DoActing = null;
+        EndTurn();
     }
 
 

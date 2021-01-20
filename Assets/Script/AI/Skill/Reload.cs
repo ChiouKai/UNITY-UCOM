@@ -19,6 +19,7 @@ public class Reload : MonoBehaviour, ISkill
 
     public string Name { get; private set; }
 
+    public int type { get; private set; }
 
     private void Start()
     {
@@ -29,6 +30,7 @@ public class Reload : MonoBehaviour, ISkill
         Point = 2;
         ai = GetComponent<AI>();
         Name = "Reload";
+        type = 0;
     }
 
     public bool CheckUseable(AI Target)

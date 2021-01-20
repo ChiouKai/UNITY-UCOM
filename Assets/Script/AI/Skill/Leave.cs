@@ -18,6 +18,8 @@ public class Leave : MonoBehaviour ,ISkill
 
     public string Name { get; private set; }
 
+    public int type { get; private set; }
+
     private void Start()
     {
         Name = "Leave";
@@ -27,6 +29,7 @@ public class Leave : MonoBehaviour ,ISkill
         CDCount = 0;
         AimPoint = 0;
         Point = 0;
+        type = 1;
     }
 
     public bool CheckUseable(AI Target)

@@ -12,6 +12,7 @@ public interface ISkill
     int CDCount { get; }
     float AimPoint { get; }
     int Point { get; }
+    int type { get; }
     bool CheckUseable(AI Target);//bool
     void EnterCD();
     void CountCD();

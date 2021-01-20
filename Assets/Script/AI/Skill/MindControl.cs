@@ -18,6 +18,8 @@ public class MindControl : MonoBehaviour,ISkill
 
     public string Name { get; private set; }
 
+    public int type { get; private set; }
+
     private void Start()
     {
         Name = "MindControl";
@@ -27,6 +29,7 @@ public class MindControl : MonoBehaviour,ISkill
         CDCount = 0;
         AimPoint = 0f;
         Point = 6;
+        type = 0;
     }
 
     public bool CheckUseable(AI Target)

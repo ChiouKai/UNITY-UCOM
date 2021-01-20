@@ -733,8 +733,8 @@ GameObject:
   - component: {fileID: 1935414094928773544}
   - component: {fileID: 6617018224542963758}
   - component: {fileID: 4161283741708353477}
-  - component: {fileID: -5603266156250117050}
   - component: {fileID: -3333062908933639276}
+  - component: {fileID: -5603266156250117050}
   m_Layer: 11
   m_Name: Soldier05
   m_TagString: Human
@@ -1267,18 +1267,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cc004c5e2ba4394786016034dd260a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-5603266156250117050
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7647131940062633392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 768e3f913f1c20d4e84b8e88e2d08708, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &-3333062908933639276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1289,6 +1277,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 92f4a3826b5011a47a4f1ce88d1cf6d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-5603266156250117050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7647131940062633392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 768e3f913f1c20d4e84b8e88e2d08708, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7647141159591516146
