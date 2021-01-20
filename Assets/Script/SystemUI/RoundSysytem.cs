@@ -105,8 +105,13 @@ public class RoundSysytem
                 System.Threading.Thread.Sleep(2);
             }
 
-            UI.Count = InsertCha(Current);
-            UI.TurnRun = UI.ChaTurnEnd;
+
+            if (UI.TurnCha != null)
+            {
+                UI.Count = InsertCha(Current);
+                UI.TurnRun = UI.ChaTurnEnd;
+            }
+
             UI.RunUI = UI.CloseActionUI;
             System.Threading.Thread.Sleep(1500);
             Current = Sequence.First;

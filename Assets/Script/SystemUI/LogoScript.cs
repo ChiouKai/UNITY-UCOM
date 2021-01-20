@@ -22,7 +22,7 @@ public class LogoScript : MonoBehaviour
 
     public void LogoInsert()
     {
-        if ((RT.anchoredPosition- InsertLocation).magnitude > 0.5f)
+        if ((RT.anchoredPosition- InsertLocation).magnitude > 1f)
         {
             RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 0.06f);
         }
@@ -38,7 +38,7 @@ public class LogoScript : MonoBehaviour
 
     public void LogoMove()
     {
-        if ((RT.anchoredPosition - InsertLocation).magnitude > 0.5f)
+        if ((RT.anchoredPosition - InsertLocation).magnitude >1f)
         {
             RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 0.03f);
         }
@@ -52,7 +52,7 @@ public class LogoScript : MonoBehaviour
 
     public void LogoLeave()
     {
-        if ((RT.anchoredPosition - LeaveLocation).magnitude > 0.5f)
+        if ((RT.anchoredPosition - LeaveLocation).magnitude > 1f)
         {
             RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.06f);
         }
@@ -64,14 +64,14 @@ public class LogoScript : MonoBehaviour
     }
     public void LogoDeath()
     {
-        if ((RT.anchoredPosition - LeaveLocation).magnitude > 0.5f)
+        if ((RT.anchoredPosition - LeaveLocation).magnitude > 1f)
         {
             RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.06f);
         }
         else
         {
             TL.Moved = true;
-            TL.acting = () => { TimeLine.Instance.LogoList.Remove(this); Destroy(this); TimeLine.Instance.acting = null; };
+            TL.acting = () => { TimeLine.Instance.LogoList.Remove(this); Destroy(this.gameObject); TimeLine.Instance.acting = null; };
         }
     }
 }

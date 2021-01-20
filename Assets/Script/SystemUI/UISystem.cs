@@ -101,7 +101,8 @@ public class UISystem : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.O))
         {
-            TurnCha.Skip();
+            if(TLine.Moved)
+                TurnChaSkip();
         }
         if (ActionTile.Count > 0)
         {
@@ -292,7 +293,7 @@ public class UISystem : MonoBehaviour
     List<Button> ADPButtonList = new List<Button>();
     List<GameObject> APPImageList = new List<GameObject>();
     List<Button> SButtonList = new List<Button>();
-    AI TrueTunCha = null;
+    AI TrueTurnCha = null;
     public Transform Frame;
 
     public void PlayerStartTurn()
@@ -325,6 +326,16 @@ public class UISystem : MonoBehaviour
         MoveCam.ChaTurn(TurnCha);
         TurnRun = null;
     }
+    private void TurnChaSkip()
+    {
+        TurnCha.Skip();
+        LRDestory();
+        DestroyADPButton();
+        DestroySkillButton();
+    }
+
+
+
     public void FindSkillButton()
     {
         foreach(var skill in TurnCha.Skills)
@@ -344,6 +355,10 @@ public class UISystem : MonoBehaviour
                 go.onClick.AddListener(() => method.Invoke(this, null));//todo CD
             }
         }
+        Button go = Instantiate<GameObject>(Resources.Load<GameObject>("Standby")).GetComponent<Button>();
+        go.transform.SetParent(SkillsPanel);
+        SButtonList.Add(go);
+        go.onClick.AddListener(() => method.Invoke(this, null));//todo CD
     }
     public void DestroySkillButton()
     {
@@ -888,7 +903,7 @@ public class UISystem : MonoBehaviour
         DestroySkillButton();
         LRDestory();
         MoveCam.ChaTurn(TurnCha);
-        TrueTunCha = TurnCha;
+        TrueTurnCha = TurnCha;
         TurnCha.PreCooperation(AllyTarget);
         m_Roundsystem.EndChecked = false;
         TurnRun = null;
@@ -901,10 +916,10 @@ public class UISystem : MonoBehaviour
     public GameObject CAM_TIMELINE;
     public void CheckEvent()
     {
-        if (TrueTunCha != null)//指揮技能有關，可無視
+        if (TrueTurnCha != null)//指揮技能有關，可無視
         {
-            TurnCha = TrueTunCha;
-            TrueTunCha = null;
+            TurnCha = TrueTurnCha;
+            TrueTurnCha = null;
             m_Roundsystem.EndChecked = true;
             if (TurnCha.AP > 0)
             {
@@ -983,11 +998,11 @@ public class UISystem : MonoBehaviour
     }
     private void Leave()
     {
-        TurnCha.Leave();
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
         TurnRun = null;
+        TurnCha.Leave();
     }
 
     public void PreWake()
@@ -1031,6 +1046,29 @@ public class UISystem : MonoBehaviour
         }
         Canceal();
     }
+    public void PreStandby()
+    {
+        Prepera = false;
+        AttPredictPanel.gameObject.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        MoveCam.ChaTurn(TurnCha);
+        ButtonText.text = "待機";
+        DescribeText.text = "停留原地。";
+        LeftText.text = "";
+        RightText.text = "";
+        ActionButton.onClick.RemoveAllListeners();
+        ActionButton.onClick.AddListener(() => Standby());
+        TurnRun = Canceal;
+    }
+    public void Standby()
+    {
+        DestroyADPButton();
+        DestroySkillButton();
+        LRDestory();
+        TurnRun = null;
+        TurnChaSkip();
+    }
+
 
 
     private void Canceal()

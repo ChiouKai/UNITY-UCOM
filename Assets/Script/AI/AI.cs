@@ -435,6 +435,7 @@ public class AI : MonoBehaviour
         AP = 0;
         EndTurn();
         ResetBool();
+        RemoveVisitedTiles();
         NPCPrepera = false;
         DoActing = null;
     }
@@ -1870,11 +1871,12 @@ public class AI : MonoBehaviour
         AP -= 1;
         Am.SetTrigger("Reload");
         RemoveVisitedTiles();
+        UI.LRDestory();
         StartCoroutine( WaitNextAction());
     }
     protected IEnumerator WaitNextAction()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
         if (AP != 0)
         {
             UI.PlayerStartTurn();
@@ -1911,7 +1913,9 @@ public class AI : MonoBehaviour
 
     public void Leave()
     {
+        RemoveVisitedTiles();
         OutCurrentTile();
+
         RoundSysytem.GetInstance().DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);
