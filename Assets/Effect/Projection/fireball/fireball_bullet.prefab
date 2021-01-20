@@ -112,11 +112,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wall_par: {fileID: 6418552270182538400, guid: 1288464152be0ce42a0d1b403f3f965e,
     type: 3}
-  HumanBlood: {fileID: 0}
-  AlienBlood: {fileID: 0}
   AttackPoint: {x: 0, y: 0, z: 0}
   FirePoint: {x: 0, y: 0, z: 0}
-  Speed: 15
+  Speed: 8
 --- !u!54 &4028304416168502037
 Rigidbody:
   m_ObjectHideFlags: 0

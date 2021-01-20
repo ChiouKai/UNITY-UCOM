@@ -17,7 +17,7 @@ public class UISystem : MonoBehaviour
     public Action TurnRun;
     public Action RunUI;
     public GameObject menu;
-    public Tile StartTile;
+    public Tile[] StartTile;
     bool acting = false;
 
     bool ssstart;
@@ -1191,24 +1191,29 @@ public class UISystem : MonoBehaviour
     }
 
 
+    internal int type;
+    internal int site;
     AI Newcome;
     ISkill[] NewcomeSkills;
     public GameObject increase_text;
     public void NewCome()
     {
-        int i = Random.Range(1, 4);
-        AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy"+i)).GetComponent<AI>();
+        if (type == 0)
+        {
+            type = Random.Range(1, 4);
+        }
+        AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy"+ type)).GetComponent<AI>();
         GameObject go =  Instantiate(increase_text,this.transform) as GameObject;
         go.SetActive(true);
         Destroy(go, 1.8f);
-        Enemy.name = "Enemy"+i;
+        Enemy.name = "Enemy"+ type;
         Newcome = Enemy;
-        i = m_Roundsystem.NewCome(Enemy);
+        int i = m_Roundsystem.NewCome(Enemy);
         Aliens.Add(Enemy);
         GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name + "Logo");
         TLine.NewComeLogo(Enemy, ChaLogo, i);
         CreateHP_Bar(Enemy, Enemy.Cha.MaxHP, Enemy.Cha.HP);
-        Enemy.InCurrentTile(StartTile);
+        Enemy.InCurrentTile(StartTile[site]);
         TurnRun = NewAct;
     }
     public void NewAct()

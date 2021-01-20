@@ -28,13 +28,13 @@ public class MindControl : MonoBehaviour,ISkill
         CD = 3;
         CDCount = 0;
         AimPoint = 0f;
-        Point = 6;
+        Point = 7;
         type = 0;
     }
 
     public bool CheckUseable(AI Target)
     {
-        if (ai.AP < AP ||CDCount > 0 || Target == null||(Target.transform.position-transform.position).magnitude>15f) 
+        if (CDCount > 0 || Target == null||(Target.transform.position-transform.position).magnitude>15f) 
         {
             return false;
         }

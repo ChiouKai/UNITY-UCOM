@@ -164,6 +164,8 @@ public class RoundSysytem
         Action Event = () => 
         { 
             EndChecked = false;
+            UI.type = 0;
+            UI.site = 0;
             UI.TurnRun = UI.NewCome;
             Event = null;
         };
@@ -171,16 +173,18 @@ public class RoundSysytem
     }
     public void NewEvent()
     {
-      /*  if (Aliens.Count < 3)
+        if (Aliens.Count < 3)
         {
             Action Event = () =>
             {
                 EndChecked = false;
+                UI.type = 3;
+                UI.site = 0;
                 UI.TurnRun = UI.NewCome;
                 Event = null;
             };
             EventList.Add(Event);
-        }*/
+        }
 
         if (UI.Bomb_Round == 3) 
         {
@@ -191,6 +195,37 @@ public class RoundSysytem
                 Event = null;
             };
             EventList.Add(Event);
+        }
+        if (UI.Bomb_Round == 1 && UI.Bomb_start)
+        {
+            Action Event = () =>
+            {
+                EndChecked = false;
+                UI.type = 1;
+                UI.site = 1;
+                UI.TurnRun = UI.NewCome;
+                Event = null;
+            };
+            EventList.Add(Event);
+            Event = () =>
+            {
+                EndChecked = false;
+                UI.type = 2;
+                UI.site = 1;
+                UI.TurnRun = UI.NewCome;
+                Event = null;
+            };
+            EventList.Add(Event);
+            Event = () =>
+            {
+                EndChecked = false;
+                UI.type = 3;
+                UI.site = 1;
+                UI.TurnRun = UI.NewCome;
+                Event = null;
+            };
+            EventList.Add(Event);
+
         }
     }
 

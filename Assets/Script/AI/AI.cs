@@ -42,7 +42,7 @@ public class AI : MonoBehaviour
                 TileCount = FindDirection(transform.forward);
                 if (CurrentTile.AdjCoverList[TileCount] == Tile.Cover.None)
                 {
-                    if (FoB> 0.99f)
+                    if (FoB> 0.95f)
                     {
                         return;
                     }
@@ -249,7 +249,7 @@ public class AI : MonoBehaviour
             Ediv = (enemy.position - transform.position).normalized;
             Vector3 CDir = Direction(TileCount);
             float CFoB = Vector3.Dot(CDir, Ediv);
-            if (CFoB > 0)
+            if (CFoB > 0.1)
             {
                 Vector3 CLoR = Vector3.Cross(CDir, Ediv);
                 if (CLoR.y > 0)
@@ -1408,6 +1408,7 @@ public class AI : MonoBehaviour
     public void Fire((AI target, int location, int aim) FireTarget)
     {
         Gun.bullet -= 1;
+        Debug.Log(FireTarget.aim);
         int i =  Random.Range(0, 101);
         if (FireTarget.aim < i)//Miss
         {
@@ -2114,23 +2115,27 @@ public class AI : MonoBehaviour
         Vector3 Location = T.transform.position;
         (AI, int, int) aim=(null,0,0);
         float MinDis = 99;
+        if (Enemies == null)
+        {
+            Enemies = RoundSysytem.GetInstance().Humans;
+        }
         foreach (AI enemy in Enemies)//有障礙物則加分
         {
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                Point += 3f;
+                Point += 3f*10f/Edir.magnitude;
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
-                Point += 2f;
+                Point += 2f * 10f / Edir.magnitude;
             }
             if (MinDis > Edir.magnitude)
             {
                 MinDis = Edir.magnitude;
             }
         }
-        float i = 12 / (MinDis);
+        float i = 16 / (MinDis);
         if (i > 4)
         {
             Point += 4;

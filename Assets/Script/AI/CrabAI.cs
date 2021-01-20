@@ -160,7 +160,10 @@ public class CrabAI : AI
         Vector3 Location = T.transform.position;
 
         float MinDis = 99;
-
+        if (Enemies == null)
+        {
+            Enemies = RoundSysytem.GetInstance().Humans;
+        }
         foreach (AI enemy in Enemies)
         {
             Vector3 Edir = enemy.transform.position - Location;
@@ -170,23 +173,17 @@ public class CrabAI : AI
                 MinDis = Edir.magnitude;
             }
         }
-        int i = 16 / ((int)MinDis + 1);
-        if (i > 4)
-        {
-            Point += 8;
-        }
-        else
-        {
+        float i = 32f / (MinDis + 1f);
+
             Point += i;
-        }
         //可用能力巡一遍，選擇得分高的能力 再拿出來加分
         float SecPoint = 0;
-        for (i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
         {
-            if (T.AdjList[i].Cha != null && EnemyLayer != T.AdjList[i].Cha.EnemyLayer)
+            if (T.AdjList[j].Cha != null && EnemyLayer != T.AdjList[j].Cha.EnemyLayer)
             {
-                Target = T.AdjList[i].Cha;
-                SecPoint += 3;
+                Target = T.AdjList[j].Cha;
+                SecPoint += 10;
                 break;
             }
         }
@@ -333,19 +330,21 @@ public class CrabAI : AI
             Moving = false;
             Attack = false;
             Am.SetTrigger("Melee");
+            AP = 0;
             StartCoroutine(WaitMelee2());
         }
     }
 
     protected IEnumerator WaitMelee2()
     {
+
         yield return new WaitForSeconds(0.5f);
 
         Target.BeDamaged(3);
         Target.Hurt(transform.forward);
         UI.status("Demage", this);
         yield return new WaitForSeconds(1f);//
-        EndTurn();
+        StartCoroutine(WaitNextAction());
     }
 
     public override void Hurt(Vector3 dir)

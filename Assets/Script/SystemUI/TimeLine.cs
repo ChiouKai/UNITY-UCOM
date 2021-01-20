@@ -46,12 +46,13 @@ public class TimeLine : MonoBehaviour
         logo.transform.SetParent(transform, false);
         logo.GetComponent<RectTransform>().anchoredPosition = new Vector2(140, -50 - 110 * Count);
         var Current = LogoList.First;
-        for(int i = 0; i < Count; ++i)
+        for(int i = 0; i < Count-1; ++i)
         {
             Current = Current.Next;
         }
-        LogoList.AddBefore(Current, logo);
+        LogoList.AddAfter(Current, logo);
         LogoDic.Add(Cha, logo);
+        Current = Current.Next;
         while (Current != null)
         {
             logo = Current.Value;
