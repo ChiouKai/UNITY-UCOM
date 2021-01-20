@@ -680,6 +680,7 @@ public class UISystem : MonoBehaviour
         DestroyADPButton();
         DestroySkillButton();
         acting = false;
+        RunUI = CloseActionUI;
         TurnRun = null;
     }
 
@@ -756,6 +757,7 @@ public class UISystem : MonoBehaviour
         TurnCha.Reload();
         DestroyADPButton();
         DestroySkillButton();
+        RunUI = CloseActionUI;
         TurnRun = null;
     }
 
@@ -831,6 +833,7 @@ public class UISystem : MonoBehaviour
         MoveCam.ChaTurn(TurnCha);
         DestroyADPButton();
         DestroySkillButton();
+        RunUI = CloseActionUI;
         TurnRun = null;
     }
 
@@ -876,6 +879,7 @@ public class UISystem : MonoBehaviour
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
+        RunUI = CloseActionUI;
         TurnRun = null;
     }
 
@@ -942,6 +946,7 @@ public class UISystem : MonoBehaviour
         TrueTurnCha = TurnCha;
         TurnCha.PreCooperation(AllyTarget);
         m_Roundsystem.EndChecked = false;
+        RunUI = CloseActionUI;
         TurnRun = null;
     }
 
@@ -1017,6 +1022,7 @@ public class UISystem : MonoBehaviour
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
+        RunUI = CloseActionUI;
         TurnRun = null;
     }
 
@@ -1040,6 +1046,7 @@ public class UISystem : MonoBehaviour
         DestroySkillButton();
         LRDestory();
         TurnRun = null;
+        RunUI = CloseActionUI;
         TurnCha.Leave();
     }
 
@@ -1069,6 +1076,7 @@ public class UISystem : MonoBehaviour
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
+        RunUI = CloseActionUI;
         TurnRun = null;
     }
     private void ChangeWakeTarget()
@@ -1101,6 +1109,7 @@ public class UISystem : MonoBehaviour
     public void Standby()
     {
         TurnRun = null;
+        RunUI = CloseActionUI;
         TurnChaSkip();
     }
 

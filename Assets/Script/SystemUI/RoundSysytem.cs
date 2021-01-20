@@ -171,7 +171,7 @@ public class RoundSysytem
     }
     public void NewEvent()
     {
-        if (Aliens.Count < 3)
+      /*  if (Aliens.Count < 3)
         {
             Action Event = () =>
             {
@@ -180,7 +180,7 @@ public class RoundSysytem
                 Event = null;
             };
             EventList.Add(Event);
-        }
+        }*/
 
         if (UI.Bomb_Round == 3) 
         {

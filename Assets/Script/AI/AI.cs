@@ -2614,5 +2614,12 @@ public class AI : MonoBehaviour
         }
     }
 
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(transform.position + Vector3.up * 1.34f, 0.1f);
+    }
+
 }
 

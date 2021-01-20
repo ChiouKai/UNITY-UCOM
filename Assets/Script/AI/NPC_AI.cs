@@ -55,14 +55,6 @@ public class NPC_AI : AI
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(enemy.position + Vector3.up * 1.6f, 0.2f);
-    }
-
-
-
 
 
 
