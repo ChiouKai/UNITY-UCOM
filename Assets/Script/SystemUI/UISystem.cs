@@ -1184,10 +1184,14 @@ public class UISystem : MonoBehaviour
 
     AI Newcome;
     ISkill[] NewcomeSkills;
+    public GameObject increase_text;
     public void NewCome()
     {
         int i = Random.Range(1, 4);
         AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy"+i)).GetComponent<AI>();
+        GameObject go =  Instantiate(increase_text,this.transform) as GameObject;
+        go.SetActive(true);
+        Destroy(go, 1.8f);
         Enemy.name = "Enemy"+i;
         Newcome = Enemy;
         i = m_Roundsystem.NewCome(Enemy);

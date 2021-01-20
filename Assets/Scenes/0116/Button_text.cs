@@ -9,12 +9,13 @@ public class Button_text : MonoBehaviour
     public bool open;
     public bool fin;
     bool textfin;
+    public float speed;
     void Update()
     {
         if (mis_col.color.a == 0) fin = true;
         if (mis_col.color.a == 1) fin =false;
-        if (fin) fadein(mis_col, 1);
-        if (!fin) fadeout(mis_col, 1);
+        if (fin) fadein(mis_col, speed);
+        if (!fin) fadeout(mis_col, speed);
     }
     void fadein(Text text, float speed)
     {
