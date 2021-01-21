@@ -28,7 +28,7 @@ public class Melee : MonoBehaviour , ISkill
         CD = 1;
         CDCount = 0;
         AimPoint = 0;
-        Point = 3;
+        Point = 0;
         type = 0;
     }
 

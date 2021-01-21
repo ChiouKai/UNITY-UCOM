@@ -230,7 +230,7 @@ public class UISystem : MonoBehaviour
         {
             ShowPredictAttable(T);
             var path = TurnCha.MoveToTile(T);
-            if (T.distance > TurnCha.Cha.Mobility)
+            if (T.distance > TurnCha.Cha.Mobility*(TurnCha.AP-1))
             {
                 DrawHeadingLine(path,Yellow);
             }
@@ -695,7 +695,6 @@ public class UISystem : MonoBehaviour
         TurnCha.Fire(Target.Value);
         DestroyADPButton();
         DestroySkillButton();
-        acting = false;
         RunUI = CloseActionUI;
         TurnRun = null;
     }
@@ -966,13 +965,18 @@ public class UISystem : MonoBehaviour
         TurnRun = null;
     }
 
-    //每回合檢查
+    //每回合檢查dra
     public bool lose_check = false;
     public bool win_check = false;
     public GameObject CAM;
     public GameObject CAM_TIMELINE;
+    public bool Escape = false;
     public void CheckEvent()
     {
+        MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
+        per_but = false; //我方切換子彈預設為關
+        MoveCam.att_cam_bool = false;
+        acting = false;
         if (TrueTurnCha != null)//指揮技能有關，可無視
         {
             TurnCha = TrueTurnCha;
@@ -989,25 +993,25 @@ public class UISystem : MonoBehaviour
         }
         if (Humans.Count == 0)//我方角色全都不再場上時
         {
-            if (!Bomb_start)//沒按裝炸彈但都不在場上 ->死光時
+            if (Bomb_Round < 3) //安裝炸彈且超過三回合且人走光
             {
                 lose_check = true;
-                Debug.Log("我方角色死光");
             }
-            if (Bomb_Round <= 5) //安裝炸彈且超過三回合且人走光
+            else if (Escape)
             {
                 Debug.Log("786453AS");
-               // toggle[2].transform.GetChild(1).GetComponent<Text>().color = Color.green;
-               // toggle[2].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
+                toggle[2].transform.GetChild(1).GetComponent<Text>().color = Color.green;
+                toggle[2].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
                 win_check = true;
             }
-            if (Bomb_Round > 5)//安裝炸彈但還沒超過堅守回合 ->失敗
+            else
             {
                 lose_check = true;
             }
-            Debug.Log("AAAAAAAAAAAAAAAAAAAAA");
-            //安裝炸彈超過三回合全都逃出
-            //安裝炸彈後在場上超過五回合 ->就算角色都在但也成功
+        }
+        else if(Bomb_Round > 5)
+        {
+            lose_check = true;
         }
     }
 
@@ -1413,7 +1417,7 @@ public class UISystem : MonoBehaviour
     public bool Bomb_explosion;
     public GameObject mission_success;
     public GameObject mission_failure;
-    public int Bomb_Round;
+    public int Bomb_Round = 0;
     //public Text fr;
     public Text final_text;
     public GameObject[] toggle;

@@ -4055,7 +4055,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cha: {fileID: 7154555018010834703}
   CurrentTile: {fileID: 0}
-  MoveSpeed: 4
+  MoveSpeed: 6
   FirePoint: {fileID: 0}
   Bullet: {fileID: 0}
   BeAttakePoint: {fileID: 402724848175036054}

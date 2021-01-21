@@ -260,7 +260,6 @@ public class CrabAI : AI
 
             Am.SetBool("Run", false);
             Moving = false;
-            Turn = false;
             PreAttack = false;
             NPCPrepera = false;
             AP = 0;
