@@ -978,16 +978,16 @@ public class UISystem : MonoBehaviour
                 lose_check = true;
                 Debug.Log("我方角色死光");
             }
-            if (Bomb_Round < 3)//安裝炸彈但還沒超過堅守回合 ->失敗
-            {
-                lose_check = true;
-            }
-            if (Bomb_Round >= 3) //安裝炸彈且超過三回合且人走光
+            if (Bomb_Round <= 5) //安裝炸彈且超過三回合且人走光
             {
                 Debug.Log("786453AS");
-                toggle[2].transform.GetChild(1).GetComponent<Text>().color = Color.green;
-                toggle[2].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
+               // toggle[2].transform.GetChild(1).GetComponent<Text>().color = Color.green;
+               // toggle[2].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
                 win_check = true;
+            }
+            if (Bomb_Round > 5)//安裝炸彈但還沒超過堅守回合 ->失敗
+            {
+                lose_check = true;
             }
             Debug.Log("AAAAAAAAAAAAAAAAAAAAA");
             //安裝炸彈超過三回合全都逃出

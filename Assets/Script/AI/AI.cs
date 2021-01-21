@@ -1800,17 +1800,17 @@ public class AI : MonoBehaviour
     }
     protected virtual void AIDeath()
     {
-        if (MindControlAI != null)
-        {
-            UI.TurnRun = () => { StartCoroutine(MindControlAI.RecoverMind()); UI.TurnRun = null; };
-        }
+
         OutCurrentTile();
         RoundSysytem.GetInstance().DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);
         Destroy(GetComponent<EPOOutline.Outlinable>());
         Destroy(Cha);
-        Destroy(this);
+        if (MindControlAI != null)
+        {
+            UI.TurnRun = () => { StartCoroutine(MindControlAI.RecoverMind(this)); UI.TurnRun = null; };
+        }
     }
 
     public virtual void Hurt(Vector3 dir)
@@ -2124,11 +2124,11 @@ public class AI : MonoBehaviour
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                Point += 3f*10f/Edir.magnitude;
+                Point += 3f; // Edir.magnitude;
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
-                Point += 2f * 10f / Edir.magnitude;
+                Point += 2f;// Edir.magnitude;
             }
             if (MinDis > Edir.magnitude)
             {
@@ -2557,7 +2557,7 @@ public class AI : MonoBehaviour
         UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
     }
 
-    public IEnumerator RecoverMind()
+    public IEnumerator RecoverMind(AI enemy)
     {
         RoundSysytem.GetInstance().EndChecked = false;
         yield return new WaitForSeconds(1f);
@@ -2573,6 +2573,7 @@ public class AI : MonoBehaviour
         UI.DestroyHPBar(this);
         UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
         RoundSysytem.GetInstance().EndChecked = true;
+        Destroy(enemy);
     }
 
 

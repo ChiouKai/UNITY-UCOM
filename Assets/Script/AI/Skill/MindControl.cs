@@ -34,7 +34,7 @@ public class MindControl : MonoBehaviour,ISkill
 
     public bool CheckUseable(AI Target)
     {
-        if (CDCount > 0 || Target == null||(Target.transform.position-transform.position).magnitude>15f) 
+        if (CDCount > 0 || Target == null||(Target.transform.position-transform.position).magnitude>20f) 
         {
             return false;
         }

@@ -178,7 +178,7 @@ public class RoundSysytem
             Action Event = () =>
             {
                 EndChecked = false;
-                UI.type = 3;
+                UI.type = 0;
                 UI.site = 0;
                 UI.TurnRun = UI.NewCome;
                 Event = null;
@@ -186,7 +186,7 @@ public class RoundSysytem
             EventList.Add(Event);
         }
 
-        if (UI.Bomb_Round == 3) 
+        if (UI.Bomb_Round == 1) 
         {
             Action Event = () =>
             {
