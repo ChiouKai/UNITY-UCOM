@@ -1921,7 +1921,7 @@ public class AI : MonoBehaviour
     {
         RemoveVisitedTiles();
         OutCurrentTile();
-
+        UI.Escape = true;
         RoundSysytem.GetInstance().DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);

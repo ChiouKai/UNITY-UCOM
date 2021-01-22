@@ -148,7 +148,7 @@ public class UISystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) && missionDialogue.activeInHierarchy) { menu.SetActive(true); missionDialogue.SetActive(false); }
         if (Input.GetKeyDown(KeyCode.Escape)) { menu.SetActive(!menu.activeInHierarchy); }
         if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy) { menu.SetActive(true); menuOption.SetActive(false); }
-        if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy && menuCheck.activeInHierarchy) { menu.SetActive(true); menuCheck.SetActive(false); }
+        //if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy && menuCheck.activeInHierarchy) { menu.SetActive(true); menuCheck.SetActive(false); }
 
     }
 
