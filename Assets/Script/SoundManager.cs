@@ -23,8 +23,7 @@ public class SoundManager : MonoBehaviour
             s.source.pitch = s.pitch;
             s.source.loop = s.Loop;
         }        
-    }
-       
+    }       
     
     void Start()
     {   
