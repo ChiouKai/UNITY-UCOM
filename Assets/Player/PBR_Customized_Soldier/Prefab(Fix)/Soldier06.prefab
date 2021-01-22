@@ -421,6 +421,12 @@ MonoBehaviour:
   BasicAim: 70
   Energy: 0
   MaxEnergy: 0
+  affirmative: 
+  takeHit: 
+  die: 
+  MindControlled: 
+  reload: 
+  skill: 
   camp: 0
   type: 0
 --- !u!114 &6990360659797749033
@@ -435,7 +441,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96e1eb11be80a8b47b0b4af77fe7470b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: 
+  preAttack: 
+  weapon1: 
+  weapon2: 
   Damage: 0400000005000000
   DamageRange: 2
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000
@@ -1424,7 +1432,7 @@ GameObject:
   - component: {fileID: 152767530113594645}
   m_Layer: 11
   m_Name: Pelvis
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1455,8 +1463,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.885369, y: 0.4, z: 0.4}
-  m_Center: {x: -0.17268455, y: 0.00000000195918, z: -0.000000008333703}
+  m_Size: {x: 0.885369, y: 0.36622646, z: 0.51}
+  m_Center: {x: -0.17268455, y: 0.0074147554, z: 0.0048470036}
 --- !u!114 &1852713294772282050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2355,9 +2363,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1217560603507701737}
+  - component: {fileID: 4480545733531740789}
   m_Layer: 11
   m_Name: Head
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2377,6 +2386,19 @@ Transform:
   m_Father: {fileID: 1223662315625456317}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4480545733531740789
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220152157479323159}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.2, y: 0.2, z: 0.2}
+  m_Center: {x: -0.09, y: 0, z: 0}
 --- !u!1 &1220152296666884657
 GameObject:
   m_ObjectHideFlags: 0
@@ -3624,9 +3646,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1223597463073581471}
+  - component: {fileID: 1735340582450154690}
   m_Layer: 11
   m_Name: Calf_L
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3646,6 +3669,19 @@ Transform:
   m_Father: {fileID: 1223726185120719613}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1735340582450154690
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220450757668069099}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.65, y: 0.21, z: 0.15}
+  m_Center: {x: -0.06, y: 0, z: 0}
 --- !u!1 &1220452495071272495
 GameObject:
   m_ObjectHideFlags: 0
@@ -3716,9 +3752,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1223716937834516319}
+  - component: {fileID: 4524505256833901414}
   m_Layer: 11
   m_Name: Calf_R
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3738,6 +3775,19 @@ Transform:
   m_Father: {fileID: 1217170459158260597}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4524505256833901414
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220472406783673647}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.65, y: 0.21, z: 0.15}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1220474332194140097
 GameObject:
   m_ObjectHideFlags: 0
@@ -3934,24 +3984,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dda5d32a2ba08d94599e5aa88a54a366, type: 3}
---- !u!4 &6061721161193797391 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6432821481602306256, guid: dda5d32a2ba08d94599e5aa88a54a366,
-    type: 3}
-  m_PrefabInstance: {fileID: 962211528684398559}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &939450716594200967 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 23625457745364568, guid: dda5d32a2ba08d94599e5aa88a54a366,
-    type: 3}
-  m_PrefabInstance: {fileID: 962211528684398559}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &939453593186237917 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 23620092228049410, guid: dda5d32a2ba08d94599e5aa88a54a366,
-    type: 3}
-  m_PrefabInstance: {fileID: 962211528684398559}
-  m_PrefabAsset: {fileID: 0}
 --- !u!23 &939482741168156547 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 23574469326194780, guid: dda5d32a2ba08d94599e5aa88a54a366,
@@ -3970,9 +4002,27 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 962211528684398559}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &939450716594200967 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 23625457745364568, guid: dda5d32a2ba08d94599e5aa88a54a366,
+    type: 3}
+  m_PrefabInstance: {fileID: 962211528684398559}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &963243942020510727 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1221602686079960, guid: dda5d32a2ba08d94599e5aa88a54a366,
+    type: 3}
+  m_PrefabInstance: {fileID: 962211528684398559}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &939453593186237917 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 23620092228049410, guid: dda5d32a2ba08d94599e5aa88a54a366,
+    type: 3}
+  m_PrefabInstance: {fileID: 962211528684398559}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6061721161193797391 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6432821481602306256, guid: dda5d32a2ba08d94599e5aa88a54a366,
     type: 3}
   m_PrefabInstance: {fileID: 962211528684398559}
   m_PrefabAsset: {fileID: 0}

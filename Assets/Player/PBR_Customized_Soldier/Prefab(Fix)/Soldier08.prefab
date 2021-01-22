@@ -825,6 +825,12 @@ MonoBehaviour:
   BasicAim: 70
   Energy: 0
   MaxEnergy: 0
+  affirmative: 
+  takeHit: 
+  die: 
+  MindControlled: 
+  reload: 
+  skill: 
   camp: 0
   type: 0
 --- !u!114 &8157025691337330856
@@ -839,7 +845,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96e1eb11be80a8b47b0b4af77fe7470b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: 
+  preAttack: 
+  weapon1: 
+  weapon2: 
   Damage: 0400000005000000
   DamageRange: 2
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000
@@ -1494,9 +1502,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1833757073240402263}
+  - component: {fileID: 1879382000672264219}
   m_Layer: 0
   m_Name: Head
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1516,6 +1525,19 @@ Transform:
   m_Father: {fileID: 1833964883682710653}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1879382000672264219
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1829837532157636687}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.2, y: 0.2, z: 0.2}
+  m_Center: {x: -0.09, y: 0, z: 0}
 --- !u!1 &1829848047705060949
 GameObject:
   m_ObjectHideFlags: 0
@@ -2539,7 +2561,7 @@ GameObject:
   - component: {fileID: 8734115238368448969}
   m_Layer: 0
   m_Name: Pelvis
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2732,9 +2754,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1833785018320578479}
+  - component: {fileID: 3037215915326742842}
   m_Layer: 0
   m_Name: Calf_L
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2754,6 +2777,19 @@ Transform:
   m_Father: {fileID: 1832158419489003197}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &3037215915326742842
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830352687463837023}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.65, y: 0.21, z: 0.15}
+  m_Center: {x: -0.06, y: 0, z: 0}
 --- !u!1 &1830365911865626221
 GameObject:
   m_ObjectHideFlags: 0
@@ -3141,9 +3177,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1833637454203379169}
+  - component: {fileID: 3084070103252948883}
   m_Layer: 0
   m_Name: Calf_R
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3163,6 +3200,19 @@ Transform:
   m_Father: {fileID: 1833651555279495445}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &3084070103252948883
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830493724330651585}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.65, y: 0.21, z: 0.15}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1830502099220377263
 GameObject:
   m_ObjectHideFlags: 0

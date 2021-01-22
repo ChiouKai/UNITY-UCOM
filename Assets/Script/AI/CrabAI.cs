@@ -263,6 +263,7 @@ public class CrabAI : AI
             PreAttack = false;
             NPCPrepera = false;
             AP = 0;
+            RoundSysytem.GetInstance().EndChecked = true;
             StartCoroutine(WaitNextAction());
         }
     }
@@ -343,6 +344,7 @@ public class CrabAI : AI
         Target.Hurt(transform.forward);
         UI.status("Demage", this);
         yield return new WaitForSeconds(1f);//
+        RoundSysytem.GetInstance().EndChecked = true;
         StartCoroutine(WaitNextAction());
     }
 

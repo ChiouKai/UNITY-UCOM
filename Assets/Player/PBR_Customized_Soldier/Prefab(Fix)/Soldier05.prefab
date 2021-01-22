@@ -829,6 +829,12 @@ MonoBehaviour:
   BasicAim: 70
   Energy: 0
   MaxEnergy: 0
+  affirmative: 
+  takeHit: 
+  die: 
+  MindControlled: 
+  reload: 
+  skill: 
   camp: 0
   type: 0
 --- !u!114 &177668318653176371
@@ -843,7 +849,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96e1eb11be80a8b47b0b4af77fe7470b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: 
+  preAttack: 
+  weapon1: 
+  weapon2: 
   Damage: 0400000005000000
   DamageRange: 2
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000
@@ -1362,9 +1370,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7653436100007355340}
+  - component: {fileID: 1983117113538485242}
   m_Layer: 11
   m_Name: Head
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1384,6 +1393,19 @@ Transform:
   m_Father: {fileID: 7653632935618060006}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1983117113538485242
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7647187245889403604}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.2, y: 0.2, z: 0.2}
+  m_Center: {x: -0.09, y: 0, z: 0}
 --- !u!1 &7647188420376479458
 GameObject:
   m_ObjectHideFlags: 0
@@ -2344,9 +2366,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7653390382388096308}
+  - component: {fileID: 6387503245212963249}
   m_Layer: 11
   m_Name: Calf_L
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2366,6 +2389,19 @@ Transform:
   m_Father: {fileID: 7649792376842378278}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6387503245212963249
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7647710098314946500}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.65, y: 0.21, z: 0.15}
+  m_Center: {x: -0.06, y: 0, z: 0}
 --- !u!1 &7647712124041548174
 GameObject:
   m_ObjectHideFlags: 0
@@ -2443,7 +2479,7 @@ GameObject:
   - component: {fileID: 752497281068653394}
   m_Layer: 11
   m_Name: Pelvis
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3811,9 +3847,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7653520457364707194}
+  - component: {fileID: 3110193059384515228}
   m_Layer: 11
   m_Name: Calf_R
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3833,6 +3870,19 @@ Transform:
   m_Father: {fileID: 7653541686685641614}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &3110193059384515228
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7648132080081249626}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.65, y: 0.21, z: 0.15}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7648158507257140044
 GameObject:
   m_ObjectHideFlags: 0
@@ -4649,18 +4699,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 434d3225433cccb4b902688ae47e9726, type: 3}
---- !u!1 &2313054451397255025 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1376827010617884, guid: 434d3225433cccb4b902688ae47e9726,
-    type: 3}
-  m_PrefabInstance: {fileID: 2314140968662191469}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &2309695529803381691 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4737984120567510, guid: 434d3225433cccb4b902688ae47e9726,
-    type: 3}
-  m_PrefabInstance: {fileID: 2314140968662191469}
-  m_PrefabAsset: {fileID: 0}
 --- !u!23 &2326182731809420125 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 23987141250661936, guid: 434d3225433cccb4b902688ae47e9726,
@@ -4670,6 +4708,18 @@ MeshRenderer:
 --- !u!23 &2327411630677824535 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 23039713080498554, guid: 434d3225433cccb4b902688ae47e9726,
+    type: 3}
+  m_PrefabInstance: {fileID: 2314140968662191469}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2309695529803381691 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4737984120567510, guid: 434d3225433cccb4b902688ae47e9726,
+    type: 3}
+  m_PrefabInstance: {fileID: 2314140968662191469}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2313054451397255025 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1376827010617884, guid: 434d3225433cccb4b902688ae47e9726,
     type: 3}
   m_PrefabInstance: {fileID: 2314140968662191469}
   m_PrefabAsset: {fileID: 0}
@@ -4747,15 +4797,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a748dd79567cd0a40a6236f00161573a, type: 3}
---- !u!198 &9220115728203540500 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 429707531517164064, guid: a748dd79567cd0a40a6236f00161573a,
-    type: 3}
-  m_PrefabInstance: {fileID: 8791816878326780468}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9023652908764658384 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 520370663167748324, guid: a748dd79567cd0a40a6236f00161573a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8791816878326780468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &9220115728203540500 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 429707531517164064, guid: a748dd79567cd0a40a6236f00161573a,
     type: 3}
   m_PrefabInstance: {fileID: 8791816878326780468}
   m_PrefabAsset: {fileID: 0}

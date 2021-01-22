@@ -4081,6 +4081,12 @@ MonoBehaviour:
   BasicAim: 100
   Energy: 0
   MaxEnergy: 0
+  affirmative: 
+  takeHit: 
+  die: 
+  MindControlled: 
+  reload: 
+  skill: 
   camp: 1
   type: 1
 --- !u!114 &5480942384249066731
@@ -4725,9 +4731,10 @@ GameObject:
   - component: {fileID: 402724848175036054}
   - component: {fileID: 6308235170786311837}
   - component: {fileID: 4652110737122724121}
+  - component: {fileID: 4036570089186496351}
   m_Layer: 10
   m_Name: BeAttackPoint
-  m_TagString: Untagged
+  m_TagString: Alien
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4773,3 +4780,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.72, y: 1.63, z: 0.71}
   m_Center: {x: 0, y: -0.44, z: -0.33}
+--- !u!54 &4036570089186496351
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1956968327794809616}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

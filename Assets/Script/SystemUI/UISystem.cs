@@ -51,13 +51,19 @@ public class UISystem : MonoBehaviour
         Humans = new List<AI>();
         for(int count = 0; count< GHumans.Length; ++count)
         {
-            Humans.Add(GHumans[count].GetComponent<AI>());
+            AI ai = GHumans[count].GetComponent<AI>();
+            if (ai == null)
+                continue;
+            Humans.Add(ai);
         }
         GameObject[] GAliens = GameObject.FindGameObjectsWithTag("Alien");
         Aliens = new List<AI>();
         for (int count = 0; count < GAliens.Length; ++count)
         {
-            Aliens.Add(GAliens[count].GetComponent<AI>());
+            AI ai = GAliens[count].GetComponent<AI>();
+            if (ai == null)
+                continue;
+            Aliens.Add(ai);
         }
         /*將對話寫在這 對話完再執行*/
         //m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
@@ -177,6 +183,7 @@ public class UISystem : MonoBehaviour
         RT.anchoredPosition3D = new Vector3(0, 240, 0);
         BelowButtonAndText.SetActive(true);
         AttDectPanel.gameObject.SetActive(true);
+        LRs.gameObject.SetActive(true);
         RunUI = null;
     }
 
@@ -188,11 +195,11 @@ public class UISystem : MonoBehaviour
         RunUI = null;
     }
 
-    float AlphaValve=0.6f;
-    float AdjustValve = 0.2f;
+    float AlphaValve=0.7f;
+    float AdjustValve = 0.25f;
     private void UpdateActionTile()
     {
-        if (AlphaValve > 0.6f)
+        if (AlphaValve > 0.7f)
         {
             AdjustValve = -AdjustValve;
         }
@@ -309,6 +316,7 @@ public class UISystem : MonoBehaviour
     public GameObject Blue;
     public GameObject Yellow;
     public List<GameObject> LRList;
+    public Transform LRs;
     private GameObject GLR;
     public bool Prepera = false;
     public Transform AttDectPanel;
@@ -590,6 +598,7 @@ public class UISystem : MonoBehaviour
                     }
                     else
                     {
+                        GLR.transform.SetParent(LRs);
                         LRList.Add(GLR);
                     }
                 }
@@ -664,6 +673,7 @@ public class UISystem : MonoBehaviour
         {
             return;
         }
+        LRs.gameObject.SetActive(false);
         acting = true;
         Prepera = false;
         Target = TurnCha.AttakeableList.First;
@@ -739,6 +749,7 @@ public class UISystem : MonoBehaviour
             //StartCoroutine(WaitMove());
             per_but = false;
             acting = false;
+            LRs.gameObject.SetActive(true);
         }
     }
     public void ChangeAttakeTargetButton(AI ai)
@@ -980,6 +991,7 @@ public class UISystem : MonoBehaviour
         per_but = false; //我方切換子彈預設為關
         MoveCam.att_cam_bool = false;
         acting = false;
+
         if (TrueTurnCha != null)//指揮技能有關，可無視
         {
             TurnCha = TrueTurnCha;
@@ -1237,6 +1249,12 @@ public class UISystem : MonoBehaviour
         TLine.NewComeLogo(Enemy, ChaLogo, i);
         CreateHP_Bar(Enemy, Enemy.Cha.MaxHP, Enemy.Cha.HP);
         Enemy.InCurrentTile(StartTile[site]);
+        TurnRun = null;
+        StartCoroutine(WaitInitialization());
+    }
+    IEnumerator WaitInitialization()
+    {
+        yield return new WaitForSeconds(0.1f); 
         TurnRun = NewAct;
     }
     public void NewAct()

@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public class Move_Camera : MonoBehaviour
 {
     public Camera scene_camera;
-    float move_speed = 6f;
+    float move_speed = 7f;
     public float y = -45; //旋轉45度
     float td = 0; //時間
     int i = 0; // 地板提示變數

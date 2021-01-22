@@ -1417,10 +1417,10 @@ public class AI : MonoBehaviour
             
             while (true)
             {
-                if (Physics.Raycast(ShotPoint, (Target.transform.position
-                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f))) - ShotPoint,out RH))
+                if (Physics.Raycast(ShotPoint, (Target.BeAttakePoint.position
+                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.15f, 0.15f), Random.Range(-0.67f, 0.67f))) - ShotPoint,out RH))
                 {
-                    if (RH.collider.tag == "En" || RH.collider.tag == "Wall")
+                    if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
                     {
                         AttackPoint = RH.point;
 
@@ -1888,7 +1888,6 @@ public class AI : MonoBehaviour
         }
         else
         {
-            RoundSysytem.GetInstance().EndChecked = true;
             EndTurn();
             PreAttack = false;
         }
@@ -2096,6 +2095,7 @@ public class AI : MonoBehaviour
                 NPCPrepera = false;
                 ResetBool();
                 AP = 0;
+                RoundSysytem.GetInstance().EndChecked = true;
                 StartCoroutine(WaitNextAction());
             }
         }
@@ -2351,13 +2351,13 @@ public class AI : MonoBehaviour
         {
             Miss = true;
             RaycastHit RH;
-            Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(AttakeTarget.Item2);
+            Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(AttakeTarget.Item2)+TargetDir.normalized*0.67f;
             while (true)
             {
-                if (Physics.Raycast(ShotPoint, (AttakeTarget.Item1.transform.position
+                if (Physics.Raycast(ShotPoint, (AttakeTarget.Item1.BeAttakePoint.position
                     + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f))) - ShotPoint, out RH))
                 {
-                    if (RH.collider.tag == "En"|| RH.collider.tag =="Wall" )
+                    if (RH.collider.tag!="Human"&& RH.collider.tag !="Alien" )
                     {
                         AttackPoint = RH.point;
 
