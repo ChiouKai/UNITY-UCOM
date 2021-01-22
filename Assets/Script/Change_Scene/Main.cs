@@ -33,6 +33,7 @@ public class Main : MonoBehaviour
     }
     public void change_scene(string scenename)
     {
+        UISystem.getInstance().Round.Abort();
         b_change = true;
         scene_name = scenename;
         
@@ -92,6 +93,7 @@ public class Main : MonoBehaviour
     }
     public void reload_scene()
     {
+        UISystem.getInstance().Round.Abort();
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
     }

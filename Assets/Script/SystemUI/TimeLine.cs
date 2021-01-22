@@ -138,7 +138,6 @@ public class TimeLine : MonoBehaviour
             LogoList.Remove(tem);
             Destroy(logo.gameObject);
             LogoDic.Add(Cha, newlogo);
-            RoundSysytem.GetInstance().EndChecked = true;
         }
     }
 }

@@ -2153,7 +2153,7 @@ public class AI : MonoBehaviour
         float SecPoint = 0;
         if (Skills != null) 
         {
-            if (T.distance < Cha.Mobility)
+            if (T.distance <= Cha.Mobility)
             {
                 if (T.distance != 0)
                 {
@@ -2429,6 +2429,9 @@ public class AI : MonoBehaviour
         }
         else
         {
+            RemoveVisitedTiles();
+            NPCPrepera = false;
+            DoActing = null;
             EndTurn();
         }
     }
@@ -2545,7 +2548,11 @@ public class AI : MonoBehaviour
 
     public IEnumerator BeMindControl(float Sec)
     {
+        UI.MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
+        UI.per_but = false; //我方切換子彈預設為關
+        UI.MoveCam.att_cam_bool = false;
         yield return new WaitForSeconds(Sec);
+        UI.MoveCam.ChaTurn(this);
         Am.Play("Agony");
         GameObject go = Instantiate<GameObject>(Resources.Load<GameObject>("MindCing"));
         Transform head = BeAttakePoint.GetChild(0).Find("Head");
@@ -2561,12 +2568,15 @@ public class AI : MonoBehaviour
         UI.ChangeLogo(this);
         UI.DestroyHPBar(this);
         UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
+        yield return new WaitForSeconds(0.5f);
+        RoundSysytem.GetInstance().EndChecked = true;
     }
 
     public IEnumerator RecoverMind(AI enemy)
     {
         RoundSysytem.GetInstance().EndChecked = false;
         yield return new WaitForSeconds(1f);
+        UI.MoveCam.ChaTurn(this);
         Transform MCing = BeAttakePoint.GetChild(0).Find("Head").Find("MindCing(Clone)");
         Destroy(MCing.gameObject);
         Cha.camp = Character.Camp.Human;

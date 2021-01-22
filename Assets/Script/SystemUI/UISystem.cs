@@ -14,7 +14,7 @@ public class UISystem : MonoBehaviour
     List<AI> Humans, Aliens;
     public AI TurnCha;
     RoundSysytem m_Roundsystem;
-    Thread Round;
+    internal Thread Round;
     public Action TurnRun;
     public Action RunUI;
     public GameObject menu;
@@ -400,10 +400,10 @@ public class UISystem : MonoBehaviour
                 }
             }
         }
-        Button SB = Instantiate<GameObject>(Resources.Load<GameObject>("Standby")).GetComponent<Button>();
-        SB.transform.SetParent(SkillsPanel);
-        SButtonList.Add(SB);
-        SB.onClick.AddListener(() => PreStandby());//todo CD
+        //Button SB = Instantiate<GameObject>(Resources.Load<GameObject>("Standby")).GetComponent<Button>();
+        //SB.transform.SetParent(SkillsPanel);
+        //SButtonList.Add(SB);
+        //SB.onClick.AddListener(() => PreStandby());//todo CD
     }
     public void DestroySkillButton()
     {
@@ -794,6 +794,7 @@ public class UISystem : MonoBehaviour
         MeleeTarget.Value.Item2.ChoMeleePos();
         MoveCam.ChaTurn(MeleeTarget.Value.Item1);
         AimTarget.SetActive(true);
+        AimTarget.transform.GetChild(0).GetComponent<Text>().text ="90%";
         AimPos = MeleeTarget.Value.Item1.BeAttakePoint;
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);

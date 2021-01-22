@@ -44,7 +44,9 @@ public class Move_Camera : MonoBehaviour
         US.final_text.text = (5 - US.Bomb_Round).ToString();
         if (US.Bomb_Round == 3)
         {
-            //US.toggle[2].SetActive(true);
+            US.toggle[2].SetActive(true);
+            US.toggle[1].transform.GetChild(1).GetComponent<Text>().color = Color.green;
+            US.toggle[1].transform.GetChild(0).GetComponent<Image>().sprite = US.mission_Images[1];
         }
         if (US.Bomb_Round > 5) //安裝炸彈且稱超過5回合
             US.lose_check = true;
@@ -56,8 +58,6 @@ public class Move_Camera : MonoBehaviour
             T_Explosion += Time.deltaTime;
             if (T_Explosion >= 3f)
             {
-                US.toggle[1].transform.GetChild(1).GetComponent<Text>().color = Color.green;
-                US.toggle[1].transform.GetChild(0).GetComponent<Image>().sprite = US.mission_Images[1];
                 US.explosion.SetActive(false);
                 US.mission_success.SetActive(true);
                 US.CAM.SetActive(false);

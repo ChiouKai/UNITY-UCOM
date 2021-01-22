@@ -181,11 +181,11 @@ public class RoundSysytem
             {
                 EndChecked = false;
                 UI.type = 0;
-                if (UI.Bomb_start&&i%2==0)
-                    UI.site = 0;
+                if (UI.Bomb_start && i % 2 == 0)
+                    UI.site = 1;
                 else
                 {
-                    UI.site = 1;
+                    UI.site = 0;
                 }
                 UI.TurnRun = UI.NewCome;
                 Event = null;
