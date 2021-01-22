@@ -184,6 +184,7 @@ public class UISystem : MonoBehaviour
         BelowButtonAndText.SetActive(true);
         AttDectPanel.gameObject.SetActive(true);
         LRs.gameObject.SetActive(true);
+        bulnum();
         RunUI = null;
     }
 
@@ -192,6 +193,7 @@ public class UISystem : MonoBehaviour
         RT.anchoredPosition3D = new Vector3(0, 240, 0);
         BelowButtonAndText.SetActive(false);
         AttPredictPanel.gameObject.SetActive(false);
+        bulletnumber.SetActive(false);
         RunUI = null;
     }
 
@@ -1530,9 +1532,9 @@ public class UISystem : MonoBehaviour
     public GameObject dialog_02;
     public void gamestart()
     {
-        ssstart = true;
         dialog_01.SetActive(false);
         b_mission.SetActive(false);
+        ssstart = true;
         time_mis = false;
     }
     public GameObject option;
@@ -1540,5 +1542,14 @@ public class UISystem : MonoBehaviour
     {
         menu.SetActive(false);
         option.SetActive(true);
+    }
+    public GameObject bulletnumber;
+    public Text Max_Bullet;
+    public Text Now_Bullet;
+    public void bulnum()
+    {
+        bulletnumber.SetActive(true);
+        Max_Bullet.text = TurnCha.Gun.MaxBullet.ToString();
+        Now_Bullet.text = TurnCha.Gun.bullet.ToString();
     }
 }
