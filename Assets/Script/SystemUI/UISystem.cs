@@ -28,7 +28,7 @@ public class UISystem : MonoBehaviour
     bool acting = false;
 
 
-    bool ssstart;
+    bool ssstart =false;
     public List<Tile> LeaveTile = new List<Tile>();
     public List<MeshRenderer> ActionTile = new List<MeshRenderer>();
 
@@ -73,6 +73,7 @@ public class UISystem : MonoBehaviour
     float time;
     float time2;
     bool time_mis = true;
+    public GameObject TimeLine_First;
     private void Update()
     {
         time += Time.deltaTime;
@@ -95,6 +96,7 @@ public class UISystem : MonoBehaviour
         }
         if (ssstart)
         {
+            TimeLine_First.SetActive(true);
             m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
             ssstart = false;
         }
@@ -1434,13 +1436,22 @@ public class UISystem : MonoBehaviour
         toggle[0].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
         explosion.SetActive(true);
     }
-
+    public GameObject dialog_03;
     public void StartLeave()
     {
+        MoveCam.ChaTurn(LeaveTile[0].GetComponent<AI>());
         LeaveTile[0].MissionPos();
         LeaveTile[1].MissionPos();
         JoinActionTile(LeaveTile[0]);
         JoinActionTile(LeaveTile[1]);
+        StartCoroutine(WaitTime());
+        RunUI = null;
+    }
+    IEnumerator WaitTime()
+    {
+        dialog_03.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        dialog_03.SetActive(false);
         m_Roundsystem.EndChecked = true;
     }
 

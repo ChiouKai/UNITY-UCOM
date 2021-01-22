@@ -33,7 +33,7 @@ public class Main : MonoBehaviour
     }
     public void change_scene(string scenename)
     {
-        UISystem.getInstance().Round.Abort();
+        Debug.Log(scenename);
         b_change = true;
         scene_name = scenename;
         
