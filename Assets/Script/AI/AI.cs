@@ -1288,7 +1288,6 @@ public class AI : MonoBehaviour
                 {
                     AP = 0;
                     UI.LRDestory();
-                    Am.SetBool("Aim", false);
                     Am.SetBool(ActionName, true);
                     RemoveVisitedTiles();
                     PreAttack = false;
@@ -1340,7 +1339,6 @@ public class AI : MonoBehaviour
                     transform.forward = TargetDir;
                     AP = 0;
                     UI.LRDestory();
-                    Am.SetBool("Aim", false);//func(name)
                     Am.SetBool(ActionName, true);
                     RemoveVisitedTiles();
                     StartCoroutine(FW());
@@ -1515,6 +1513,7 @@ public class AI : MonoBehaviour
         yield return new WaitUntil(() => PreAttack == false);
         transform.forward = Direction(TileCount);
         Am.SetBool(ActionName, false);
+        Am.SetBool("Aim", false);
         ActionName = null;
         EndTurn();
 
@@ -1525,6 +1524,7 @@ public class AI : MonoBehaviour
         yield return new WaitUntil(() => stateinfo.IsName(ActionName));
         Am.SetBool(ActionName, false);
         ActionName = null;
+
         yield return new WaitForSeconds(1f);
         Am.SetBool("Aim", false);
         EndTurn();
@@ -1770,11 +1770,7 @@ public class AI : MonoBehaviour
     public void EndTurn()
     {
         Target = null;
-        UI.MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
-        UI.per_but = false; //我方切換子彈預設為關
         NPC_Prefire = false;
-        UI.MoveCam.att_cam_bool = false;
-        //checkevent
         if (AttakeTarget.Item1 != null)
         {
             AttakeTarget.Item1.BeAimed = false;
@@ -2178,7 +2174,6 @@ public class AI : MonoBehaviour
                 }
                 else
                 {
-                    int ap = 2;
                     aim = AttakeableDetect(T);
 
                     foreach (var skill in Skills)
@@ -2187,18 +2182,21 @@ public class AI : MonoBehaviour
                         {
                             float TmpPoint = skill.Point;
                             TmpPoint += aim.Item3 * skill.AimPoint;
-                            if (ap - skill.AP > 0)
+                            if (2 - skill.AP > 0)
                             {
                                 foreach (var skill2 in Skills)
                                 {
-                                    if (skill == skill2) { continue; }
-                                    TmpPoint += skill.Point;
-                                    TmpPoint += aim.Item3 * skill.AimPoint;
-                                    if (SecPoint < TmpPoint)
+                                    if (skill2.CheckUseable(aim.Item1))
                                     {
-                                        Sec = skill;
-                                        Sec2 = skill2;
-                                        SecPoint = TmpPoint;
+                                        if (skill == skill2) { continue; }
+                                        TmpPoint += skill.Point;
+                                        TmpPoint += aim.Item3 * skill.AimPoint;
+                                        if (SecPoint < TmpPoint)
+                                        {
+                                            Sec = skill;
+                                            Sec2 = skill2;
+                                            SecPoint = TmpPoint;
+                                        }
                                     }
                                 }
                             }
@@ -2345,6 +2343,7 @@ public class AI : MonoBehaviour
 
     public void Fire()
     {
+        Debug.Log(AttakeTarget.Item3);
         int i = Random.Range(0, 101);
         NPC_Prefire = true;
         UI.MoveCam.att_cam_bool = true;
@@ -2418,6 +2417,7 @@ public class AI : MonoBehaviour
         if (BestT != CurrentTile)
         {
             DoActing = PreMove;
+            NPCPrepera = true;
         }
         else if (Acting != null )
         {
@@ -2425,15 +2425,12 @@ public class AI : MonoBehaviour
             ActionName = Acting.Name;
             Acting.EnterCD();
             Acting = null;
+            NPCPrepera = true;
         }
-
-
-        //if (Acting2 == PreFire)//Target!=null
-        //{
-            //ChangePreAttakeIdle();
-        //}//else if (Acting2==reload)
-
-        NPCPrepera = true;
+        else
+        {
+            EndTurn();
+        }
     }
 
 
@@ -2441,6 +2438,7 @@ public class AI : MonoBehaviour
 
     public void AIReload()
     {
+        ResetBool();
         Gun.bullet = Gun.MaxBullet;
         AP -= 1;
         Am.SetTrigger("Reload");
