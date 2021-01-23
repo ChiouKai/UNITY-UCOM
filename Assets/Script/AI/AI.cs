@@ -1424,7 +1424,7 @@ public class AI : MonoBehaviour
                 {
                     if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
                     {
-                        AttackPoint = RH.point;
+                        AttackPoint = ShotPoint;
                         break;
                     }
                 }
@@ -2406,7 +2406,7 @@ public class AI : MonoBehaviour
                 {
                     if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
                     {
-                        AttackPoint = RH.point;
+                        AttackPoint = ShotPoint;
                         break;
                     }
                 }

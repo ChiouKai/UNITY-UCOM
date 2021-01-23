@@ -226,11 +226,11 @@ public class UISystem : MonoBehaviour
     {
         if (AlphaValve > 0.7f)
         {
-            AdjustValve = -AdjustValve;
+            AdjustValve = -0.25f;
         }
         else if (AlphaValve < 0.2f)
         {
-            AdjustValve = -AdjustValve;
+            AdjustValve = 0.25f;
         }
         AlphaValve += AdjustValve * Time.deltaTime;
         for(int i = 0; i < ActionTile.Count; ++i)

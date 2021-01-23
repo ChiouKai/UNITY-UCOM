@@ -10,6 +10,7 @@ public class Grenade : MonoBehaviour
     private float VelocityH;
     private float VelocityV;
     Vector3 dir;
+    public ParticleSystem Trail;
     // Start is called before the first frame update
     void Start()
     {
