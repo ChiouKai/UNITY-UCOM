@@ -9,13 +9,17 @@ public class Arrow_transform : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(Time.timeScale);
         time_ud += Time.deltaTime;
         if (time_ud > 0.5f)
         {
             y = -y;
             time_ud = 0;
         }
-        this.transform.position += new Vector3(0, y, 0);
-        transform.Rotate(0.5f, 0, 0);
+        if (Time.timeScale != 0)
+        {
+            this.transform.position += new Vector3(0, y, 0);
+            transform.Rotate(0.5f, 0, 0);
+        }
     }
 }

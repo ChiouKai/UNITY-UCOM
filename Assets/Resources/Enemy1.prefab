@@ -1712,11 +1712,12 @@ MonoBehaviour:
   CurrentTile: {fileID: 0}
   MoveSpeed: 4
   FirePoint: {fileID: 9180771876627362521}
-  Bullet: {fileID: 7146958682680602157, guid: 1278ef489717b7148a911b32a56b8a65, type: 3}
+  Bullet: {fileID: 8002836254976248469, guid: 2fb9a9a2bd7774e4692348d1872def07, type: 3}
   BeAttakePoint: {fileID: 8498292573919531213}
   Rifle: {fileID: 0}
   Knife: {fileID: 0}
   FireLight: {fileID: 0}
+  Grenade: {fileID: 0}
 --- !u!114 &3181660201966367008
 MonoBehaviour:
   m_ObjectHideFlags: 0

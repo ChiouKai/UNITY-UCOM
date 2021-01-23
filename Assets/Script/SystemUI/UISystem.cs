@@ -85,7 +85,6 @@ public class UISystem : MonoBehaviour
     private void Update()
     {
         time += Time.deltaTime;
-        Debug.Log("DDSADASD:" + F_TimeLine.gamestart);
         if (time_mis)
         {
             if (time > 1.5f)
@@ -160,13 +159,26 @@ public class UISystem : MonoBehaviour
     //press Esc button
     public void onEscapeKeyed()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && missionDialogue.activeInHierarchy) { menu.SetActive(true); missionDialogue.SetActive(false); }
-        if (Input.GetKeyDown(KeyCode.Escape)) { menu.SetActive(!menu.activeInHierarchy); }
+        //if (Input.GetKeyDown(KeyCode.Escape) && missionDialogue.activeInHierarchy) { menu.SetActive(true); missionDialogue.SetActive(false); }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            menu.SetActive(!menu.activeInHierarchy);
+            if (Time.timeScale == 0) Time.timeScale = 1;
+            else
+                Time.timeScale = 0;
+        }
         if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy) { menu.SetActive(true); menuOption.SetActive(false); }
         //if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy && menuCheck.activeInHierarchy) { menu.SetActive(true); menuCheck.SetActive(false); }
 
     }
-
+    void pause()
+    {
+        Time.timeScale = 0;
+    }
+    void resume()
+    {
+        Time.timeScale = 1;
+    }
     //menu buttons
     public void onExitClicked()
     {       

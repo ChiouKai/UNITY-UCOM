@@ -11,12 +11,15 @@ public class V_transform : MonoBehaviour
     void Update()
     {
         time_ud += Time.deltaTime;
-        if (time_ud > 1)
+        if (time_ud > 1 && Time.timeScale != 0)
         {
             y = -y;
             time_ud = 0;
         }
-        this.transform.position += new Vector3(0, y, 0);
-        transform.Rotate(0, 0.5f, 0);
+        if (Time.timeScale != 0)
+        { 
+            this.transform.position += new Vector3(0, y, 0);
+            transform.Rotate(0, 0.5f, 0);
+        }
     }
 }
