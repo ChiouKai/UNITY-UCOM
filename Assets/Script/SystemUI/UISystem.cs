@@ -45,7 +45,7 @@ public class UISystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        Time.timeScale = 1;
         m_Roundsystem = RoundSysytem.GetInstance();
         GameObject[] GHumans = GameObject.FindGameObjectsWithTag("Human");
         Humans = new List<AI>();
@@ -162,24 +162,24 @@ public class UISystem : MonoBehaviour
         //if (Input.GetKeyDown(KeyCode.Escape) && missionDialogue.activeInHierarchy) { menu.SetActive(true); missionDialogue.SetActive(false); }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            menu.SetActive(!menu.activeInHierarchy);
-            if (Time.timeScale == 0) Time.timeScale = 1;
+            menu.SetActive(!menu.activeInHierarchy );
+            if (menu.activeInHierarchy == true) Time.timeScale = 0;
             else
-                Time.timeScale = 0;
+                Time.timeScale = 1;
         }
         if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy) { menu.SetActive(true); menuOption.SetActive(false); }
         //if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy && menuCheck.activeInHierarchy) { menu.SetActive(true); menuCheck.SetActive(false); }
 
     }
-    void pause()
-    {
-        Time.timeScale = 0;
-    }
-    void resume()
+    //menu buttons
+    public void resume()
     {
         Time.timeScale = 1;
     }
-    //menu buttons
+    public void pause()
+    {
+        Time.timeScale = 0;
+    }
     public void onExitClicked()
     {       
         if (menu.activeInHierarchy) { menu.SetActive(false);}

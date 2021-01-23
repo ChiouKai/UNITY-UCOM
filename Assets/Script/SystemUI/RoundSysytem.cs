@@ -29,7 +29,7 @@ public class RoundSysytem
     public List<Action> EventList;
     private EndCheck EC;
     public void RoundPrepare(List<AI> humans, List<AI> aliens, Move_Camera MC, UISystem ui) //遊戲開始前 抓取每個單位資料
-    {
+    { 
         EC = EndCheck.GetInstance();
         Humans = humans;
         Aliens = aliens;
