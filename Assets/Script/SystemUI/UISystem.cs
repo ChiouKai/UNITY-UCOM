@@ -72,9 +72,11 @@ public class UISystem : MonoBehaviour
         RT = BelowButtonAndText.GetComponent<RectTransform>();
         JoinActionTile(BombSite);
         Round = new System.Threading.Thread(m_Roundsystem.RoundStart);
+        Round.IsBackground = true;
         dialog_01.SetActive(false);
         b_mission.SetActive(false);
         dialog_02.SetActive(false);
+        
     }
     float time;
     float time2;
@@ -237,7 +239,17 @@ public class UISystem : MonoBehaviour
         }
         MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
         //MouseOnTile.GetComponent<Renderer>().enabled = true;
-        if (T.selectable && TurnCha.Moving != true)
+        if (Grenaded && (T.transform.position - TurnCha.transform.position).magnitude < 18f)
+        {
+            T.DangerPos();
+            JoinActionTile(T);
+            for(int i = 0; i < 8; ++i)
+            {
+                T.AdjList[i].DangerPos();
+                JoinActionTile(T.AdjList[i]);
+            }
+        }
+        else if (T.selectable && TurnCha.Moving != true)
         {
             ShowPredictAttable(T);
             var path = TurnCha.MoveToTile(T);
@@ -271,7 +283,17 @@ public class UISystem : MonoBehaviour
     {
 
         //MouseOnTile.GetComponent<Renderer>().enabled = false;
-        if (T.selectable && TurnCha.Moving != true)
+        if (Grenaded)
+        {
+            LeaveActionTile(T);
+            T.Recover();
+            for (int i = 0; i < 8; ++i)
+            {
+                LeaveActionTile(T.AdjList[i]);
+                T.AdjList[i].Recover();
+            }
+        }
+        else if (T.selectable && TurnCha.Moving != true)
         {
             DestroyAPPImage();
             Destroy(GLR);
@@ -1159,9 +1181,75 @@ public class UISystem : MonoBehaviour
             RT.anchoredPosition3D = new Vector3(0, 240, 0);
             AttDectPanel.gameObject.SetActive(true);
             MoveCam.ChaTurn(TurnCha);
+            
             TurnRun = CheckMouse;
         }
     }
+
+
+    bool Grenaded;
+    public void PreGrenade()
+    {
+        Prepera = false;
+        AttPredictPanel.gameObject.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 340, 0);
+        ButtonText.text = "手雷";
+        DescribeText.text = "丟出手雷造成範圍傷害。";
+        LeftText.text = "傷害： 4 ";
+        RightText.text = "";
+        ActionButton.onClick.RemoveAllListeners();
+        Grenaded = true;
+        TurnRun = Grenade;//
+    }
+    public void Grenade()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            Physics.Raycast(ray, out hit);
+            if (hit.collider.tag == "tile")
+            {
+                Tile T = hit.collider.GetComponent<Tile>();
+                TurnCha.PreGrenade(T);
+                AttPredictPanel.gameObject.SetActive(false);
+                DestroyADPButton();
+                DestroySkillButton();
+                Prepera = false;
+                LRDestory();
+                RunUI = null;
+            }
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            Physics.Raycast(ray, out hit);
+            if (hit.collider.tag == "tile")
+            {
+                Tile T = hit.collider.GetComponent<Tile>();
+                LeaveActionTile(T);
+                T.Recover();
+                for (int i = 0; i < 8; ++i)
+                {
+                    LeaveActionTile(T.AdjList[i]);
+                    T.AdjList[i].Recover();
+                }
+            }
+            Grenaded = false;
+            RT.anchoredPosition3D = new Vector3(0, 240, 0);
+            AttDectPanel.gameObject.SetActive(true);
+            MoveCam.ChaTurn(TurnCha);
+
+            TurnRun = CheckMouse;
+        }
+    }
+
+
+
+
+
+
 
 
 

@@ -1242,6 +1242,7 @@ public class AI : MonoBehaviour
     }
 
     public Action PreAttakeIdle;
+
     public virtual void PreAtkNoCover()
     {
         if (Attack)
@@ -1800,14 +1801,13 @@ public class AI : MonoBehaviour
     }
     protected virtual void AIDeath()
     {
-
         OutCurrentTile();
         RoundSysytem.GetInstance().DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);
         Destroy(GetComponent<EPOOutline.Outlinable>());
         Destroy(Cha);
-        if (MindControlAI != null)
+        if (MindControlAI != null&&!MindControlAI.Am.GetBool("Death"))
         {
             UI.TurnRun = () => { StartCoroutine(MindControlAI.RecoverMind(this)); UI.TurnRun = null; };
         }
@@ -1815,9 +1815,11 @@ public class AI : MonoBehaviour
 
     public virtual void Hurt(Vector3 dir)
     {
+        if(!Am.GetBool("Death"))
         dir.y = 0;
         if (Cha.HP <= 0)
         {
+            Am.SetBool("Death", true);
             transform.forward = -dir;
             UI.HpControl(this, Cha.HP);
             Am.Play("Death");
@@ -1968,6 +1970,28 @@ public class AI : MonoBehaviour
         Target.WakeUp();
         StartCoroutine(WaitNextAction());
     }
+
+    public Grenade Grenade;
+    private Tile ExTile;
+
+    public void PreGrenade(Tile T)
+    {
+        Destroy(GetComponent<ThrowGrenade>());
+        Grenade.gameObject.SetActive(true);
+        ResetBool();
+        ExTile = T;
+        AmTurn = true;
+        Am.SetTrigger("Grenade");
+        transform.forward = T.transform.position - transform.position;
+    }
+    public void ThrowGrenade()
+    {
+        AmTurn = false;
+        Grenade.transform.SetParent(null);
+        Grenade.enabled = true;
+        Grenade.TargetTile = ExTile;
+    }
+
 
 
 

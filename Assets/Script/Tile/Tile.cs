@@ -51,6 +51,10 @@ public class Tile : MonoBehaviour
     {
         GetComponent<Renderer>().material = Resources.Load<Material>("MissionTile");
     }
+    public void DangerPos()
+    {
+        GetComponent<Renderer>().material = Resources.Load<Material>("DangerTile");
+    }
     public void Recover()
     {
         GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
