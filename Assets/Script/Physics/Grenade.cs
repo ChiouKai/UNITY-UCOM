@@ -20,7 +20,7 @@ public class Grenade : MonoBehaviour
         dir.y = 0;
         float Time = Mathf.Sqrt(2f*(H + dir.magnitude) / Gravity);
         VelocityV =  VelocityH = dir.magnitude / Time;
-
+        Trail.gameObject.SetActive(true);
     }
 
     // Update is called once per frame
@@ -30,6 +30,7 @@ public class Grenade : MonoBehaviour
         VelocityV -= Gravity * Time.deltaTime;
         if ((transform.position - TargetTile.transform.position).magnitude < 0.5f)
         {
+            FindObjectOfType<SoundManager>().Play("Grenade");
             Explosion();
             UISystem.getInstance().AfterGrenade(TargetTile);
             Destroy(gameObject);

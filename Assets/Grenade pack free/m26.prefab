@@ -129,6 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FirstPos: {x: 0, y: 0, z: 0}
   TargetTile: {fileID: 0}
+  Trail: {fileID: 1337486005684634789}
 --- !u!1 &135744
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,6 +379,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bullet_trail 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4937317811033562242, guid: 0db0c38dd623a3643aef8b4c42103f3d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4940669712099902228, guid: 0db0c38dd623a3643aef8b4c42103f3d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -438,6 +444,12 @@ PrefabInstance:
 --- !u!4 &1179426028279354359 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4940669712099902228, guid: 0db0c38dd623a3643aef8b4c42103f3d,
+    type: 3}
+  m_PrefabInstance: {fileID: 6111069497031905507}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &1337486005684634789 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5062421172271731782, guid: 0db0c38dd623a3643aef8b4c42103f3d,
     type: 3}
   m_PrefabInstance: {fileID: 6111069497031905507}
   m_PrefabAsset: {fileID: 0}

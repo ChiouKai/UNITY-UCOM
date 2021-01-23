@@ -1424,13 +1424,13 @@ public class AI : MonoBehaviour
                 {
                     if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
                     {
-                        AttackPoint = ShotPoint;
+                        AttackPoint = RandPoint;
                         break;
                     }
                 }
                 else
                 {
-                    AttackPoint = ShotPoint;
+                    AttackPoint = RandPoint;
                 }
             }
         }
@@ -2406,13 +2406,13 @@ public class AI : MonoBehaviour
                 {
                     if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
                     {
-                        AttackPoint = ShotPoint;
+                        AttackPoint = RandPoint;
                         break;
                     }
                 }
                 else
                 {
-                    AttackPoint = ShotPoint;
+                    AttackPoint = RandPoint;
                 }
             }
         }
@@ -2519,7 +2519,7 @@ public class AI : MonoBehaviour
         PreAttack = true;
         NPCPrepera = false;
         DoActing = MindControl;
-        FindObjectOfType<SoundManager>().Play(Gun.weapon2);
+        
     }
 
 
@@ -2685,11 +2685,6 @@ public class AI : MonoBehaviour
     }
 
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position + Vector3.up * 1.34f, 0.1f);
-    }
 
 }
 

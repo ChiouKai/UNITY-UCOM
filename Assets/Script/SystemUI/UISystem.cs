@@ -259,7 +259,7 @@ public class UISystem : MonoBehaviour
             return;
         }
         MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
-        //MouseOnTile.GetComponent<Renderer>().enabled = true;
+        
         if (Grenaded && (T.transform.position - TurnCha.transform.position).magnitude < 12f)
         {
             T.DangerPos();
@@ -283,6 +283,10 @@ public class UISystem : MonoBehaviour
                 DrawHeadingLine(path, Blue);
             }
             Prepera = true;
+        }
+        if (!T.walkable)
+        {
+            return;
         }
         for (int i = 0; i < 4; ++i)
         {
