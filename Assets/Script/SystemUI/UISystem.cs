@@ -1210,6 +1210,7 @@ public class UISystem : MonoBehaviour
             Physics.Raycast(ray, out hit);
             if (hit.collider.tag == "tile")
             {
+                Grenaded = false;
                 Tile T = hit.collider.GetComponent<Tile>();
                 TurnCha.PreGrenade(T);
                 AttPredictPanel.gameObject.SetActive(false);
@@ -1244,8 +1245,17 @@ public class UISystem : MonoBehaviour
             TurnRun = CheckMouse;
         }
     }
-
-
+    public void AfterGrenade(Tile T)
+    {
+        LeaveActionTile(T);
+        T.Recover();
+        for (int i = 0; i < 8; ++i)
+        {
+            LeaveActionTile(T.AdjList[i]);
+            T.AdjList[i].Recover();
+        }
+        StartCoroutine(TurnCha.WaitEndturn());
+    }
 
 
 

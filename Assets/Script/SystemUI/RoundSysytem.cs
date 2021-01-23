@@ -124,7 +124,7 @@ public class RoundSysytem
                     UI.Bomb_Round++;
                 }
                 NewEvent();//條件觸發則增加Event;
-                while (TimeLine.Instance.Moved != true)
+                while (TimeLine.Instance.Moved != true || EndChecked != true)
                 {
                     System.Threading.Thread.Sleep(1);
                 }

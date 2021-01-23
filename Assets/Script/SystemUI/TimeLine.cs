@@ -80,10 +80,11 @@ public class TimeLine : MonoBehaviour
         LogoList.RemoveFirst();
         LogoList.AddLast(Current);
         Current = LogoList.First;
+        Vector2 Location = new Vector2(-60, -50);
         for (int i =0; i <Count; ++i)
         {
             logo = Current.Value;
-            logo.InsertLocation += new Vector2(0, 110);
+            logo.InsertLocation =Location - new Vector2(0, 110*(i));
             logo.LogoUpdate = logo.LogoMove;
             Current = Current.Next;
         }

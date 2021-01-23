@@ -1960,8 +1960,6 @@ public class AI : MonoBehaviour
         Am.SetTrigger("Wake");
         Target = Cha;
         transform.forward = Target.transform.position - transform.position;
-
-
         RemoveVisitedTiles(); 
     }
      public void Wake()
@@ -1982,6 +1980,7 @@ public class AI : MonoBehaviour
         ExTile = T;
         AmTurn = true;
         Am.SetTrigger("Grenade");
+        RemoveVisitedTiles();
         transform.forward = T.transform.position - transform.position;
     }
     public void ThrowGrenade()
@@ -2593,6 +2592,7 @@ public class AI : MonoBehaviour
         UI.DestroyHPBar(this);
         UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
         yield return new WaitForSeconds(0.5f);
+        UI.CheckEvent();
         RoundSysytem.GetInstance().EndChecked = true;
     }
 

@@ -7,7 +7,8 @@ public class Grenade : MonoBehaviour
     public Vector3 FirstPos;
     private float Gravity = 9.8f;
     public Tile TargetTile;
-    private float Velocity;
+    private float VelocityH;
+    private float VelocityV;
     Vector3 dir;
     // Start is called before the first frame update
     void Start()
@@ -17,17 +18,19 @@ public class Grenade : MonoBehaviour
         dir =  TargetTile.transform.position- FirstPos;
         dir.y = 0;
         float Time = Mathf.Sqrt(2f*(H + dir.magnitude) / Gravity);
-        Velocity = dir.magnitude / Time;
+        VelocityV =  VelocityH = dir.magnitude / Time;
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position += Time.deltaTime * (dir.normalized * Velocity + Vector3.up * (Velocity -1f / 2f * Gravity * Time.deltaTime));
+        transform.position += Time.deltaTime * (dir.normalized * VelocityH + Vector3.up * (VelocityV - 1f / 2f * Gravity * Time.deltaTime));
+        VelocityV -= Gravity * Time.deltaTime;
         if ((transform.position - TargetTile.transform.position).magnitude < 0.5f)
         {
             Explosion();
+            UISystem.getInstance().AfterGrenade(TargetTile);
             Destroy(gameObject);
         }
     }
@@ -48,10 +51,10 @@ public class Grenade : MonoBehaviour
             {
                 cha = TargetTile.AdjList[i].Cha;
                 cha.BeDamaged(3);
-                cha.Hurt(TargetTile.transform.position - TargetTile.AdjList[i].transform.position);
+                cha.Hurt(TargetTile.AdjList[i].transform.position - TargetTile.transform.position);
             }
         }
-        Instantiate<GameObject>(Resources.Load<GameObject>("Explsion"),TargetTile.transform.position,Quaternion.identity);
+        Instantiate<GameObject>(Resources.Load<GameObject>("Explosion"),TargetTile.transform.position,Quaternion.identity);
     }
 
 }
