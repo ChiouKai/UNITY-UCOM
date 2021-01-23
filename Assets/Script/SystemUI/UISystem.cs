@@ -85,6 +85,7 @@ public class UISystem : MonoBehaviour
     private void Update()
     {
         time += Time.deltaTime;
+        Debug.Log("DDSADASD:" + F_TimeLine.gamestart);
         if (time_mis)
         {
             if (time > 1.5f)
@@ -105,8 +106,12 @@ public class UISystem : MonoBehaviour
         if (ssstart)
         {
             TimeLine_First.SetActive(true);
-            m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
             ssstart = false;
+        }
+        if (F_TimeLine.gamestart)
+        {
+            m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
+            F_TimeLine.gamestart = false;
         }
         TurnRun?.Invoke();//控制角色UI
         RunUI?.Invoke();//控制UI
