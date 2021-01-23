@@ -2008,6 +2008,7 @@ public class AI : MonoBehaviour
         Grenade.transform.SetParent(null);
         Grenade.enabled = true;
         Grenade.TargetTile = ExTile;
+        Debug.Log("Hello");
     }
 
 

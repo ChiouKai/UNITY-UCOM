@@ -9,7 +9,6 @@ public class Arrow_transform : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(Time.timeScale);
         time_ud += Time.deltaTime;
         if (time_ud > 0.5f)
         {
