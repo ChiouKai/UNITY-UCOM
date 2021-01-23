@@ -331,7 +331,7 @@ public class CrabAI : AI
             Attack = false;
             Am.SetTrigger("Melee");
             AP = 0;
-            StartCoroutine(WaitMelee2());
+            StartCoroutine(WaitMelee2());            
         }
     }
 
@@ -364,18 +364,21 @@ public class CrabAI : AI
             Am.SetBool("Turn", false);
             AmTurn = false;
             Am.Play("Hurt");
+            FindObjectOfType<SoundManager>().Play(Cha.takeHit);
         }
     }
     protected override void AIDeath()
     {
         OutCurrentTile();
         Am.Play("Death");
+        FindObjectOfType<SoundManager>().Play(Cha.die);
         RoundSysytem.GetInstance().DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);
         Destroy(GetComponent<EPOOutline.Outlinable>());
         Destroy(Cha);
         //Idle = DeathIdle;
+        FindObjectOfType<SoundManager>().Play(Cha.die);
     }
     private void DeathIdle()
     {

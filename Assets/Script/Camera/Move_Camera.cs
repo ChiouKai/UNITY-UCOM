@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
 /*  假設場景上有一個目標 攝影機為跟著目標移動
     攝影機的位置等於目標的位置加上一個距離
     攝影機永遠看向目標
@@ -24,6 +25,7 @@ public class Move_Camera : MonoBehaviour
     public Material[] ourstar;
     public float cam_dis;
     UISystem US;
+    ThemePlayer TP;
     public bool att_cam_bool;
     public Transform Birth_cam;
     AI Target;
@@ -36,6 +38,7 @@ public class Move_Camera : MonoBehaviour
         Our_star.SetActive(false);
     }
     float T_Explosion;
+    public ThemePlayer themePlayer;
     private void LateUpdate()
     {
         float fH = Input.GetAxis("Horizontal");
@@ -51,8 +54,11 @@ public class Move_Camera : MonoBehaviour
         if (US.Bomb_Round > 5) //安裝炸彈且稱超過5回合
             US.lose_check = true;
 
-        if (US.lose_check) //
+        if (US.lose_check)
+        {
             US.mission_failure.SetActive(true);
+            themePlayer.PlayThemes(1);
+        }
         if (US.win_check)
         {
             T_Explosion += Time.deltaTime;
@@ -60,6 +66,7 @@ public class Move_Camera : MonoBehaviour
             {
                 US.explosion.SetActive(false);
                 US.mission_success.SetActive(true);
+                themePlayer.PlayThemes(2);
                 US.CAM.SetActive(false);
                 US.CAM_TIMELINE.SetActive(true);
                 US.HPCanvas.gameObject.SetActive(false);

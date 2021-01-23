@@ -18,8 +18,7 @@ public class UISystem : MonoBehaviour
     public Action TurnRun;
     public Action RunUI;
     public GameObject menu;
-    public GameObject menuOption;
-    internal SoundManager sManager;
+    public GameObject menuOption;    
     public Slider Volume;
     public GameObject menuCheck;
     public GameObject missionDialogue;
@@ -97,7 +96,7 @@ public class UISystem : MonoBehaviour
         {
             time2 += Time.deltaTime;
             dialog_02.SetActive(true);
-            if (time2 > 2f)
+            if (time2 > 3.5f)
             {
                 dialog_02.SetActive(false);
             }
@@ -158,7 +157,8 @@ public class UISystem : MonoBehaviour
 
     //press Esc button
     public void onEscapeKeyed()
-    {
+    {        
+
         //if (Input.GetKeyDown(KeyCode.Escape) && missionDialogue.activeInHierarchy) { menu.SetActive(true); missionDialogue.SetActive(false); }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -169,7 +169,6 @@ public class UISystem : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy) { menu.SetActive(true); menuOption.SetActive(false); }
         //if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy && menuCheck.activeInHierarchy) { menu.SetActive(true); menuCheck.SetActive(false); }
-
     }
     //menu buttons
     public void resume()
@@ -192,10 +191,15 @@ public class UISystem : MonoBehaviour
         Application.Quit();
     }
 
-   public void BackToMain()
+   void PauseGame()
     {
-        SceneManager.LoadScene(0);
-    }       
+        Time.timeScale = 0;
+    }
+
+    void ResumeGame()
+    {
+        Time.timeScale = 1;
+    }
 
     public void ShowActionUI()
     {
@@ -466,14 +470,7 @@ public class UISystem : MonoBehaviour
             }
         }
         SButtonList.Clear();
-    }
-
-
-
-
-
-
-
+    }      
 
 
     public void ShowAttackableButton()

@@ -1729,7 +1729,7 @@ public class AI : MonoBehaviour
 
     public void Heal()
     {
-        FindObjectOfType<SoundManager>().Play(Cha.skill);
+        FindObjectOfType<SoundManager>().Play(Cha.xskill);
         Target.Cha.HP += 3;
         Destroy(Instantiate<GameObject>(Resources.Load<GameObject>("HealEffect"), Target.transform.position, Quaternion.identity), 2.0f);
         if (Target.Cha.HP > Target.Cha.MaxHP)
@@ -1761,6 +1761,7 @@ public class AI : MonoBehaviour
         RemoveVisitedTiles();//重置Tile狀態
         Target = Cha;
         transform.forward = Target.transform.position - transform.position;
+        FindObjectOfType<SoundManager>().Play(Gun.note);
     }
     public void Cooperation()
     {
@@ -1795,10 +1796,7 @@ public class AI : MonoBehaviour
         UI.CheckEvent();
     }
 
-
-
-
-    
+             
     
     public virtual void BeDamaged(int damage)
     {
@@ -1886,6 +1884,7 @@ public class AI : MonoBehaviour
         AP -= 1;
         Am.SetTrigger("Reload");
         FindObjectOfType<SoundManager>().Play(Cha.reload);
+        FindObjectOfType<SoundManager>().Play(Gun.vReload);
         RemoveVisitedTiles();
         UI.LRDestory();
         StartCoroutine( WaitNextAction());
@@ -1914,6 +1913,7 @@ public class AI : MonoBehaviour
         TileCount = FindDirection(Vector3.right);
         RemoveVisitedTiles();
         UI.LRDestory();
+        FindObjectOfType<SoundManager>().Play(Cha.detonate);
     }
     public void ForwardToBomb()
     {
@@ -2572,7 +2572,7 @@ public class AI : MonoBehaviour
     public void CreatMindC()
     {
         RoundSysytem.GetInstance().EndChecked = false;
-        GameObject GO = Instantiate<GameObject>(Resources.Load<GameObject>("MindControl"));        
+        GameObject GO = Instantiate<GameObject>(Resources.Load<GameObject>("MindControl"));
         GO.transform.position = FirePoint.position;
         GO.transform.SetParent(FirePoint);
         StartCoroutine(ShotMindC(GO));        
@@ -2616,6 +2616,7 @@ public class AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         UI.CheckEvent();
         RoundSysytem.GetInstance().EndChecked = true;
+        FindObjectOfType<SoundManager>().Play(Cha.MindControlled);
     }
 
     public IEnumerator RecoverMind(AI enemy)

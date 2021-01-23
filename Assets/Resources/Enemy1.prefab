@@ -1731,8 +1731,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preAttack: 
-  weapon1: 
-  weapon2: 
+  vReload: 
+  weapon1: att_energyBomb
+  weapon2: att_mindControl_whisper
+  note: 
   Damage: 0400000005000000
   DamageRange: 2
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000
@@ -1759,10 +1761,12 @@ MonoBehaviour:
   MaxEnergy: 0
   affirmative: 
   takeHit: 
-  die: 
+  die: voice_alien1_death
   MindControlled: 
   reload: 
-  skill: 
+  xskill: 
+  detonate: 
+  holdGround: 
   camp: 1
   type: 0
 --- !u!114 &1732583735357124354

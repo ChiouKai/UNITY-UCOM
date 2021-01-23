@@ -4077,16 +4077,18 @@ MonoBehaviour:
   MaxHP: 6
   HP: 6
   Mobility: 6
-  Speed: 7
+  Speed: 1
   BasicAim: 100
   Energy: 0
   MaxEnergy: 0
-  affirmative: 
-  takeHit: 
-  die: 
+  affirmative: att_alien_bite
+  takeHit: voice_alien_scream_eerie
+  die: voice_alien_death1
   MindControlled: 
   reload: 
-  skill: 
+  xskill: 
+  detonate: 
+  holdGround: 
   camp: 1
   type: 1
 --- !u!114 &5480942384249066731

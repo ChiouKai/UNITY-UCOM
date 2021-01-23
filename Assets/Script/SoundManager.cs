@@ -5,13 +5,10 @@ using UnityEngine.UI;
 using UnityEngine.Audio;
 
 public class SoundManager : MonoBehaviour
-{
-    public Camera fpsCam;
-    public Sound[] sounds;
-    internal SoundManager sManager;
-    
+{    
+    public Sound[] sounds;    
     public Slider Volume;
-    
+
     // Awake() is called right before it
     void Awake()
     {

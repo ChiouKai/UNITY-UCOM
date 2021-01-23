@@ -1436,8 +1436,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preAttack: 
-  weapon1: 
+  vReload: 
+  weapon1: att_laser
   weapon2: 
+  note: 
   Damage: 0300000004000000
   DamageRange: 2
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000
@@ -1463,11 +1465,13 @@ MonoBehaviour:
   Energy: 0
   MaxEnergy: 0
   affirmative: 
-  takeHit: 
+  takeHit: voice_alien_takeHit_light
   die: 
   MindControlled: 
   reload: 
-  skill: 
+  xskill: 
+  detonate: 
+  holdGround: 
   camp: 1
   type: 0
 --- !u!114 &8794203437819925794

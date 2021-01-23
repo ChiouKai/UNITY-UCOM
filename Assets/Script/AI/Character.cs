@@ -19,7 +19,11 @@ public  class Character :MonoBehaviour
     public string die;
     public string MindControlled;
     public string reload;
-    public string skill;
+    public string xskill;
+    public string detonate;
+    public string holdGround;
+
+
 
     public enum Camp
     {
