@@ -1415,11 +1415,11 @@ public class AI : MonoBehaviour
             Miss = true;
             RaycastHit RH;
             Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(FireTarget.location);
-
+            int j = 0;
             while (true)
             {
-                Vector3 RandPoint = AttakeTarget.Item1.BeAttakePoint.position
-                            + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f)) - ShotPoint;
+                Vector3 RandPoint = FireTarget.Item1.BeAttakePoint.position
+                            + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f));
                 if (Physics.SphereCast(ShotPoint, 0.2f, RandPoint - ShotPoint, out RH, 30f))
                 {
                     if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
@@ -1431,7 +1431,9 @@ public class AI : MonoBehaviour
                 else
                 {
                     AttackPoint = RandPoint;
+                    break;
                 }
+                ++j;
             }
         }
         else
@@ -2401,7 +2403,7 @@ public class AI : MonoBehaviour
             while (true)
             {
                 Vector3 RandPoint = AttakeTarget.Item1.BeAttakePoint.position
-                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f)) - ShotPoint;
+                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f));
                 if (Physics.SphereCast(ShotPoint, 0.2f, RandPoint-ShotPoint, out RH, 30f))
                 {
                     if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
@@ -2413,6 +2415,7 @@ public class AI : MonoBehaviour
                 else
                 {
                     AttackPoint = RandPoint;
+                    break;
                 }
             }
         }
