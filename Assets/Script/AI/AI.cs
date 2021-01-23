@@ -1786,12 +1786,13 @@ public class AI : MonoBehaviour
             }
         }
         AttakeableList.Clear();
-        UI.CheckEvent();
+
         Turn = false;
         lock (EndCheck.GetInstance())
         {
             EndCheck.GetInstance().ChaEnd = true;
         }
+        UI.CheckEvent();
     }
 
 
@@ -2151,7 +2152,7 @@ public class AI : MonoBehaviour
     protected float BestPoint;
     internal bool NPCPrepera = false;
     internal bool NPC_Prefire;
-    internal List<ISkill> Skills;
+    internal List<ISkill> Skills=new List<ISkill>();
 
     protected virtual bool CalPointAction(Tile T)
     {
@@ -2168,29 +2169,28 @@ public class AI : MonoBehaviour
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                Point += 5f; // Edir.magnitude;
+                Point += 3f; // Edir.magnitude;
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
-                Point += 3f;// Edir.magnitude;
+                Point += 2f;// Edir.magnitude;
             }
             if (MinDis > Edir.magnitude)
             {
                 MinDis = Edir.magnitude;
             }
         }
-        float i = 15f / (MinDis-3f);
-        if (i > 3f)
+        if (MinDis < 1f)
         {
-            Point += 3f;
+            ;
         }
-        else if (i < -3f)
+        else if(MinDis< 3f)
         {
-            Point -= 3f;
+            Point += 2f;
         }
-        else
+        else if (MinDis < 6f)
         {
-            Point += i;
+            Point += 1;
         }
         //可用能力巡一遍，選擇得分高的能力 再拿出來加分
         ISkill Sec = null ;
@@ -2454,7 +2454,6 @@ public class AI : MonoBehaviour
         DoActing = null;
         NPCPrepera = false;
         AttakeTarget.Item1.BeAim(this);
-
     }
 
 

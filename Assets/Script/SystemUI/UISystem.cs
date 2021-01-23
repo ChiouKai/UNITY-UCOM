@@ -256,7 +256,7 @@ public class UISystem : MonoBehaviour
         }
         MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
         //MouseOnTile.GetComponent<Renderer>().enabled = true;
-        if (Grenaded && (T.transform.position - TurnCha.transform.position).magnitude < 18f)
+        if (Grenaded && (T.transform.position - TurnCha.transform.position).magnitude < 12f)
         {
             T.DangerPos();
             JoinActionTile(T);
@@ -808,7 +808,6 @@ public class UISystem : MonoBehaviour
     }
 
 
-
     public void PreReload()
     {
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
@@ -1037,6 +1036,10 @@ public class UISystem : MonoBehaviour
         {
             TurnCha = TrueTurnCha;
             TrueTurnCha = null;
+            lock (EndCheck.GetInstance())
+            {
+                EndCheck.GetInstance().ChaEnd = false;
+            }
             m_Roundsystem.EndChecked = true;
             if (TurnCha.AP > 0)
             {
