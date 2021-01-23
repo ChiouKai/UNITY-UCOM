@@ -4062,6 +4062,7 @@ MonoBehaviour:
   Rifle: {fileID: 0}
   Knife: {fileID: 0}
   FireLight: {fileID: 0}
+  Grenade: {fileID: 0}
 --- !u!114 &7154555018010834703
 MonoBehaviour:
   m_ObjectHideFlags: 0

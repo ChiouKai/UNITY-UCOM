@@ -823,16 +823,18 @@ MonoBehaviour:
   MaxHP: 6
   HP: 6
   Mobility: 6
-  Speed: 2
+  Speed: 3
   BasicAim: 70
   Energy: 0
   MaxEnergy: 0
-  affirmative: 
-  takeHit: 
-  die: 
-  MindControlled: 
-  reload: 
-  skill: 
+  affirmative: voice_male_RogerThat8
+  takeHit: voice_male_groan1
+  die: voice_male_death2
+  MindControlled: voice_male_mindcontrolled2
+  reload: skill_reload
+  xskill: skill_go
+  detonate: sound_detonate_bombfull
+  holdGround: 
   camp: 0
   type: 0
 --- !u!114 &8157025691337330856
@@ -848,8 +850,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preAttack: 
-  weapon1: 
+  vReload: voice_reloading_loud
+  weapon1: att_rifle_singleShot_bass
   weapon2: 
+  note: skill_go
   Damage: 0400000005000000
   DamageRange: 2
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000

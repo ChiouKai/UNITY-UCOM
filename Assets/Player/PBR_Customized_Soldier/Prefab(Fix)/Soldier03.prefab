@@ -31,6 +31,7 @@ Transform:
   m_Father: {fileID: 8592070430173631716}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  Trail: {fileID: 0}
 --- !u!1 &4477772776125081946
 GameObject:
   m_ObjectHideFlags: 0
@@ -3286,13 +3287,13 @@ MonoBehaviour:
   BasicAim: 70
   Energy: 0
   MaxEnergy: 0
-  affirmative: 
-  takeHit: 
-  die: 
-  MindControlled: 
-  reload: 
+  affirmative: voice_do_my_best
+  takeHit: voice_male_takeHit
+  die: voice_male_death1
+  MindControlled: voice_male_mindcontrolled1
+  reload: skill_reload
   xskill: 
-  detonate: 
+  detonate: sound_detonate_bombfull
   holdGround: 
   camp: 0
   type: 0
@@ -3308,10 +3309,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96e1eb11be80a8b47b0b4af77fe7470b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  preAttack: 
-  vReload: 
-  weapon1: 
-  weapon2: 
+  preAttack: att_blade_swipe
+  vReload: voice_reload2
+  weapon1: att_rifle_singleShot
+  weapon2: att_blade_slay
+  note: 
   note: 
   Damage: 0400000005000000
   DamageRange: 2

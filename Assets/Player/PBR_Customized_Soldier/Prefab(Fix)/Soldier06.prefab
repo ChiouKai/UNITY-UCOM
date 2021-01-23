@@ -415,19 +415,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f716625bc427f4892e763f19d66117, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 5
-  HP: 5
+  MaxHP: 13
+  HP: 13
   Mobility: 6
-  Speed: 5
+  Speed: 8
   BasicAim: 70
   Energy: 0
   MaxEnergy: 0
-  affirmative: 
-  takeHit: 
-  die: 
-  MindControlled: 
-  reload: 
-  skill: 
+  affirmative: voice_male_Affirmative
+  takeHit: voice_male_takeHit
+  die: voice_male_death1
+  MindControlled: voice_male_mindcontrolled1
+  reload: skill_reload
+  xskill: skill_heal2
+  detonate: sound_detonate_bombfull
+  holdGround: 
   camp: 0
   type: 0
 --- !u!114 &6990360659797749033
@@ -443,8 +445,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preAttack: 
-  weapon1: 
+  vReload: voice_reload
+  weapon1: att_rifle_singleShot
   weapon2: 
+  note: 
   Damage: 0400000005000000
   DamageRange: 2
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000

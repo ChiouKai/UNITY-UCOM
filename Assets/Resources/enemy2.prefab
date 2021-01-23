@@ -1423,6 +1423,7 @@ MonoBehaviour:
   Rifle: {fileID: 0}
   Knife: {fileID: 0}
   FireLight: {fileID: 0}
+  Grenade: {fileID: 0}
 --- !u!114 &8019003800130855932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1461,7 +1462,7 @@ MonoBehaviour:
   HP: 5
   Mobility: 6
   Speed: 5
-  BasicAim: 70
+  BasicAim: 60
   Energy: 0
   MaxEnergy: 0
   affirmative: 
