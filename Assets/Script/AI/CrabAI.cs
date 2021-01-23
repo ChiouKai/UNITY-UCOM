@@ -18,7 +18,7 @@ public class CrabAI : AI
         Am = GetComponent<Animator>();
         EnemyLayer = 1 << 11;
         Enemies = RoundSysytem.GetInstance().Humans;
-        Skills = GetComponents<ISkill>();
+        Skills.AddRange(GetComponents<ISkill>());
         Idle = NoCover;
         UI = UISystem.getInstance();
     }

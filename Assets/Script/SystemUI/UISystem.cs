@@ -1216,6 +1216,7 @@ public class UISystem : MonoBehaviour
         RightText.text = "";
         ActionButton.onClick.RemoveAllListeners();
         Grenaded = true;
+        Destroy(GLR);
         TurnRun = Grenade;//
     }
     public void Grenade()
@@ -1346,7 +1347,7 @@ public class UISystem : MonoBehaviour
     internal int type;
     internal int site;
     AI Newcome;
-    ISkill[] NewcomeSkills;
+    List<ISkill> NewcomeSkills;
     public GameObject increase_text;
     public void NewCome()
     {

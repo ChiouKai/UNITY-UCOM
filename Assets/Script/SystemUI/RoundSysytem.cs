@@ -27,9 +27,10 @@ public class RoundSysytem
     UISystem UI;
     public bool EndChecked = true;
     public List<Action> EventList;
-
+    private EndCheck EC;
     public void RoundPrepare(List<AI> humans, List<AI> aliens, Move_Camera MC, UISystem ui) //遊戲開始前 抓取每個單位資料
     {
+        EC = EndCheck.GetInstance();
         Humans = humans;
         Aliens = aliens;
         UI = ui;
@@ -81,26 +82,27 @@ public class RoundSysytem
             {
                 System.Threading.Thread.Sleep(1);
             }
-            lock (UI.TurnCha)
+                EC.ChaEnd = false;
+            lock (TurnCha)
             {
                 UI.TurnCha = TurnCha;
-            }
-            if (TurnCha.Cha.camp == 0)
-            {
-                TurnCha.AP = 2;
 
-                TurnCha.Turn = true;
-                TurnCha.CountCD();
-                UI.TurnRun = UI.PlayerStartTurn;
-            }
-            else
-            {
-                TurnCha.Turn = true;
-                UI.TurnRun = UI.EnemyStartTurn;
+                if (TurnCha.Cha.camp == 0)
+                {
+                    TurnCha.AP = 2;
+
+                    TurnCha.Turn = true;
+                    TurnCha.CountCD();
+                    UI.TurnRun = UI.PlayerStartTurn;
+                }
+                else
+                {
+                    TurnCha.Turn = true;
+                    UI.TurnRun = UI.EnemyStartTurn;
+                }
             }
 
-
-            while (TurnCha.Turn!= false|| EndChecked!= true|| TimeLine.Instance.Moved != true)
+            while (EC.ChaEnd!= true|| EndChecked!= true|| TimeLine.Instance.Moved != true)
             {
                 System.Threading.Thread.Sleep(2);
             }
@@ -152,7 +154,7 @@ public class RoundSysytem
         foreach(var Event in EventList)
         {
             Event?.Invoke();
-            while (TimeLine.Instance.Moved != true || EndChecked != true)
+            while (EC.ChaEnd != true|| TimeLine.Instance.Moved != true || EndChecked != true)
             {
                 System.Threading.Thread.Sleep(1);
             }
@@ -162,7 +164,8 @@ public class RoundSysytem
     public void testevent()
     {
         Action Event = () => 
-        { 
+        {
+            EC.ChaEnd = false;
             EndChecked = false;
             UI.type = 0;
             UI.site = 0;
@@ -179,6 +182,7 @@ public class RoundSysytem
         {
             Action Event = () =>
             {
+                EC.ChaEnd = false;
                 EndChecked = false;
                 UI.type = 0;
                 if (UI.Bomb_start && i % 2 == 0)

@@ -39,7 +39,7 @@ public class ThrowGrenade : MonoBehaviour,ISkill
 
     public void EnterCD()
     {
-        CDCount = CD;
+        Destroy(this);
     }
     public Action GetAction()
     {

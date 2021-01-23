@@ -1415,21 +1415,22 @@ public class AI : MonoBehaviour
             Miss = true;
             RaycastHit RH;
             Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(FireTarget.location);
-            
+
             while (true)
             {
-                if (Physics.Raycast(ShotPoint, (Target.BeAttakePoint.position
-                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.15f, 0.15f), Random.Range(-0.67f, 0.67f))) - ShotPoint,out RH))
+                Vector3 RandPoint = AttakeTarget.Item1.BeAttakePoint.position
+                            + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f)) - ShotPoint;
+                if (Physics.SphereCast(ShotPoint, 0.2f, RandPoint - ShotPoint, out RH, 30f))
                 {
                     if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
                     {
                         AttackPoint = RH.point;
-
-                        //var RHObsetacle = RH.transform.GetComponent<Obstacle>();
-                        //if (RHObsetacle != null)
-                            //RHObsetacle.TakeDamage(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
                         break;
                     }
+                }
+                else
+                {
+                    AttackPoint = ShotPoint;
                 }
             }
         }
@@ -1787,6 +1788,10 @@ public class AI : MonoBehaviour
         AttakeableList.Clear();
         UI.CheckEvent();
         Turn = false;
+        lock (EndCheck.GetInstance())
+        {
+            EndCheck.GetInstance().ChaEnd = true;
+        }
     }
 
 
@@ -1815,7 +1820,10 @@ public class AI : MonoBehaviour
 
     public virtual void Hurt(Vector3 dir)
     {
-        if(!Am.GetBool("Death"))
+        if (Am.GetBool("Death") || stateinfo.IsName("Hurt"))
+        {
+            return;
+        }
         dir.y = 0;
         if (Cha.HP <= 0)
         {
@@ -1974,6 +1982,16 @@ public class AI : MonoBehaviour
 
     public void PreGrenade(Tile T)
     {
+        foreach (var Skill in Skills)
+        {
+            if (Skill.Name == "Grenade")
+            {
+                Skills.Remove(Skill);
+                Skill.EnterCD();
+                AP -= Skill.AP;
+                break;
+            }
+        }
         Destroy(GetComponent<ThrowGrenade>());
         Grenade.gameObject.SetActive(true);
         ResetBool();
@@ -2133,7 +2151,7 @@ public class AI : MonoBehaviour
     protected float BestPoint;
     internal bool NPCPrepera = false;
     internal bool NPC_Prefire;
-    internal ISkill[] Skills;
+    internal List<ISkill> Skills;
 
     protected virtual bool CalPointAction(Tile T)
     {
@@ -2150,21 +2168,25 @@ public class AI : MonoBehaviour
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                Point += 3f; // Edir.magnitude;
+                Point += 5f; // Edir.magnitude;
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
-                Point += 2f;// Edir.magnitude;
+                Point += 3f;// Edir.magnitude;
             }
             if (MinDis > Edir.magnitude)
             {
                 MinDis = Edir.magnitude;
             }
         }
-        float i = 16 / (MinDis);
-        if (i > 4)
+        float i = 15f / (MinDis-3f);
+        if (i > 3f)
         {
-            Point += 4;
+            Point += 3f;
+        }
+        else if (i < -3f)
+        {
+            Point -= 3f;
         }
         else
         {
@@ -2377,18 +2399,19 @@ public class AI : MonoBehaviour
             Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(AttakeTarget.Item2)+TargetDir.normalized*0.67f;
             while (true)
             {
-                if (Physics.Raycast(ShotPoint, (AttakeTarget.Item1.BeAttakePoint.position
-                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f))) - ShotPoint, out RH))
+                Vector3 RandPoint = AttakeTarget.Item1.BeAttakePoint.position
+                    + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f)) - ShotPoint;
+                if (Physics.SphereCast(ShotPoint, 0.2f, RandPoint-ShotPoint, out RH, 30f))
                 {
-                    if (RH.collider.tag!="Human"&& RH.collider.tag !="Alien" )
+                    if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
                     {
                         AttackPoint = RH.point;
-
-                        //var RHObsetacle = RH.transform.GetComponent<Obstacle>();
-                        //if (RHObsetacle != null)
-                            //RHObsetacle.TakeDamage(Gun.Damage[Random.Range(0, Gun.DamageRange - 1)]);
                         break;
                     }
+                }
+                else
+                {
+                    AttackPoint = ShotPoint;
                 }
             }
         }

@@ -24,7 +24,7 @@ public class HumanAI : AI
         Idle = NoCover;
         UI = UISystem.getInstance();
         Enemies = RoundSysytem.GetInstance().Aliens;
-        Skills = GetComponents<ISkill>();
+        Skills.AddRange(GetComponents<ISkill>());
         AIState = PlayerAI;
     }
 

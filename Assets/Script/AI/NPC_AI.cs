@@ -20,7 +20,7 @@ public class NPC_AI : AI
         TileCount = FindDirection(transform.forward);
         Idle = NoCover;
         Enemies = RoundSysytem.GetInstance().Humans;
-        Skills = GetComponents<ISkill>();
+        Skills.AddRange(GetComponents<ISkill>());
         AIState = NpcAI;
         UI = UISystem.getInstance();
     }
