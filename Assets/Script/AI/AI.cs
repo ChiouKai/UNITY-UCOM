@@ -1416,9 +1416,15 @@ public class AI : MonoBehaviour
             RaycastHit RH;
             Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(FireTarget.location);
             int j = 0;
+            Vector3 RandPoint;
             while (true)
             {
-                Vector3 RandPoint = FireTarget.Item1.BeAttakePoint.position
+                if (j > 10)
+                {
+                    AttackPoint = FireTarget.Item1.BeAttakePoint.position +Vector3.up*0.3f+Vector3.right*0.2f;
+                    break;
+                }
+                RandPoint = FireTarget.Item1.BeAttakePoint.position
                             + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f));
                 if (Physics.SphereCast(ShotPoint, 0.2f, RandPoint - ShotPoint, out RH, 30f))
                 {
@@ -2400,9 +2406,16 @@ public class AI : MonoBehaviour
             Miss = true;
             RaycastHit RH;
             Vector3 ShotPoint = CurrentTile.transform.position + new Vector3(0, 1.34f, 0) + Direction(AttakeTarget.Item2)+TargetDir.normalized*0.67f;
+            Vector3 RandPoint;
+            int j = 0;
             while (true)
             {
-                Vector3 RandPoint = AttakeTarget.Item1.BeAttakePoint.position
+                if (j > 10)
+                {
+                    AttackPoint = AttakeTarget.Item1.BeAttakePoint.position + Vector3.up * 0.3f + Vector3.right * 0.2f;
+                    break;
+                }
+                RandPoint = AttakeTarget.Item1.BeAttakePoint.position
                     + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f));
                 if (Physics.SphereCast(ShotPoint, 0.2f, RandPoint-ShotPoint, out RH, 30f))
                 {
@@ -2417,6 +2430,7 @@ public class AI : MonoBehaviour
                     AttackPoint = RandPoint;
                     break;
                 }
+                ++j;
             }
         }
         else

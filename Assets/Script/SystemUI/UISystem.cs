@@ -1053,6 +1053,7 @@ public class UISystem : MonoBehaviour
         }
         if (Humans.Count == 0)//我方角色全都不再場上時
         {
+            m_Roundsystem.EndChecked = false;
             if (Bomb_Round < 3) //安裝炸彈且超過三回合且人走光
             {
                 lose_check = true;
