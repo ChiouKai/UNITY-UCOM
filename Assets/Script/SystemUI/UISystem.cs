@@ -886,6 +886,7 @@ public class UISystem : MonoBehaviour
             RT.anchoredPosition3D = new Vector3(0, 240, 0);
             AttDectPanel.gameObject.SetActive(true);
             TurnRun = CheckMouse;
+            MoveCam.ChaTurn(TurnCha);
         }
     }
 

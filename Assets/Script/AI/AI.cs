@@ -2180,9 +2180,9 @@ public class AI : MonoBehaviour
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                a = 5f / Edir.magnitude;
-                if (a>3)
-                    Point += 3;
+                a = 2f / Edir.magnitude;
+                if (a>2)
+                    Point += 2;
                 else
                 {
                     Point += a;
@@ -2190,9 +2190,9 @@ public class AI : MonoBehaviour
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
-                a = 3f / Edir.magnitude;
-                if (a > 2)
-                    Point += 2;
+                a = 1f / Edir.magnitude;
+                if (a > 1)
+                    Point += 1;
                 else
                 {
                     Point += a;
@@ -2206,18 +2206,18 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        //if (MinDis < 1f)
-        //{
-        //    ;
-        //}
-        //else if(MinDis< 3f)
-        //{
-        //    Point += 2f;
-        //}
-        //else if (MinDis < 6f)
-        //{
-        //    Point += 1;
-        //}
+        if (MinDis < 1f)
+        {
+            ;
+        }
+        else if (MinDis < 3f)
+        {
+            Point += 2f;
+        }
+        else if (MinDis < 6f)
+        {
+            Point += 1;
+        }
         //可用能力巡一遍，選擇得分高的能力 再拿出來加分
         ISkill Sec = null ;
         ISkill Sec2 = null;
