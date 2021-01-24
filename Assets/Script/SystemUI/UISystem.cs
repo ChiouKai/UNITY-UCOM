@@ -118,7 +118,7 @@ public class UISystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.P))
         {
-            m_Roundsystem.testevent();
+            Cheat();
         }
         if (Input.GetKeyDown(KeyCode.O))
         {
@@ -414,6 +414,13 @@ public class UISystem : MonoBehaviour
         DestroySkillButton();
         TurnCha.Skip();
     }
+    private void Cheat()
+    {
+        m_Roundsystem.EndChecked = true;
+        EndCheck.GetInstance().ChaEnd = true;
+        TLine.Moved = true;
+    }
+
 
 
 
@@ -924,7 +931,7 @@ public class UISystem : MonoBehaviour
         ButtonText.text = "治療";
         DescribeText.text = "快速治療一名友軍。";
         LeftText.text = "治癒：3";
-        RightText.text = "";
+        RightText.text = "CD：2回合";
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Heal());
         TurnRun = ChangeHealTarget;
@@ -975,7 +982,7 @@ public class UISystem : MonoBehaviour
         ButtonText.text = "指揮";
         DescribeText.text = "指揮隊友，使隊友獲得一個行動點。";
         LeftText.text = "";
-        RightText.text = "";
+        RightText.text = "CD：2回合";
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Cooperation());
         TurnRun = ChangeAllyTarget;
@@ -1613,7 +1620,7 @@ public class UISystem : MonoBehaviour
             GameObject go = Instantiate(status_UI[judge]) as GameObject;
             go.transform.position = vScreenPos;
 
-            go.transform.SetParent(this.transform);
+            go.transform.SetParent(HPCanvas.transform);
             Destroy(go, 2f);
         }
         if (TurnCha.Cha.tag == "Human" && judge!=4)
@@ -1629,7 +1636,7 @@ public class UISystem : MonoBehaviour
                 go.transform.GetChild(2).GetComponent<Text>().text = demage.ToString();
             go.transform.position = vScreenPos;
 
-            go.transform.SetParent(this.transform);
+            go.transform.SetParent(HPCanvas.transform);
             Destroy(go, 2f);
         }
         if (TurnCha.Cha.tag == "Alien")
@@ -1642,7 +1649,7 @@ public class UISystem : MonoBehaviour
             vScreenPos += Vector3.right * -100 + Vector3.up * 150f;
             GameObject go = Instantiate(status_UI[judge]) as GameObject;
             go.transform.position = vScreenPos;
-            go.transform.SetParent(this.transform);
+            go.transform.SetParent(HPCanvas.transform);
             if (judge == 0)
                 go.transform.GetChild(2).GetComponent<Text>().text = demage.ToString();
             Destroy(go, 2f);

@@ -1426,7 +1426,7 @@ public class AI : MonoBehaviour
                 }
                 RandPoint = FireTarget.Item1.BeAttakePoint.position
                             + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f));
-                if (Physics.SphereCast(ShotPoint, 0.2f, RandPoint - ShotPoint, out RH, 30f))
+                if (Physics.SphereCast(ShotPoint, 0.05f, RandPoint - ShotPoint, out RH, 30f))
                 {
                     if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
                     {
@@ -1715,6 +1715,7 @@ public class AI : MonoBehaviour
             if (Skill.Name == "Heal")
             {
                 Skill.EnterCD();
+                AP -= Skill.AP;
                 break;
             }
         }
@@ -1731,7 +1732,6 @@ public class AI : MonoBehaviour
             Target = Cha;
             transform.forward = Target.transform.position - transform.position;
         }
-
         RemoveVisitedTiles();
 
     }
@@ -1748,7 +1748,7 @@ public class AI : MonoBehaviour
         UI.status("heal", this);
         UI.HpControl(Target, Target.Cha.HP);
         ResetBool();
-        EndTurn();
+        StartCoroutine(WaitNextAction());
     }
 
 
@@ -2206,11 +2206,11 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        if (MinDis < 1f)
+        if (MinDis < 2f)
         {
             ;
         }
-        else if (MinDis < 3f)
+        else if (MinDis < 4f)
         {
             Point += 2f;
         }
@@ -2435,7 +2435,7 @@ public class AI : MonoBehaviour
                 }
                 RandPoint = AttakeTarget.Item1.BeAttakePoint.position
                     + new Vector3(Random.Range(-0.67f, 0.67f), Random.Range(-0.2f, 0.2f), Random.Range(-0.67f, 0.67f));
-                if (Physics.SphereCast(ShotPoint, 0.2f, RandPoint-ShotPoint, out RH, 30f))
+                if (Physics.SphereCast(ShotPoint, 0.05f, RandPoint-ShotPoint, out RH, 30f))
                 {
                     if (RH.collider.tag != "Human" && RH.collider.tag != "Alien")
                     {
@@ -2554,7 +2554,7 @@ public class AI : MonoBehaviour
         PreAttack = true;
         NPCPrepera = false;
         DoActing = MindControl;
-        
+        FindObjectOfType<SoundManager>().Play(Gun.weapon2);
     }
 
 
@@ -2620,6 +2620,7 @@ public class AI : MonoBehaviour
         TargetDir = Target.BeAttakePoint.position - FirePoint.position;
         go.GetComponent<bullet>().enabled = true;
         go.GetComponent<bullet>().SetAttackPoint(FirePoint.position, Target.BeAttakePoint.position);
+        go.GetComponent<bullet>().Hit = true;
         float sec = TargetDir.magnitude / 10f;
         go.transform.forward = TargetDir;
         Attack = false;
@@ -2718,7 +2719,6 @@ public class AI : MonoBehaviour
             skill.CountCD();
         }
     }
-
 
 
 }

@@ -24,8 +24,8 @@ public class Heal : MonoBehaviour ,ISkill
     {
         Name = "Heal";
         ai = GetComponent<AI>();
-        AP = 2;
-        CD = 3;
+        AP = 1;
+        CD = 2;
         CDCount = 0;
         AimPoint = 0;
         Point = 2;

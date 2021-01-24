@@ -25,7 +25,7 @@ public class Cooperation : MonoBehaviour, ISkill
         Name = "Cooperation";
         ai = GetComponent<AI>();
         AP = 1;
-        CD = 3;
+        CD = 2;
         CDCount = 0;
         AimPoint = 0;
         Point = 2;

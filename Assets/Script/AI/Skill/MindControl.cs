@@ -28,7 +28,7 @@ public class MindControl : MonoBehaviour,ISkill
         CD = 3;
         CDCount = 0;
         AimPoint = 0f;
-        Point = 7;
+        Point = 10;
         type = 0;
     }
 
