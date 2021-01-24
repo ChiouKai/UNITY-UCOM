@@ -416,6 +416,10 @@ public class UISystem : MonoBehaviour
     }
     private void Cheat()
     {
+        LRDestory();
+        DestroyADPButton();
+        DestroySkillButton();
+        TurnCha.Skip();
         m_Roundsystem.EndChecked = true;
         EndCheck.GetInstance().ChaEnd = true;
         TLine.Moved = true;
@@ -751,6 +755,10 @@ public class UISystem : MonoBehaviour
     }
     public void Fire()//button
     {
+        if (TurnCha.AmTurn == true&& TurnCha.ChangeTarget)
+        {
+            return;
+        }
         AimTarget.SetActive(false);
         AimTarget.transform.GetChild(0).GetComponent<Text>().text = "";
         TurnCha.Fire(Target.Value);

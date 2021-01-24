@@ -19,10 +19,12 @@ public class NPC_AI : AI
         Gun = GetComponent<Weapon>();
         TileCount = FindDirection(transform.forward);
         Idle = NoCover;
-        Enemies = RoundSysytem.GetInstance().Humans;
+        RS = RoundSysytem.GetInstance();
+        Enemies = RS.Humans;
         Skills.AddRange(GetComponents<ISkill>());
         AIState = NpcAI;
         UI = UISystem.getInstance();
+
     }
 
     // Update is called once per frame

@@ -21,6 +21,7 @@ public class AI : MonoBehaviour
     internal int EnemyLayer;
     protected int TileCount;
     internal bool AmTurn = false;
+    protected RoundSysytem RS;
     
     
     //動畫
@@ -410,6 +411,8 @@ public class AI : MonoBehaviour
 
     public void ResetBool()
     {
+        Moving = false;
+        Attack = false;
         Idle = NoCover;
         AmTurn = false;
         if (ActionName != null)
@@ -510,6 +513,10 @@ public class AI : MonoBehaviour
                         Vector3 vdiv = adjT.transform.position - T.transform.position;
                         vdiv.y = 0;
                         float TDis = vdiv.magnitude;
+                        if (adjT.Cha != null && EnemyLayer != adjT.Cha.EnemyLayer)
+                        {
+                            MeleeableList.AddLast((adjT.Cha, T));
+                        }
                         if (TDis > 0.9f)        //如果斜向移動，則判斷路徑上有沒有東西卡到
                         {
                             if (Physics.CheckBox(T.transform.position + (vdiv / 2) + new Vector3(0, 0.67f, 0), new Vector3(0.3f, 0.3f, 0.3f), Quaternion.identity, LayerMask.GetMask("Environment"))
@@ -521,10 +528,6 @@ public class AI : MonoBehaviour
                         adjT.distance = TDis + T.distance;
                         if (!adjT.walkable)
                         {
-                            if (adjT.Cha != null && EnemyLayer != adjT.Cha.EnemyLayer)
-                            {
-                                MeleeableList.AddLast((adjT.Cha, T));
-                            }
                             Process2.Enqueue(adjT);
                             AddVisited(adjT);
                             continue;
@@ -1114,9 +1117,6 @@ public class AI : MonoBehaviour
                 Am.SetBool("Turn", true);
             }
 
-
-
-
         }
         else
         {
@@ -1155,6 +1155,7 @@ public class AI : MonoBehaviour
         TargetDir.y = 0;
         if (Am.GetBool("FCover"))
         {
+            Idle = FullCover;
             Vector3 LoR = Vector3.Cross(Direction(TileCount), TargetDir);
             if (LoR.y >= 0)
             {
@@ -1169,6 +1170,7 @@ public class AI : MonoBehaviour
         }
         else if (Am.GetBool("HCover"))
         {
+            Idle = HalfCover;
             float FoB = Vector3.Dot(transform.forward, TargetDir.normalized);
             if (FoB > 1 / Mathf.Sqrt(2) - 0.001f)
             {
@@ -1192,6 +1194,7 @@ public class AI : MonoBehaviour
         }
         else
         {
+            Idle = NoCover;
             ChangeTarget = true;
             Am.SetBool("Aim", false);
             Vector3 LoR = Vector3.Cross(transform.forward, TargetDir);
@@ -1634,27 +1637,6 @@ public class AI : MonoBehaviour
             (Tile T, MoveWay M) = Path.Peek();
             Vector3 target = T.transform.position;
             target.y += ChaHeight;
-            //switch (M)  用移動方式來決定程式跑法
-            //{
-            //    case MoveWay.Run:
-            //        Run(target);
-            //        break;
-            //    case MoveWay.Across:
-            //        Across();
-            //        break;
-            //    case MoveWay.Jump:
-            //        Jump();
-            //        break;
-            //    case MoveWay.ClimbDown:
-            //        ClimbDown();
-            //        break;
-            //    case MoveWay.Ladder:
-            //        Ladder();
-            //        break;
-            //    case MoveWay.ClimbUp:
-            //        Climbup();
-            //        break;
-            //}
 
             if ((transform.position - target).magnitude >= 0.05f)
             {
@@ -1816,7 +1798,7 @@ public class AI : MonoBehaviour
     protected virtual void AIDeath()
     {
         OutCurrentTile();
-        RoundSysytem.GetInstance().DeathKick(this);
+        RS.DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);
         Destroy(GetComponent<EPOOutline.Outlinable>());
@@ -1942,7 +1924,7 @@ public class AI : MonoBehaviour
         RemoveVisitedTiles();
         OutCurrentTile();
         UI.Escape = true;
-        RoundSysytem.GetInstance().DeathKick(this);
+        RS.DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);
         EndTurn();
@@ -2148,7 +2130,7 @@ public class AI : MonoBehaviour
                 NPCPrepera = false;
                 ResetBool();
                 AP = 0;
-                RoundSysytem.GetInstance().EndChecked = true;
+                RS.EndChecked = true;
                 StartCoroutine(WaitNextAction());
             }
         }
@@ -2207,15 +2189,15 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        if (MinDis < 2f)
+        if (MinDis < 3f)
         {
             ;
         }
-        else if (MinDis < 4f)
+        else if (MinDis < 6f)
         {
             Point += 2f;
         }
-        else if (MinDis < 6f)
+        else if (MinDis < 9f)
         {
             Point += 1;
         }
@@ -2524,6 +2506,7 @@ public class AI : MonoBehaviour
             RemoveVisitedTiles();
             NPCPrepera = false;
             DoActing = null;
+            RS.EndChecked = true;
             EndTurn();
         }
     }
@@ -2550,7 +2533,6 @@ public class AI : MonoBehaviour
             
             PreAttack = false;
             NPCPrepera = false;
-            ResetBool();
             EndTurn();
         }
     }
@@ -2619,7 +2601,7 @@ public class AI : MonoBehaviour
     }
     public void CreatMindC()
     {
-        RoundSysytem.GetInstance().EndChecked = false;
+        RS.EndChecked = false;
         GameObject GO = Instantiate<GameObject>(Resources.Load<GameObject>("MindControl"));
         GO.transform.position = FirePoint.position;
         GO.transform.SetParent(FirePoint);
@@ -2654,7 +2636,7 @@ public class AI : MonoBehaviour
         go.transform.SetParent(head);
         Cha.camp = Character.Camp.Alien;
         Enemies.Add(this);
-        Enemies = RoundSysytem.GetInstance().Humans;
+        Enemies = RS.Humans;
         Enemies.Remove(this);
         EnemyLayer = 1 << 11;
         AIState = NpcAI;
@@ -2664,27 +2646,27 @@ public class AI : MonoBehaviour
         UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
         yield return new WaitForSeconds(0.5f);
         UI.CheckEvent();
-        RoundSysytem.GetInstance().EndChecked = true;
+        RS.EndChecked = true;
         FindObjectOfType<SoundManager>().Play(Cha.MindControlled);
     }
 
     public IEnumerator RecoverMind(AI enemy)
     {
-        RoundSysytem.GetInstance().EndChecked = false;
+        RS.EndChecked = false;
         yield return new WaitForSeconds(1f);
         UI.MoveCam.ChaTurn(this);
         Transform MCing = BeAttakePoint.GetChild(0).Find("Head").Find("MindCing(Clone)");
         Destroy(MCing.gameObject);
         Cha.camp = Character.Camp.Human;
         Enemies.Add(this);
-        Enemies = RoundSysytem.GetInstance().Aliens;
+        Enemies = RS.Aliens;
         Enemies.Remove(this);
         EnemyLayer = 1 << 10;
         AIState = PlayerAI;
         UI.ChangeLogo(this);
         UI.DestroyHPBar(this);
         UI.CreateHP_Bar(this, Cha.MaxHP, Cha.HP);
-        RoundSysytem.GetInstance().EndChecked = true;
+        RS.EndChecked = true;
         Destroy(enemy);
     }
 

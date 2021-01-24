@@ -17,7 +17,8 @@ public class CrabAI : AI
         Cha = GetComponent<Character>();
         Am = GetComponent<Animator>();
         EnemyLayer = 1 << 11;
-        Enemies = RoundSysytem.GetInstance().Humans;
+        RS = RoundSysytem.GetInstance();
+        Enemies = RS.Humans;
         Skills.AddRange(GetComponents<ISkill>());
         Idle = NoCover;
         UI = UISystem.getInstance();
@@ -263,7 +264,7 @@ public class CrabAI : AI
             PreAttack = false;
             NPCPrepera = false;
             AP = 0;
-            RoundSysytem.GetInstance().EndChecked = true;
+            RS.EndChecked = true;
             StartCoroutine(WaitNextAction());
         }
     }
@@ -344,7 +345,7 @@ public class CrabAI : AI
         Target.Hurt(transform.forward);
         UI.status("Demage", this);
         yield return new WaitForSeconds(1f);//
-        RoundSysytem.GetInstance().EndChecked = true;
+        RS.EndChecked = true;
         StartCoroutine(WaitNextAction());
     }
 
@@ -372,7 +373,7 @@ public class CrabAI : AI
         OutCurrentTile();
         Am.Play("Death");
         FindObjectOfType<SoundManager>().Play(Cha.die);
-        RoundSysytem.GetInstance().DeathKick(this);
+        RS.DeathKick(this);
         TimeLine.Instance.Moved = false;
         UI.DeathKick(this);
         Destroy(GetComponent<EPOOutline.Outlinable>());

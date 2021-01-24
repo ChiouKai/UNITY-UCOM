@@ -28,7 +28,7 @@ public class Cooperation : MonoBehaviour, ISkill
         CD = 2;
         CDCount = 0;
         AimPoint = 0;
-        Point = 2;
+        Point = 0;
         type = 0;
     }
 

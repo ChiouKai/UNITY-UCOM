@@ -18,7 +18,8 @@ public class BossAI : AI
         Gun = GetComponent<Weapon>();
         TileCount = FindDirection(transform.forward);
         Idle = NoCover;
-        Enemies = RoundSysytem.GetInstance().Humans;
+        RS = RoundSysytem.GetInstance();
+        Enemies = RS.Humans;
         Skills.AddRange(GetComponents<ISkill>());
         AIState = NpcAI;
     }

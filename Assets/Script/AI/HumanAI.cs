@@ -23,9 +23,11 @@ public class HumanAI : AI
         TileCount = FindDirection(transform.forward);
         Idle = NoCover;
         UI = UISystem.getInstance();
-        Enemies = RoundSysytem.GetInstance().Aliens;
+        RS = RoundSysytem.GetInstance();
+        Enemies = RS.Aliens;
         Skills.AddRange(GetComponents<ISkill>());
         AIState = PlayerAI;
+        
     }
 
     // Update is called once per frame
