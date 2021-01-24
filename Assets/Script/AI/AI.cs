@@ -1135,6 +1135,7 @@ public class AI : MonoBehaviour
             PreAttakeIdle = PreAtkNoCover;
             ChangeTarget = true;
             Idle = NoCover;
+            AmTurn = false;
 
         }
     }
@@ -2536,10 +2537,11 @@ public class AI : MonoBehaviour
         }
         else
         {
-            EndTurn();
+            
             PreAttack = false;
             NPCPrepera = false;
             ResetBool();
+            EndTurn();
         }
     }
 

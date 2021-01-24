@@ -27,7 +27,7 @@ public class Reload : MonoBehaviour, ISkill
         CD = 0;
         CDCount = 0;
         AimPoint = 0f;
-        Point = 2;
+        Point = 1;
         ai = GetComponent<AI>();
         Name = "Reload";
         type = 0;

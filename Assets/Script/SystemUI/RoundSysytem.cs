@@ -234,7 +234,7 @@ public class RoundSysytem
             {
                 EC.ChaEnd = false;
                 EndChecked = false;
-                UI.type = 1;
+                UI.type = 0;
                 UI.site = 1;
                 UI.TurnRun = UI.NewCome;
                 Event = null;
