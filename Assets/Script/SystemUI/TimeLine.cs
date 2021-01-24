@@ -60,8 +60,6 @@ public class TimeLine : MonoBehaviour
             logo.LogoUpdate = logo.LogoMove;
             Current = Current.Next;
         }
-
-
     }
 
     public void TEndLogo(AI Cha, int Count)

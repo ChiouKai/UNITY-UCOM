@@ -52,7 +52,7 @@ public class Grenade : MonoBehaviour
             if (TargetTile.AdjList[i].Cha != null)
             {
                 cha = TargetTile.AdjList[i].Cha;
-                cha.BeDamaged(3);
+                cha.BeDamaged(4);
                 cha.Hurt(TargetTile.AdjList[i].transform.position - TargetTile.transform.position);
             }
         }

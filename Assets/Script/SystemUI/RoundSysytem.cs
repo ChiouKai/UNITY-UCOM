@@ -66,17 +66,6 @@ public class RoundSysytem
         UI.UIAnima = UI.PrepareTimeLine;
         EventList = new List<Action>();
 
-        Action Event = () =>
-        {
-            EC.ChaEnd = false;
-            EndChecked = false;
-            UI.type = 1;
-            UI.site = 0;
-            UI.TurnRun = UI.NewCome;
-            Event = null;
-        };
-        EventList.Add(Event);
-
     }
     public void RoundStart()
     {

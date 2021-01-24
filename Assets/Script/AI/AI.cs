@@ -818,7 +818,7 @@ public class AI : MonoBehaviour
             }
             Vector3 TDiv = Target - Location;
             i = FindDirection(TDiv);
-            if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), Target - Location, (Target - Location).magnitude, 1 << 9))
+            if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), Target - Location, (Target - Location).magnitude, 1 << 9 ))
             {//確保路徑上沒有障礙物
                 AttakeableList.AddLast((Enemy, -1, CalculateAim(Enemy, CurrentTile.transform.position)));
             }
@@ -839,7 +839,7 @@ public class AI : MonoBehaviour
                     if (CurrentTile.AdjList[i].walkable)
                     {//判斷旁邊可以站
                         TDiv = Target - Location;
-                        if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9 ))
                         {//確保路徑上沒有障礙物
                             AttakeableList.AddLast((Enemy, i, CalculateAim(Enemy, Location)));//todo
                             continue;
@@ -851,7 +851,7 @@ public class AI : MonoBehaviour
                     if (CurrentTile.AdjList[(i + 1) % 4].walkable)
                     {//判斷旁邊可以站
                         TDiv = Target - Location;
-                        if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9 ))
                         {//確保路徑上沒有障礙物
                             AttakeableList.AddLast((Enemy, (i + 1) % 4, CalculateAim(Enemy, Location)));//todo
                             continue;
@@ -918,7 +918,7 @@ public class AI : MonoBehaviour
             }
             Vector3 TDiv = Target - Location;
             i = FindDirection(TDiv);
-            if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), Target - Location, (Target - Location).magnitude, 1 << 9))
+            if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), Target - Location, (Target - Location).magnitude, 1 << 9 ))
             {//確保路徑上沒有障礙物
                 AttPredict.Add(Enemy);
             }
@@ -939,7 +939,7 @@ public class AI : MonoBehaviour
                     if (T.AdjList[i].walkable)
                     {//判斷旁邊可以站
                         TDiv = Target - Location;
-                        if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9 ))
                         {//確保路徑上沒有障礙物
                             AttPredict.Add(Enemy);
                             continue;
@@ -960,7 +960,7 @@ public class AI : MonoBehaviour
                     if (T.AdjList[(i + 3) % 4].walkable)
                     {//判斷旁邊可以站
                         TDiv = Target - Location;
-                        if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9))
+                        if (!Physics.Raycast(Location + new Vector3(0, 1.2f, 0), TDiv, TDiv.magnitude, 1 << 9 ))
                         {//確保路徑上沒有障礙物
                             AttPredict.Add(Enemy);
                             continue;
@@ -2400,7 +2400,17 @@ public class AI : MonoBehaviour
         }
         return BestAim;
     }
-
+    private int FriendLayer()
+    {
+        if (EnemyLayer == 1 << 10)
+        {
+            return 1 << 11;
+        }
+        else
+        {
+            return 1 << 10;
+        }
+    }
     public void PreFire()
     {
         Target = AttakeTarget.Item1;
