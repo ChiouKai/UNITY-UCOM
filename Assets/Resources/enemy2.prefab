@@ -269,7 +269,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.4, y: 0.73, z: 0.3}
+  m_Size: {x: 0.41, y: 0.7, z: 0.18}
   m_Center: {x: -2.5755494e-13, y: 0.2, z: -1.0934403e-15}
 --- !u!114 &6434469387450083037
 MonoBehaviour:
@@ -1460,7 +1460,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHP: 5
   HP: 5
-  Mobility: 6
+  Mobility: 5
   Speed: 5
   BasicAim: 60
   Energy: 0

@@ -4055,7 +4055,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cha: {fileID: 7154555018010834703}
   CurrentTile: {fileID: 0}
-  MoveSpeed: 6
+  MoveSpeed: 5
   FirePoint: {fileID: 0}
   Bullet: {fileID: 0}
   BeAttakePoint: {fileID: 402724848175036054}
@@ -4077,8 +4077,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHP: 6
   HP: 6
-  Mobility: 6
-  Speed: 1
+  Mobility: 7
+  Speed: 7
   BasicAim: 100
   Energy: 0
   MaxEnergy: 0

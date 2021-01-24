@@ -2176,13 +2176,29 @@ public class AI : MonoBehaviour
         }
         foreach (AI enemy in Enemies)//有障礙物則加分
         {
+            float a;
             Vector3 Edir = enemy.transform.position - Location;
             if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.FullC)
             {
-                Point += 3f; // Edir.magnitude;
+                a = 5f / Edir.magnitude;
+                if (a>3)
+                    Point += 3;
+                else
+                {
+                    Point += a;
+                }
             }
             else if (T.AdjCoverList[FindDirection(Edir)] == Tile.Cover.HalfC)
             {
+                a = 3f / Edir.magnitude;
+                if (a > 2)
+                    Point += 2;
+                else
+                {
+                    Point += a;
+                }
+
+
                 Point += 2f;// Edir.magnitude;
             }
             if (MinDis > Edir.magnitude)
@@ -2190,18 +2206,18 @@ public class AI : MonoBehaviour
                 MinDis = Edir.magnitude;
             }
         }
-        if (MinDis < 1f)
-        {
-            ;
-        }
-        else if(MinDis< 3f)
-        {
-            Point += 2f;
-        }
-        else if (MinDis < 6f)
-        {
-            Point += 1;
-        }
+        //if (MinDis < 1f)
+        //{
+        //    ;
+        //}
+        //else if(MinDis< 3f)
+        //{
+        //    Point += 2f;
+        //}
+        //else if (MinDis < 6f)
+        //{
+        //    Point += 1;
+        //}
         //可用能力巡一遍，選擇得分高的能力 再拿出來加分
         ISkill Sec = null ;
         ISkill Sec2 = null;

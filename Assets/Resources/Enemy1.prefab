@@ -1754,7 +1754,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHP: 4
   HP: 4
-  Mobility: 6
+  Mobility: 5
   Speed: 3
   BasicAim: 60
   Energy: 0

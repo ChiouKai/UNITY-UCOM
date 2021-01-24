@@ -3279,10 +3279,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f716625bc427f4892e763f19d66117, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 6
-  HP: 6
+  MaxHP: 7
+  HP: 7
   Mobility: 6
-  Speed: 2
+  Speed: 6
   BasicAim: 70
   Energy: 0
   MaxEnergy: 0
@@ -3313,7 +3313,7 @@ MonoBehaviour:
   weapon1: att_rifle_singleShot
   weapon2: att_blade_slay
   note: 
-  Damage: 0400000005000000
+  Damage: 0300000004000000
   DamageRange: 2
   atkRange: 0000000015000000140000001300000011000000100000000e0000000b000000090000000700000005000000040000000300000002000000010000000100000001000000010000000100000000000000000000000000000000000000000000000000000000000000
   MaxBullet: 4
