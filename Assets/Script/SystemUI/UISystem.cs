@@ -722,7 +722,7 @@ public class UISystem : MonoBehaviour
 
     public void PreFire()//button
     {
-        if (TurnCha.AttakeableList.Count == 0)
+        if (TurnCha.AttakeableList.Count == 0||TurnCha.AmTurn)
         {
             return;
         }

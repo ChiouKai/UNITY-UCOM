@@ -216,8 +216,10 @@ public class BossAI : AI
         NPCPrepera = false;
         DoActing = MindControl;
     }
+
+
     public void Ultimate()
     {
-        }
+    }
 
 }
