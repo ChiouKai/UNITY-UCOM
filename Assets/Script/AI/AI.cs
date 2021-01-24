@@ -1421,7 +1421,7 @@ public class AI : MonoBehaviour
             {
                 if (j > 10)
                 {
-                    AttackPoint = FireTarget.Item1.BeAttakePoint.position +Vector3.up*0.3f+Vector3.right*0.2f;
+                    AttackPoint = FireTarget.Item1.BeAttakePoint.position +Vector3.up*0.3f+ Vector3.Cross((FireTarget.Item1.BeAttakePoint.position - ShotPoint), Vector3.up).normalized * 0.3f; ;
                     break;
                 }
                 RandPoint = FireTarget.Item1.BeAttakePoint.position
@@ -1489,6 +1489,7 @@ public class AI : MonoBehaviour
         {
             TargetDir = Target.BeAttakePoint.position - FirePoint.position;
             B.GetComponent<bullet>().SetAttackPoint(FirePoint.position, Target.BeAttakePoint.position);
+            B.GetComponent<bullet>().Hit = true;
         }
         B.transform.forward = TargetDir;
         if (FireLight != null)
@@ -2398,7 +2399,7 @@ public class AI : MonoBehaviour
     public void Fire()
     {
         Debug.Log(AttakeTarget.Item3);
-        int i = Random.Range(0, 101);
+        int i = Random.Range(0, 100);
         NPC_Prefire = true;
         UI.MoveCam.att_cam_bool = true;
         if (AttakeTarget.Item3 < i)//Miss
@@ -2410,9 +2411,10 @@ public class AI : MonoBehaviour
             int j = 0;
             while (true)
             {
-                if (j > 10)
+                if (j>10)
                 {
-                    AttackPoint = AttakeTarget.Item1.BeAttakePoint.position + Vector3.up * 0.3f + Vector3.right * 0.2f;
+                    Debug.Log("Miss");
+                    AttackPoint = AttakeTarget.Item1.BeAttakePoint.position + Vector3.up * 0.3f + Vector3.Cross((AttakeTarget.Item1.BeAttakePoint.position -ShotPoint),Vector3.up).normalized* 0.3f;
                     break;
                 }
                 RandPoint = AttakeTarget.Item1.BeAttakePoint.position

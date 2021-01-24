@@ -31,7 +31,6 @@ Transform:
   m_Father: {fileID: 8592070430173631716}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  Trail: {fileID: 0}
 --- !u!1 &4477772776125081946
 GameObject:
   m_ObjectHideFlags: 0
@@ -2267,7 +2266,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.885369, y: 0.36622646, z: 0.51}
+  m_Size: {x: 0.885369, y: 0.31, z: 0.3}
   m_Center: {x: -0.17268455, y: 0.0074147554, z: 0.0048470036}
 --- !u!1 &8367018576617964867
 GameObject:
@@ -3313,7 +3312,6 @@ MonoBehaviour:
   vReload: voice_reload2
   weapon1: att_rifle_singleShot
   weapon2: att_blade_slay
-  note: 
   note: 
   Damage: 0400000005000000
   DamageRange: 2

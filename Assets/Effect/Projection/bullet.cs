@@ -15,14 +15,15 @@ public class bullet : MonoBehaviour
     public Vector3 AttackPoint;
     public Vector3 FirePoint;
     public float Speed = 20f;
+    public bool Hit = false;
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if ((transform.position-AttackPoint).magnitude <0.5f)
+        if ((transform.position - AttackPoint).magnitude < 0.5f&&Hit)
         {
             transform.position = AttackPoint;
-            Destroy(gameObject,0.1f);
+            Destroy(gameObject, 0.1f);
         }
         else
         {
@@ -54,7 +55,8 @@ public class bullet : MonoBehaviour
             fire.transform.forward = DIV;//火花方向 = 子彈的反方向
             fire.SetActive(true); //讓火花顯示
             Destroy(fire, 0.7f); //一秒後刪除火花效果
-
+            if (!Hit)
+                Destroy(gameObject);
         }
        
     }
