@@ -1599,7 +1599,6 @@ public class AI : MonoBehaviour
         Attack = true;
         Target = MeleeTarget.Value.Item1;
         Am.SetBool("Melee",true);        
-        MeleeableList.Clear();
         UI.LRDestory();        
     }
 

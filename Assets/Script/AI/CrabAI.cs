@@ -378,7 +378,7 @@ public class CrabAI : AI
         UI.DeathKick(this);
         Destroy(GetComponent<EPOOutline.Outlinable>());
         Destroy(Cha);
-        //Idle = DeathIdle;
+        Idle = DeathIdle;
         FindObjectOfType<SoundManager>().Play(Cha.die);
     }
     private void DeathIdle()
