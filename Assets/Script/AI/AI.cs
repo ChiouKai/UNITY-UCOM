@@ -1762,7 +1762,7 @@ public class AI : MonoBehaviour
         UI.PlayerStartTurn();
     }
 
-    public void EndTurn()
+    public virtual void EndTurn()
     {
         Target = null;
         NPC_Prefire = false;

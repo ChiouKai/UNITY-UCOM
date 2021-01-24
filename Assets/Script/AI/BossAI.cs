@@ -173,7 +173,7 @@ public class BossAI : AI
     }
 
     public GameObject Chain;
-
+    bool Hit = false;
     public void Lightning()
     {
         GameObject go = Instantiate(Bullet, FirePoint.position, Quaternion.identity);
@@ -188,6 +188,7 @@ public class BossAI : AI
         }
         else
         {
+            Hit = true;
             Target.BeDamaged(Random.Range(2, 3));
             Vector3 dir = Target.transform.position - transform.position;
             dir.y = 0;
@@ -204,6 +205,7 @@ public class BossAI : AI
 
     public override void PreMindControl()
     {
+        ResetBool();
         Vector3 pos = new Vector3();
         foreach(AI target in Enemies)
         {
@@ -212,14 +214,67 @@ public class BossAI : AI
         pos = pos / Enemies.Count;
         TargetDir = pos - transform.position;
         TargetDir.y = 0;
-        PreAttack = true;
-        NPCPrepera = false;
-        DoActing = MindControl;
+        //settrriger
     }
-
-
-    public void Ultimate()
+    public void UltFaceTarget()
     {
+        transform.forward = TargetDir;
     }
 
+
+    List<Tile> UltimateTile = new List<Tile>();
+
+    public void UseUltimate()
+    {
+        Cha.Energy -= 3;
+        UI.HpControl(this, Cha.HP);
+        //instiate
+        StartCoroutine(Ultimating());
+    }
+    IEnumerator Ultimating()
+    {
+        foreach(AI target in Enemies)
+        {
+            Tile T = target.CurrentTile;
+            UltimateTile.Add(T);
+            T.DangerPos();
+            UI.JoinActionTile(T);
+            for(int i = 0; i < 8; ++i)
+            {
+                T.AdjList[i].DangerPos();
+                UI.JoinActionTile(T.AdjList[i]);
+            }
+            //instiate emptyaAI
+            UI.MoveCam.ChaTurn(target);
+            yield return new WaitForSeconds(1f);
+        }
+    }
+    //IEnumerator Ultimatied()
+    //{
+    //    foreach (Tile T in UltimateTile)
+    //    {
+    //        Tile T = target.CurrentTile;
+    //        UltimateTile.Add(T);
+    //        T.DangerPos();
+    //        UI.JoinActionTile(T);
+    //        for (int i = 0; i < 8; ++i)
+    //        {
+    //            T.AdjList[i].DangerPos();
+    //            UI.JoinActionTile(T.AdjList[i]);
+    //        }
+    //        UI.MoveCam.ChaTurn(target);
+    //        yield return new WaitForSeconds(1f);
+    //    }
+    //}
+
+    public override void EndTurn()
+    {
+        if (Cha.Energy > 7 && Hit)
+        {
+            PreMindControl();
+            Hit = false;
+            return;
+        }
+        base.EndTurn();
+    }
 }
