@@ -23,7 +23,7 @@ public class Ultimate : MonoBehaviour , ISkill
     {
         Name = "Ultimate";
         ai = GetComponent<AI>();
-        AP = 2;
+        AP = 1;
         CD = 0;
         CDCount = 0;
         AimPoint = 0;
@@ -33,7 +33,7 @@ public class Ultimate : MonoBehaviour , ISkill
 
     public bool CheckUseable(AI Target)
     {
-        if (ai.Cha.Energy!= 10)
+        if (!ai.Ult)
         {
             return false;
         }

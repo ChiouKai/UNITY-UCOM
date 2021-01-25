@@ -56,9 +56,10 @@ public class TimeLine : MonoBehaviour
         while (Current != null)
         {
             logo = Current.Value;
-            logo.InsertLocation += new Vector2(0, -110);
+            logo.InsertLocation = new Vector2(-60, -50 - 110 * Count);
             logo.LogoUpdate = logo.LogoMove;
             Current = Current.Next;
+            ++Count;
         }
     }
 

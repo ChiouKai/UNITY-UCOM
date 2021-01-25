@@ -65,6 +65,7 @@ public class BossAI : AI
         ResetBool();
         Am.SetTrigger("Charge");
         NPCPrepera = false;
+        DoActing = null;
     }
 
 
@@ -111,7 +112,12 @@ public class BossAI : AI
 
     public override void ConfirmAction()
     {
-        if (Cha.Energy == Cha.MaxEnergy)
+        if (Ult)
+        {
+            ResetBool();
+            Am.SetTrigger("Ultimate2");
+        }
+        else if (Cha.Energy == Cha.MaxEnergy)
         {
             ConfirmAction2();
         }
@@ -120,12 +126,14 @@ public class BossAI : AI
             DoActing = PreCharge;
         }
         NPCPrepera = true;
+
     }
     private void ConfirmAction2()
     {
         if (BestT != CurrentTile)
         {
             DoActing = PreMove;
+            NPCPrepera = true;
         }
         else if (Acting != null)
         {
@@ -133,8 +141,16 @@ public class BossAI : AI
             ActionName = Acting.Name;
             Acting.EnterCD();
             Acting = null;
+            NPCPrepera = true;
         }
-        NPCPrepera = true;
+        else
+        {
+            RemoveVisitedTiles();
+            NPCPrepera = false;
+            DoActing = null;
+            RS.EndChecked = true;
+            EndTurn();
+        }
     }
 
 
@@ -210,6 +226,7 @@ public class BossAI : AI
     public override void PreMindControl()
     {
         ResetBool();
+        
         Vector3 pos = new Vector3();
         foreach(AI target in Enemies)
         {
@@ -218,7 +235,8 @@ public class BossAI : AI
         pos = pos / Enemies.Count;
         TargetDir = pos - transform.position;
         TargetDir.y = 0;
-        //settrriger
+        Ult = true;
+        Am.SetTrigger("Ultimate");
     }
     public void UltFaceTarget()
     {
@@ -227,7 +245,8 @@ public class BossAI : AI
 
 
     List<Tile> UltimateTile = new List<Tile>();
-
+    List<AI> CamAIList = new List<AI>();
+    public  GameObject CamTarget;
     public void UseUltimate()
     {
         Cha.Energy -= 3;
@@ -248,10 +267,11 @@ public class BossAI : AI
                 T.AdjList[i].DangerPos();
                 UI.JoinActionTile(T.AdjList[i]);
             }
-            //instiate emptyaAI
+            CamAIList.Add((Instantiate<GameObject>(CamTarget).GetComponent<AI>()));
             UI.MoveCam.ChaTurn(target);
             yield return new WaitForSeconds(1f);
         }
+
     }
     IEnumerator Ultimatied()
     {

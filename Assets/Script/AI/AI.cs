@@ -2164,6 +2164,7 @@ public class AI : MonoBehaviour
     internal bool NPCPrepera = false;
     internal bool NPC_Prefire;
     internal List<ISkill> Skills=new List<ISkill>();
+    internal bool Ult=false;
 
     protected virtual bool CalPointAction(Tile T)
     {
