@@ -22,6 +22,7 @@ public class BossAI : AI
         Enemies = RS.Humans;
         Skills.AddRange(GetComponents<ISkill>());
         AIState = NpcAI;
+        UI = UISystem.getInstance();
     }
     
     // Update is called once per frame
@@ -156,6 +157,7 @@ public class BossAI : AI
         {
             transform.forward = -dir;
             UI.HpControl(this, Cha.HP);
+            Am.Play("Death");
             AIDeath();
         }
         else
@@ -173,6 +175,7 @@ public class BossAI : AI
     }
 
     public GameObject Chain;
+    public GameObject Fall;
     bool Hit = false;
     public void Lightning()
     {
@@ -189,7 +192,6 @@ public class BossAI : AI
         else
         {
             Hit = true;
-            Target.BeDamaged(Random.Range(2, 3));
             Vector3 dir = Target.transform.position - transform.position;
             dir.y = 0;
             Target.Hurt2(dir);

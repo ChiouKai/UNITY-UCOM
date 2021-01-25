@@ -70,7 +70,7 @@ public class createhp : MonoBehaviour
         }
         if (HP <= 0) { Destroy(gameObject); }
         Eng = eng;
-        for (int i = 1; i < LiEn_Tiles.Length; i++)
+        for (int i = 0; i < LiEn_Tiles.Length; i++)
         {
             if (i < eng)
             {

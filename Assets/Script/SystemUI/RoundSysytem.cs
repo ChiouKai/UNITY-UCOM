@@ -189,6 +189,16 @@ public class RoundSysytem
                 Event = null;
             };
             EventList.Add(Event);
+            Action Event2 = () =>
+            {
+                EC.ChaEnd = false;
+                EndChecked = false;
+                UI.type = 2;
+                UI.site = 1;
+                UI.TurnRun = UI.NewCome;
+                Event = null;
+            };
+            EventList.Add(Event);
         }
 
         if (Aliens.Count < 3)

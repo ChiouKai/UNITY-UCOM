@@ -5595,7 +5595,7 @@ GameObject:
   - component: {fileID: 4684246254171964}
   - component: {fileID: 5225917954117270874}
   - component: {fileID: 5367820065688287595}
-  - component: {fileID: 3106792676882578904}
+  - component: {fileID: 6226228809354896012}
   m_Layer: 0
   m_Name: TriggerEnter
   m_TagString: Untagged
@@ -5647,7 +5647,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!136 &3106792676882578904
+--- !u!136 &6226228809354896012
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5655,10 +5655,10 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1879186567050256}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 1
+  m_Radius: 1.17
+  m_Height: 1.96
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1918065072037318

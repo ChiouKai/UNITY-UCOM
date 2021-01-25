@@ -1793,6 +1793,7 @@ public class AI : MonoBehaviour
     {
         Cha.HP -= damage;//todo ?
         UI.demage = damage;
+        Debug.Log(damage);
     }
     protected virtual void AIDeath()
     {
