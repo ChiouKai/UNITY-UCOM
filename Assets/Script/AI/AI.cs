@@ -1946,8 +1946,6 @@ public class AI : MonoBehaviour
         UI.DeathKick(this);
         EndTurn();
         Destroy(gameObject);
-
-
     }
 
     public void BeComa()
@@ -2224,7 +2222,7 @@ public class AI : MonoBehaviour
         ISkill Sec = null ;
         ISkill Sec2 = null;
         float SecPoint = 0;
-        if (Skills != null) 
+        if (Skills != null&&!Ult) 
         {
             if (T.distance <= Cha.Mobility)
             {

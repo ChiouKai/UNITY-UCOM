@@ -115,6 +115,7 @@ public class BossAI : AI
         if (Ult)
         {
             ResetBool();
+            Ult = false;
             Am.SetTrigger("Ultimate2");
         }
         else if (Cha.Energy == Cha.MaxEnergy)
@@ -249,12 +250,20 @@ public class BossAI : AI
     public  GameObject CamTarget;
     public void UseUltimate()
     {
+        for (int i = 0; i < 4; ++i)
+        {
+            LineRenderer chain = Instantiate<GameObject>(Chain).GetComponent<LineRenderer>();
+            chain.positionCount = 2;
+            chain.SetPosition(0, transform.position + Vector3.up * 10f);
+            chain.SetPosition(1, transform.position + Direction(i) * 0.335f);
+            Destroy(chain.gameObject, 2f);
+        }
         Cha.Energy -= 3;
         UI.HpControl(this, Cha.HP);
         //instiate
-        StartCoroutine(Ultimating());
+        StartCoroutine(PreUltimate());
     }
-    IEnumerator Ultimating()
+    IEnumerator PreUltimate()
     {
         foreach(AI target in Enemies)
         {
@@ -271,15 +280,21 @@ public class BossAI : AI
             UI.MoveCam.ChaTurn(target);
             yield return new WaitForSeconds(1f);
         }
-
+        EndTurn();
     }
-    IEnumerator Ultimatied()
+    public void PreUltimated()
     {
+        StartCoroutine(Ultimated());
+    }
+    public IEnumerator Ultimated()
+    {
+
         for(int i = 0; i < UltimateTile.Count; ++i)
         {
             UI.LeaveActionTile(UltimateTile[i]);
             UltimateTile[i].Recover();
             AI cha;
+
             if (UltimateTile[i].Cha != null && UltimateTile[i].Cha.name != "Boss")
             {
                 cha = UltimateTile[i].Cha;
@@ -294,6 +309,9 @@ public class BossAI : AI
                 Destroy(go, 2f);
 
             }
+            UI.LeaveActionTile(UltimateTile[i]);
+            UltimateTile[i].Recover();
+
             for (int j = 0; j < 8; ++j)
             {
                 UI.LeaveActionTile(UltimateTile[i].AdjList[j]);
@@ -311,6 +329,8 @@ public class BossAI : AI
                     go.transform.SetParent(UISystem.getInstance().HPCanvas.transform);
                     Destroy(go, 2f);
                 }
+                UI.LeaveActionTile(UltimateTile[i].AdjList[j]);
+                UltimateTile[i].AdjList[j].Recover();
             }
             //UI.MoveCam.ChaTurn();
             yield return new WaitForSeconds(1f);
@@ -322,10 +342,16 @@ public class BossAI : AI
 
 
 
+        ConfirmAction();
+        UI.MoveCam.ChaTurn(this);
     }
 
     public override void EndTurn()
     {
+        UI.MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
+        UI.per_but = false; //我方切換子彈預設為關
+        UI.MoveCam.att_cam_bool = false;
+        
         if (Cha.Energy > 7 && Hit)
         {
             PreMindControl();
