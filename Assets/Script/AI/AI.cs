@@ -66,6 +66,7 @@ public class AI : MonoBehaviour
                     {
                         Am.SetBool("HCover", true);
                         Idle = HalfCover;
+                        PreAttakeIdle = PreAtkHalfCover;
                         TileCount = i;
                     }
                     else
@@ -80,6 +81,7 @@ public class AI : MonoBehaviour
                             Am.SetBool("Left", true);
                         }
                         Idle = FullCover;
+                        PreAttakeIdle = PreAtkFullCover;
                         Am.SetBool("FCover", true);
                         TileCount = i;
                     }
@@ -89,6 +91,7 @@ public class AI : MonoBehaviour
                 {
                     Am.SetBool("HCover", true);
                     Idle = HalfCover;
+                    PreAttakeIdle = PreAtkHalfCover;
                 }
                 else
                 {
@@ -102,6 +105,7 @@ public class AI : MonoBehaviour
                         Am.SetBool("Left", true);
                     }
                     Idle = FullCover;
+                    PreAttakeIdle = PreAtkFullCover;
                     Am.SetBool("FCover", true);
                 }
             }
@@ -161,6 +165,7 @@ public class AI : MonoBehaviour
                         if (FoB > 0.99f)
                         {
                             Idle = NoCover;
+                            PreAttakeIdle = PreAtkNoCover;
                             Am.SetBool("HCover", false);
                             TileCount = EDir;
                             return;
@@ -179,6 +184,7 @@ public class AI : MonoBehaviour
                         if (CurrentTile.AdjCoverList[i] == Tile.Cover.None)
                         {
                             Idle = NoCover;
+                            PreAttakeIdle = PreAtkNoCover;
                             Am.SetBool("HCover", false);
                             TileCount = EDir;
                         }
@@ -198,6 +204,7 @@ public class AI : MonoBehaviour
                                 Am.SetBool("Left", true);
                             }
                             Idle = FullCover;
+                            PreAttakeIdle = PreAtkFullCover;
                             Am.SetBool("FCover", true);
                             TileCount = i;
                             Am.SetBool("HCover", false);
@@ -272,6 +279,7 @@ public class AI : MonoBehaviour
                 Am.SetBool("HCover", false);
                 Am.SetBool("FCover", false);
                 Idle = NoCover;
+                PreAttakeIdle = PreAtkNoCover;
             }
         }
     }
@@ -414,6 +422,7 @@ public class AI : MonoBehaviour
         Moving = false;
         Attack = false;
         Idle = NoCover;
+        PreAttakeIdle = PreAtkNoCover;
         AmTurn = false;
         if (ActionName != null)
         {
@@ -1594,6 +1603,7 @@ public class AI : MonoBehaviour
             Am.SetBool("Run", true);
         }
         Idle = NoCover;
+        PreAttakeIdle = PreAtkNoCover;
         Moving = true;
         RemoveVisitedTiles();//重置Tile狀態
         Attack = true;
@@ -1837,6 +1847,7 @@ public class AI : MonoBehaviour
             ResetBool();
             Am.Play("Hurt");
             Idle = NoCover;
+            PreAttakeIdle = PreAtkNoCover;
             FindObjectOfType<SoundManager>().Play(Cha.takeHit);
         }
     }
@@ -1860,6 +1871,7 @@ public class AI : MonoBehaviour
             Coma = true;
             Am.Play("Twitch");
             Idle = NoCover;
+            PreAttakeIdle = PreAtkNoCover;
         }
     }
 
@@ -2073,6 +2085,7 @@ public class AI : MonoBehaviour
         ResetBool();
         Am.SetBool("Run", true);
         Idle = NoCover;
+        PreAttakeIdle = PreAtkNoCover;
         Moving = true;
         RemoveVisitedTiles();//重置Tile狀態
         OutCurrentTile();
@@ -2682,6 +2695,7 @@ public class AI : MonoBehaviour
         Am.SetBool("Run", true);
         ResetBool();
         Idle = NoCover;
+        PreAttakeIdle = PreAtkNoCover;
         Moving = true;
         RemoveVisitedTiles();//重置Tile狀態
         OutCurrentTile();

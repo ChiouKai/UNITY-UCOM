@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BossAI : AI
 {
@@ -141,7 +142,7 @@ public class BossAI : AI
     public override void BeDamaged(int damage)
     {
         Cha.Energy -= damage;
-        if (Cha.Energy < 0)
+        if (Cha.Energy <= 0)
         {
             Cha.HP += Cha.Energy;
             Shield.SetActive(false);
@@ -164,12 +165,11 @@ public class BossAI : AI
         {
 
             UI.HpControl(this, Cha.HP);
-            ResetBool();
             if (Cha.Energy == 0)
             {
+                ResetBool();
                 transform.forward = -dir;
                 Am.Play("Hurt");
-                Idle = NoCover;
             }
         }
     }
@@ -253,32 +253,65 @@ public class BossAI : AI
             yield return new WaitForSeconds(1f);
         }
     }
-    //IEnumerator Ultimatied()
-    //{
-    //    foreach (Tile T in UltimateTile)
-    //    {
-    //        Tile T = target.CurrentTile;
-    //        UltimateTile.Add(T);
-    //        T.DangerPos();
-    //        UI.JoinActionTile(T);
-    //        for (int i = 0; i < 8; ++i)
-    //        {
-    //            T.AdjList[i].DangerPos();
-    //            UI.JoinActionTile(T.AdjList[i]);
-    //        }
-    //        UI.MoveCam.ChaTurn(target);
-    //        yield return new WaitForSeconds(1f);
-    //    }
-    //}
+    IEnumerator Ultimatied()
+    {
+        for(int i = 0; i < UltimateTile.Count; ++i)
+        {
+            UI.LeaveActionTile(UltimateTile[i]);
+            UltimateTile[i].Recover();
+            AI cha;
+            if (UltimateTile[i].Cha != null && UltimateTile[i].Cha.name != "Boss")
+            {
+                cha = UltimateTile[i].Cha;
+                cha.BeDamaged(4);
+                cha.Hurt(-UltimateTile[i].Cha.transform.forward);
+                Vector3 vScreenPos = Camera.main.WorldToScreenPoint(cha.BeAttakePoint.transform.position);
+                vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
+                GameObject go = Instantiate(UISystem.getInstance().status_UI[0]) as GameObject;
+                go.transform.GetChild(2).GetComponent<Text>().text = "4";
+                go.transform.position = vScreenPos;
+                go.transform.SetParent(UISystem.getInstance().HPCanvas.transform);
+                Destroy(go, 2f);
+
+            }
+            for (int j = 0; j < 8; ++j)
+            {
+                UI.LeaveActionTile(UltimateTile[i].AdjList[j]);
+                UltimateTile[i].AdjList[j].Recover();
+                if (UltimateTile[i].AdjList[j].Cha != null && UltimateTile[i].AdjList[j].Cha.name != "Boss")
+                {
+                    cha = UltimateTile[i].AdjList[j].Cha;
+                    cha.BeDamaged(4);
+                    cha.Hurt(UltimateTile[i].AdjList[j].transform.position - UltimateTile[i].transform.forward);
+                    Vector3 vScreenPos = Camera.main.WorldToScreenPoint(cha.BeAttakePoint.transform.position);
+                    vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
+                    GameObject go = Instantiate(UISystem.getInstance().status_UI[0]) as GameObject;
+                    go.transform.GetChild(2).GetComponent<Text>().text = "4";
+                    go.transform.position = vScreenPos;
+                    go.transform.SetParent(UISystem.getInstance().HPCanvas.transform);
+                    Destroy(go, 2f);
+                }
+            }
+            //UI.MoveCam.ChaTurn();
+            yield return new WaitForSeconds(1f);
+
+
+        }
+
+
+
+
+
+    }
 
     public override void EndTurn()
     {
-        //if (Cha.Energy > 7 && Hit)
-        //{
-        //    PreMindControl();
-        //    Hit = false;
-        //    return;
-        //}
+        if (Cha.Energy > 7 && Hit)
+        {
+            PreMindControl();
+            Hit = false;
+            return;
+        }
         base.EndTurn();
     }
 }
