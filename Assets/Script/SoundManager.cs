@@ -7,7 +7,7 @@ using UnityEngine.Audio;
 public class SoundManager : MonoBehaviour
 {    
     public Sound[] sounds;    
-    public Slider Volume;
+    public Slider Volume;    
 
     // Awake() is called right before it
     void Awake()
@@ -51,6 +51,5 @@ public class SoundManager : MonoBehaviour
             s.source.volume = s.volume*Volume.value;
         }
     }
-    
 }
 

@@ -23,6 +23,7 @@ public class UISystem : MonoBehaviour
     public GameObject menuCheck;
     public GameObject missionDialogue;
     public GameObject menuQuit;
+    public GameObject menu_success;
     public Tile[] StartTile;
     bool acting = false;
 
@@ -163,26 +164,40 @@ public class UISystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             menu.SetActive(!menu.activeInHierarchy );
-            if (menu.activeInHierarchy == true) Time.timeScale = 0;
+            if (menu.activeInHierarchy == true) PauseGame();
             else
                 Time.timeScale = 1;
         }
-        if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy) { menu.SetActive(true); menuOption.SetActive(false); }
-        //if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy && menuCheck.activeInHierarchy) { menu.SetActive(true); menuCheck.SetActive(false); }
+        if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy) 
+        { 
+            menu.SetActive(true);
+            if (menu.activeInHierarchy == true) PauseGame();
+            else
+                Time.timeScale = 1; 
+            menuOption.SetActive(false); 
+        }
+        if (Input.GetKeyDown(KeyCode.Escape) && menuCheck.activeInHierarchy) 
+        { 
+            menu.SetActive(true); 
+            if (menu.activeInHierarchy == true) PauseGame(); else  Time.timeScale = 1; menuCheck.SetActive(false);  
+        }
+        if (Input.GetKeyDown(KeyCode.Escape) && menu_success.activeInHierarchy) {menu.SetActive(false); menu_success.SetActive(true);}
     }
     //menu buttons
-    public void resume()
-    {
-        Time.timeScale = 1;
-    }
-    public void pause()
-    {
-        Time.timeScale = 0;
-    }
     public void onExitClicked()
-    {       
-        if (menu.activeInHierarchy) { menu.SetActive(false);}
-        else { menu.SetActive(true); }
+    {
+        if (menu.activeInHierarchy)
+        {
+            menu.SetActive(false);
+            Time.timeScale = 1; 
+        }      
+        
+        else 
+        { 
+            menu.SetActive(true);
+            PauseGame();
+            
+        }
     }
 
     public void QuitGame()
@@ -191,12 +206,12 @@ public class UISystem : MonoBehaviour
         Application.Quit();
     }
 
-   void PauseGame()
+   public void PauseGame()
     {
         Time.timeScale = 0;
     }
 
-    void ResumeGame()
+    public void ResumeGame()
     {
         Time.timeScale = 1;
     }

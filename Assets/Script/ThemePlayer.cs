@@ -1,16 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Audio;
 
 public class ThemePlayer : MonoBehaviour
 {
-    public AudioSource aSource;
+    AudioSource aSource;
     public AudioClip[] Themes;
-    bool MainThemePlaying;
+    public Slider Volume;
 
     void Awake()
     {
+        aSource = GetComponent<AudioSource>();
         aSource.GetComponent<AudioSource>().clip = Themes[0];       
         this.GetComponent<AudioSource>().Play();
         aSource.loop = true;
@@ -27,6 +29,11 @@ public class ThemePlayer : MonoBehaviour
         aSource.clip = Themes[i];        
         aSource.loop = true;
         this.GetComponent<AudioSource>().Play();
+    }
+
+    public void PlayVolume()
+    {
+        aSource.volume = Volume.value;
     }
 
     //public void StopMainTheme()
