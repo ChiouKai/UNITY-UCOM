@@ -27,7 +27,7 @@ public class Wake : MonoBehaviour, ISkill
         CD = 0;
         CDCount = 0;
         AimPoint = 0;
-        Point = 0;
+        Point = -2;
         type = 1;
     }
 

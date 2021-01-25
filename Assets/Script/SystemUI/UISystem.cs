@@ -381,7 +381,7 @@ public class UISystem : MonoBehaviour
     {
         if (TurnCha.Coma)
         {
-            TurnCha.Wake();
+            TurnCha.WakeUp();
             MoveCam.ChaTurn(TurnCha);
             StartCoroutine(TurnCha.WaitEndturn());
             TurnRun = null;

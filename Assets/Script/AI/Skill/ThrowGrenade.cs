@@ -28,7 +28,7 @@ public class ThrowGrenade : MonoBehaviour,ISkill
         CD = 0;
         CDCount = 0;
         AimPoint = 0f;
-        Point = 0;
+        Point = -2;
         type = 0;
     }
 

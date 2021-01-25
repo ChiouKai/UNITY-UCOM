@@ -1806,6 +1806,11 @@ public class AI : MonoBehaviour
         {
             UI.TurnRun = () => { StartCoroutine(MindControlAI.RecoverMind(this)); UI.TurnRun = null; };
         }
+        else
+        {
+            Destroy(this);
+        }
+
     }
 
     public virtual void Hurt(Vector3 dir)

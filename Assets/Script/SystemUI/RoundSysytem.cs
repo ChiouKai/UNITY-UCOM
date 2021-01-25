@@ -210,19 +210,6 @@ public class RoundSysytem
             {
                 EC.ChaEnd = false;
                 EndChecked = false;
-                UI.type = 2;
-                UI.site = 1;
-                UI.TurnRun = UI.NewCome;
-                Event = null;
-            };
-            EventList.Add(Event);
-        }
-        if (UI.Bomb_Round > 3 && UI.Bomb_Round % 2 == 0)
-        {
-            Action Event = () =>
-            {
-                EC.ChaEnd = false;
-                EndChecked = false;
                 UI.type = 0;
                 UI.site = 1;
                 UI.TurnRun = UI.NewCome;
@@ -230,6 +217,19 @@ public class RoundSysytem
             };
             EventList.Add(Event);
         }
+        //if (UI.Bomb_Round > 3 && UI.Bomb_Round % 2 == 0)
+        //{
+        //    Action Event = () =>
+        //    {
+        //        EC.ChaEnd = false;
+        //        EndChecked = false;
+        //        UI.type = 0;
+        //        UI.site = 1;
+        //        UI.TurnRun = UI.NewCome;
+        //        Event = null;
+        //    };
+        //    EventList.Add(Event);
+        //}
     }
 
 

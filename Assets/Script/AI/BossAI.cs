@@ -84,7 +84,7 @@ public class BossAI : AI
 
     public IEnumerator AfterCharge()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
         ConfirmAction2();
     }
     
@@ -269,12 +269,12 @@ public class BossAI : AI
 
     public override void EndTurn()
     {
-        if (Cha.Energy > 7 && Hit)
-        {
-            PreMindControl();
-            Hit = false;
-            return;
-        }
+        //if (Cha.Energy > 7 && Hit)
+        //{
+        //    PreMindControl();
+        //    Hit = false;
+        //    return;
+        //}
         base.EndTurn();
     }
 }
