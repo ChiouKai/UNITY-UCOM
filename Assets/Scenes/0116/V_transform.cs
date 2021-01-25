@@ -8,7 +8,7 @@ public class V_transform : MonoBehaviour
     float time_ud;
     float y = 0.01f;
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         time_ud += Time.deltaTime;
         if (time_ud > 1 && Time.timeScale != 0)
