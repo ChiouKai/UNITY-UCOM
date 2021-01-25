@@ -7,7 +7,7 @@ public class Arrow_transform : MonoBehaviour
     float time_ud;
     float y = 0.01f;
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         time_ud += Time.deltaTime;
         if (time_ud > 0.5f)
