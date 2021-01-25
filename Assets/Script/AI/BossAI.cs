@@ -186,12 +186,14 @@ public class BossAI : AI
         chain.SetPosition(0, FirePoint.position);
         if (Miss)
         {
+            UI.status("Miss", this);
             chain.SetPosition(1, AttackPoint);
             go2 = Instantiate(Bullet, AttackPoint, Quaternion.identity);
         }
         else
         {
             Hit = true;
+            UI.status("coma", this);
             Vector3 dir = Target.transform.position - transform.position;
             dir.y = 0;
             Target.Hurt2(dir);

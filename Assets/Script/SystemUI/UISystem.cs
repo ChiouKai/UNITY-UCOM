@@ -1670,6 +1670,8 @@ public class UISystem : MonoBehaviour
             go.transform.SetParent(HPCanvas.transform);
             if (judge == 0)
                 go.transform.GetChild(2).GetComponent<Text>().text = demage.ToString();
+            if (judge == 3)
+                go.transform.GetChild(3).GetComponent<Text>().text = demage.ToString();
             Destroy(go, 2f);
         }
         status_bool = false;
