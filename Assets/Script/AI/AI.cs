@@ -2208,7 +2208,7 @@ public class AI : MonoBehaviour
         }
         if (MinDis < 3f)
         {
-            Point = 1f;
+            Point = 1.5f;
         }
         else if (MinDis < 6f)
         {
@@ -2222,7 +2222,7 @@ public class AI : MonoBehaviour
             Point += 1f;
         }else if (MinDis <15f)
         {
-            Point -= 1f;
+            Point -= 2f;
         } 
          ///可用能力巡一遍，選擇得分高的能力 再拿出來加分
         ISkill Sec = null ;
