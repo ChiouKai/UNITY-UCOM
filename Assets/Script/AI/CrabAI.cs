@@ -243,7 +243,7 @@ public class CrabAI : AI
             Vector3 target = T.transform.position;
             target.y += ChaHeight;
 
-            if ((transform.position - target).magnitude >= 0.05f)
+            if ((transform.position - target).magnitude >= 0.1f)
             {
                 Heading = target - transform.position;
                 Heading.Normalize();
@@ -308,7 +308,7 @@ public class CrabAI : AI
             (Tile T, MoveWay M) = Path.Peek();
             Vector3 target = T.transform.position;
             target.y += ChaHeight;
-            if ((transform.position - target).magnitude >= 0.05f)
+            if ((transform.position - target).magnitude >= 0.1f)
             {
                 Heading = target - transform.position;
                 Heading.Normalize();
