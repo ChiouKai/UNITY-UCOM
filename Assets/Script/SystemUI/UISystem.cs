@@ -1101,7 +1101,7 @@ public class UISystem : MonoBehaviour
                 lose_check = true;
             }
         }
-        else if(Bomb_Round > 5)
+        else if(Bomb_Round > 6)
         {
             if (Escape)
             {

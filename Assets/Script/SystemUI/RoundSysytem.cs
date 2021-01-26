@@ -179,7 +179,7 @@ public class RoundSysytem
     public void NewEvent()
     {
         ++i;
-        if (UI.Bomb_Round == 6)
+        if (UI.Bomb_Round == 7)
         {
             Action Event = () =>
             {
