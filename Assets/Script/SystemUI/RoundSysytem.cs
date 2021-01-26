@@ -179,7 +179,16 @@ public class RoundSysytem
     public void NewEvent()
     {
         ++i;
-
+        if (UI.Bomb_Round == 6)
+        {
+            Action Event = () =>
+            {
+                EndChecked = false;
+                UI.RunUI = UI.CheckEvent;
+                Event = null;
+            };
+            EventList.Add(Event);
+        }
         if (UI.Bomb_Round == 3) 
         {
             Action Event = () =>

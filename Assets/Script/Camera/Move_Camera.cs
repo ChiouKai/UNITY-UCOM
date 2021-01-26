@@ -51,8 +51,6 @@ public class Move_Camera : MonoBehaviour
             US.toggle[1].transform.GetChild(1).GetComponent<Text>().color = Color.green;
             US.toggle[1].transform.GetChild(0).GetComponent<Image>().sprite = US.mission_Images[1];
         }
-        if (US.Bomb_Round > 5) //安裝炸彈且稱超過5回合
-            US.lose_check = true;
 
         if (US.lose_check)
         {

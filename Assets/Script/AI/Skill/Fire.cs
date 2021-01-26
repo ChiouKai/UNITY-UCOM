@@ -27,7 +27,7 @@ public class Fire : MonoBehaviour,ISkill
         AP = 2;
         CD = 1;
         CDCount = 0;
-        AimPoint = 1f/15f;
+        AimPoint = 1f/10f;
         Point = 1;
         type = 0;
     }

@@ -2208,15 +2208,18 @@ public class AI : MonoBehaviour
         }
         if (MinDis < 3f)
         {
-            ;
+            Point = 1f;
         }
         else if (MinDis < 6f)
         {
-            Point += 2f;
+            Point += 3f;
         }
         else if (MinDis < 9f)
         {
-            Point += 1;
+            Point += 2f;
+        }else if (MinDis < 12f)
+        {
+            Point += 1f;
         }
         //可用能力巡一遍，選擇得分高的能力 再拿出來加分
         ISkill Sec = null ;
