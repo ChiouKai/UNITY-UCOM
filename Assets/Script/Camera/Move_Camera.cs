@@ -38,38 +38,14 @@ public class Move_Camera : MonoBehaviour
         Our_star.SetActive(false);
     }
     float T_Explosion;
-    public ThemePlayer themePlayer;
     private void LateUpdate()
     {
         float fH = Input.GetAxis("Horizontal");
         float fV = Input.GetAxis("Vertical");
         //增加以45度角面向目標
-        US.final_text.text = (6 - US.Bomb_Round).ToString();
-        if (US.Bomb_Round == 3)
-        {
-            US.toggle[2].SetActive(true);
-            US.toggle[1].transform.GetChild(1).GetComponent<Text>().color = Color.green;
-            US.toggle[1].transform.GetChild(0).GetComponent<Image>().sprite = US.mission_Images[1];
-        }
 
-        if (US.lose_check)
-        {
-            US.mission_failure.SetActive(true);
-            themePlayer.PlayThemes(1);
-        }
-        if (US.win_check)
-        {
-            T_Explosion += Time.deltaTime;
-            if (T_Explosion >= 3f)
-            {
-                US.explosion.SetActive(false);
-                US.mission_success.SetActive(true);
-                themePlayer.PlayThemes(2);
-                US.CAM.SetActive(false);
-                US.CAM_TIMELINE.SetActive(true);
-                US.HPCanvas.gameObject.SetActive(false);
-            }
-        }
+
+
 
         scene_camera.transform.LookAt(transform);
         if (att_cam_bool == false)

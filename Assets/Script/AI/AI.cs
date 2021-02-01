@@ -460,7 +460,7 @@ public class AI : MonoBehaviour
     //移動
 
     internal List<Tile> VisitedTiles = new List<Tile>();
-    internal Stack<(Tile, MoveWay)> Path = new Stack<(Tile, MoveWay)>();      //tile的資料設定為Stack(後進先出)
+    internal Stack<Tile> Path = new Stack<Tile>();      //tile的資料設定為Stack(後進先出)
     public Tile CurrentTile;      //玩家目前站的tile
     internal bool Turn = false;       //回合判斷
     internal bool Moving = false;
@@ -471,12 +471,7 @@ public class AI : MonoBehaviour
     internal Vector3 Heading;                //移動方向
     internal UISystem UI;
     internal bool Prepera = false;
-    public enum MoveWay    //移動方式(簡化
-    {
-        Run=0,
-        Ladder,
-        Jump,       
-    }
+
 
     public void MoveRange() //開始計算移動範圍
     {
@@ -578,26 +573,33 @@ public class AI : MonoBehaviour
         RemoveVisitedTiles();//重置Tile狀態
         Am.Play("Run");
         AttakeableList.Clear();
+        OutCurrentTile();
+        InCurrentTile(T);
+        //Vector3 target = Path.Peek().transform.position;
+        //target.y += ChaHeight;
+        //Heading = target - transform.position;
+        //Heading.Normalize();
+        //transform.forward = Heading;
+        //PreDistance = 10f;
         FindObjectOfType<SoundManager>().Play(Cha.affirmative);
     }
 
-    public Stack<(Tile, MoveWay)> MoveToTile(Tile T)//從T的Parent往回推路徑
+    public Stack<Tile> MoveToTile(Tile T)//從T的Parent往回推路徑
     {
         Path.Clear();
         // T.TargetChange();//todo 要更換
-        Stack<(Tile, MoveWay)> DLpath = new Stack<(Tile, MoveWay)>();
+        Stack<Tile> DLpath = new Stack<Tile>();
         Tile Previous = T;
         Tile Current = T;
         while (Current.Parent != null)
         {
-            MoveWay MW = MoveWay.Run;
             Vector3 Pdiv;
             Vector3 vdiv = Current.Parent.transform.position - Current.transform.position;
             float Height = vdiv.y;
             if (Mathf.Abs(Height) <= 0.6f)
             {
-                Path.Push((Current, MW));
-                DLpath.Push((Current, MW));
+                Path.Push(Current);
+                DLpath.Push(Current);
                 Current = Current.Parent;
                 while (Current.Parent != null)//如果移動方式是Run則優化路徑
                 {       
@@ -611,25 +613,18 @@ public class AI : MonoBehaviour
                     if (Physics.BoxCast(Previous.transform.position + new Vector3(0, 0.67f, 0), new Vector3(0.3f, 0.3f, 0.3f), Pdiv
                             , Quaternion.identity, Pdiv.magnitude))//判斷之前位置跟之後的位置之間有沒有障礙，如果沒有則跳過中間的格子
                     {
-                        Path.Push((Current, MW));
-                        DLpath.Push((Current, MW));
+                        Path.Push(Current);
+                        DLpath.Push(Current);
                         Previous = Current;
                     }
                     Current = Current.Parent;
                 }
             } 
-            else if (Mathf.Abs(Height) > 2.0f)
-            {
-                if (Height > 0)
-                    MW = MoveWay.Jump;
-                else
-                    MW = MoveWay.Ladder;
-            }
-            Path.Push((Current,MW));
-            DLpath.Push((Current, MW));
+            
+            Path.Push(Current);
+            DLpath.Push(Current);
         }
         return DLpath;
-       // Moving = true;//
     }
 
     public void Move()
@@ -642,51 +637,33 @@ public class AI : MonoBehaviour
 
         if (Path.Count > 0)
         {
-            (Tile T,MoveWay M) = Path.Peek(); 
-            Vector3 target = T.transform.position;
+            Vector3 target = Path.Peek().transform.position;
             target.y += ChaHeight;
-            //switch (M)  用移動方式來決定程式跑法
-            //{
-            //    case MoveWay.Run:
-            //        Run(target);
-            //        break;
-            //    case MoveWay.Across:
-            //        Across();
-            //        break;
-            //    case MoveWay.Jump:
-            //        Jump();
-            //        break;
-            //    case MoveWay.ClimbDown:
-            //        ClimbDown();
-            //        break;
-            //    case MoveWay.Ladder:
-            //        Ladder();
-            //        break;
-            //    case MoveWay.ClimbUp:
-            //        Climbup();
-            //        break;
-            //}
 
-            if ((transform.position - target).magnitude >= 0.1f)
+            float distance = (transform.position - target).magnitude;
+            if (PreDistance > distance)
             {
-                Heading = target - transform.position;
-                Heading.Normalize();
-                //Locomotion
-                transform.forward = Heading;
+                PreDistance = distance;
                 transform.position += Heading * MoveSpeed * Time.deltaTime;
             }
             else
             {
-                //Tile center reached
                 if (Path.Count == 1)
                 {
                     Am.SetBool("Run", false);
                     Am.Play("Stop");
-                    OutCurrentTile();
-                    InCurrentTile(Path.Peek().Item1);
                 }
                 transform.position = target;
                 Path.Pop();
+                if (Path.Count != 0)
+                {
+                    PreDistance = 99f;
+                    target = Path.Peek().transform.position;
+                    target.y += ChaHeight;
+                    Heading = target - transform.position;
+                    Heading.Normalize();
+                    transform.forward = Heading;
+                }
             }
         }
         else
@@ -1597,6 +1574,8 @@ public class AI : MonoBehaviour
     public virtual void PreMelee(LinkedListNode<(AI, Tile)> MeleeTarget)
     {
         MoveToTile(MeleeTarget.Value.Item2);
+        OutCurrentTile();
+        InCurrentTile(MeleeTarget.Value.Item2);
         ResetBool();
         if (Path.Count != 0)
         {
@@ -1643,31 +1622,33 @@ public class AI : MonoBehaviour
 
         if (Path.Count > 0)
         {
-            (Tile T, MoveWay M) = Path.Peek();
-            Vector3 target = T.transform.position;
+            Vector3 target = Path.Peek().transform.position;
             target.y += ChaHeight;
 
-            if ((transform.position - target).magnitude >= 0.1f)
+            float distance = (transform.position - target).magnitude;
+            if (PreDistance > distance)
             {
-                Heading = target - transform.position;
-                Heading.Normalize();
-                //Locomotion
-                transform.forward = Heading;
-                transform.position += Heading * 5f * Time.deltaTime;
+                PreDistance = distance;
+                transform.position += Heading * 5f* Time.deltaTime;
             }
             else
             {
-                //Tile center reached
                 if (Path.Count == 1)
                 {
-
                     Am.SetBool("Run", false);
                     Am.Play("RunToStop");
-                    OutCurrentTile();
-                    InCurrentTile(Path.Peek().Item1);
                 }
                 transform.position = target;
                 Path.Pop();
+                if (Path.Count != 0)
+                {
+                    PreDistance = 99f;
+                    target = Path.Peek().transform.position;
+                    target.y += ChaHeight;
+                    Heading = target - transform.position;
+                    Heading.Normalize();
+                    transform.forward = Heading;
+                }
             }
         }
         else
@@ -2089,9 +2070,16 @@ public class AI : MonoBehaviour
         OutCurrentTile();
         InCurrentTile(BestT);
         DoActing = null;
+        Vector3 target = Path.Peek().transform.position;
+        target.y += ChaHeight;
+        Heading = target - transform.position;
+        Heading.Normalize();
+        transform.forward = Heading;
+        PreDistance = 10f;
         Am.Play("Run");
     }
 
+    protected float PreDistance;
     public virtual void Move2()
     {
         //if path.Count > 0, move, or remove selectable tiles, disable moving and end the turn. 
@@ -2101,15 +2089,13 @@ public class AI : MonoBehaviour
         }
         if (Path.Count > 0)
         {
-            (Tile T, MoveWay M) = Path.Peek();
-            Vector3 target = T.transform.position;
+            Vector3 target = Path.Peek().transform.position;
             target.y += ChaHeight;
 
-            if ((transform.position - target).magnitude >= 0.1f)
+            float distance = (transform.position - target).magnitude;
+            if (PreDistance>distance)
             {
-                Heading = target - transform.position;
-                Heading.Normalize();
-                transform.forward = Heading;
+                PreDistance = distance;
                 transform.position += Heading * MoveSpeed * Time.deltaTime;
             }
             else
@@ -2121,16 +2107,21 @@ public class AI : MonoBehaviour
                 }
                 transform.position = target;
                 Path.Pop();
+                if (Path.Count != 0)
+                {
+                    PreDistance = 99f;
+                    target = Path.Peek().transform.position;
+                    target.y += ChaHeight;
+                    Heading = target - transform.position;
+                    Heading.Normalize();
+                    transform.forward = Heading;
+                }
             }
         }
         else
         {
             TileCount = FindDirection(transform.forward);
             transform.forward = Direction(TileCount);
-            //RemoveVisitedTiles();//重置Tile狀態
-            //CurrentTile.Reset();
-            //CurrentTile.walkable = true;
-            //CurrentTile = TargetTile;
             Moving = false;
             if (Acting2 != null)
             {
@@ -2138,7 +2129,6 @@ public class AI : MonoBehaviour
                 ActionName = Acting2.Name;
                 Acting2.EnterCD();
                 Acting2 = null;
-                //StartCoroutine(MoveWait());
             }
             else
             {

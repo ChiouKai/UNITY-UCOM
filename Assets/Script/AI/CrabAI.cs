@@ -227,6 +227,12 @@ public class CrabAI : AI
         RemoveVisitedTiles();//重置Tile狀態
         OutCurrentTile();
         InCurrentTile(BestT);
+        //Vector3 target = Path.Peek().transform.position;
+        //target.y += ChaHeight;
+        //Heading = target - transform.position;
+        //Heading.Normalize();
+        //transform.forward = Heading;
+
         DoActing = null;
     }
 
@@ -239,21 +245,29 @@ public class CrabAI : AI
         }
         if (Path.Count > 0)
         {
-            (Tile T, MoveWay M) = Path.Peek();
-            Vector3 target = T.transform.position;
+            Vector3 target = Path.Peek().transform.position;
             target.y += ChaHeight;
 
-            if ((transform.position - target).magnitude >= 0.1f)
+            float distance = (transform.position - target).magnitude;
+            if (PreDistance > distance)
             {
-                Heading = target - transform.position;
-                Heading.Normalize();
-                transform.forward = Heading;
+                PreDistance = distance;
                 transform.position += Heading * MoveSpeed * Time.deltaTime;
             }
             else
             {
+
                 transform.position = target;
                 Path.Pop();
+                if (Path.Count != 0)
+                {
+                    PreDistance = 99f;
+                    target = Path.Peek().transform.position;
+                    target.y += ChaHeight;
+                    Heading = target - transform.position;
+                    Heading.Normalize();
+                    transform.forward = Heading;
+                }
             }
         }
         else
@@ -287,7 +301,7 @@ public class CrabAI : AI
         Moving = true;
         AmTurn = false;
         Am.SetBool("Turn", false);
-
+ 
         RemoveVisitedTiles();//重置Tile狀態
         OutCurrentTile();
         InCurrentTile(BestT);
@@ -305,20 +319,29 @@ public class CrabAI : AI
 
         if (Path.Count > 0)
         {
-            (Tile T, MoveWay M) = Path.Peek();
-            Vector3 target = T.transform.position;
+            Vector3 target = Path.Peek().transform.position;
             target.y += ChaHeight;
-            if ((transform.position - target).magnitude >= 0.1f)
+
+            float distance = (transform.position - target).magnitude;
+            if (PreDistance > distance)
             {
-                Heading = target - transform.position;
-                Heading.Normalize();
-                transform.forward = Heading;
+                PreDistance = distance;
                 transform.position += Heading * MoveSpeed * Time.deltaTime;
             }
             else
             {
+
                 transform.position = target;
                 Path.Pop();
+                if (Path.Count != 0)
+                {
+                    PreDistance = 99f;
+                    target = Path.Peek().transform.position;
+                    target.y += ChaHeight;
+                    Heading = target - transform.position;
+                    Heading.Normalize();
+                    transform.forward = Heading;
+                }
             }
         }
         else

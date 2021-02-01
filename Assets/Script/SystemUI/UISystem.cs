@@ -679,7 +679,7 @@ public class UISystem : MonoBehaviour
         }
     }
 
-    public void DrawHeadingLine(Stack<(Tile, AI.MoveWay)> path,GameObject Color)//畫移動路徑線
+    public void DrawHeadingLine(Stack<Tile> path,GameObject Color)//畫移動路徑線
     {
         GLR = Instantiate(Color);
         LineRenderer LR = GLR.GetComponent<LineRenderer>();
@@ -687,8 +687,8 @@ public class UISystem : MonoBehaviour
         int Count = 0;
         while (path.Count > 0)
         {
-            (Tile, AI.MoveWay) T = path.Pop();
-            LR.SetPosition(Count, T.Item1.transform.position + Vector3.up * 0.06f);
+            Tile T = path.Pop();
+            LR.SetPosition(Count, T.transform.position + Vector3.up * 0.06f);
             ++Count;
         }
     }
@@ -1052,13 +1052,14 @@ public class UISystem : MonoBehaviour
     }
 
     //每回合檢查dra
-    public bool lose_check = false;
-    public bool win_check = false;
+
     public GameObject CAM;
     public GameObject CAM_TIMELINE;
     public bool Escape = false;
+    public ThemePlayer themePlayer;
     public void CheckEvent()
     {
+        RunUI = CloseActionUI;
         MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
         per_but = false; //我方切換子彈預設為關
         MoveCam.att_cam_bool = false;
@@ -1087,18 +1088,20 @@ public class UISystem : MonoBehaviour
             m_Roundsystem.EndChecked = false;
             if (Bomb_Round < 3) //安裝炸彈且超過三回合且人走光
             {
-                lose_check = true;
+                mission_failure.SetActive(true);
+                themePlayer.PlayThemes(1);
             }
             else if (Escape)
             {
                 Debug.Log("786453AS");
                 toggle[2].transform.GetChild(1).GetComponent<Text>().color = Color.green;
                 toggle[2].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
-                win_check = true;
+                WinEvent();
             }
             else
             {
-                lose_check = true;
+                mission_failure.SetActive(true);
+                themePlayer.PlayThemes(1);
             }
         }
         else if(Bomb_Round > 6)
@@ -1108,23 +1111,31 @@ public class UISystem : MonoBehaviour
                 Debug.Log("786453AS");
                 toggle[2].transform.GetChild(1).GetComponent<Text>().color = Color.green;
                 toggle[2].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
-                win_check = true;
+                WinEvent();
             }
             else
             {
-                lose_check = true;
+                mission_failure.SetActive(true);
+                themePlayer.PlayThemes(1);
             }
         }
+    }
+
+    void WinEvent()
+    {
+        explosion.SetActive(false);
+        mission_success.SetActive(true);
+        themePlayer.PlayThemes(2);
+        CAM.SetActive(false);
+        CAM_TIMELINE.SetActive(true);
+        HPCanvas.gameObject.SetActive(false);
     }
 
 
 
     public void PreBomb()
     {
-        //if (TurnCha.HealList.Count == 0)
-        //{
-        //    return;
-        //}
+
         Prepera = false;
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
@@ -1372,6 +1383,7 @@ public class UISystem : MonoBehaviour
     public void TurnEnd()
     {
         TimeLine.Instance.Moved = false;
+        final_text.text = (6 - Bomb_Round).ToString();
         TLine.TEndLogo(GetComponent<AI>(), Sequence.Count - 1);
         TurnRun = null;
     }
@@ -1621,6 +1633,9 @@ public class UISystem : MonoBehaviour
     public GameObject dialog_03;
     public void StartLeave()
     {
+        toggle[2].SetActive(true);
+        toggle[1].transform.GetChild(1).GetComponent<Text>().color = Color.green;
+        toggle[1].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
         MoveCam.ChaTurn(LeaveTile[0].GetComponent<AI>());
         LeaveTile[0].MissionPos();
         LeaveTile[1].MissionPos();

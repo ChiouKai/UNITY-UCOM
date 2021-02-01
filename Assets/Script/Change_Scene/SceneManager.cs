@@ -67,7 +67,7 @@ public class CSceneManager
         m_bLoadingScene = false;
         while (m_bActiveScene == false) //當切換場景的bool為false時 不執行下面程式
         {
-            yield return 0;
+            yield return null;
         }
 
         ao.allowSceneActivation = true; //切換場景
