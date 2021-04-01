@@ -3,53 +3,72 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
+using System.Collections.Generic;
 
 public class SoundManager : MonoBehaviour
-{    
+{
+    public Dictionary<string, Sound> HSound= new Dictionary<string, Sound>();
     public Sound[] sounds;    
-    public Slider Volume;    
-
+    public Slider Volume;
+    Queue<AudioSource> ASs;
     // Awake() is called right before it
     void Awake()
     {
-       foreach (Sound s in sounds)
+        ASs= new Queue<AudioSource>();
+        foreach (Sound s in sounds)
         {
-            s.source = gameObject.AddComponent<AudioSource>();
-            s.source.clip = s.clip;
-            s.source.volume = s.volume;
-            s.source.pitch = s.pitch;
-            s.source.loop = s.Loop;
-        }        
-    }       
-    
-    void Start()
-    {   
-        Play("Theme_Scene2_Vigilo Confido");                
+            if (s.clip != null)
+            {
+                HSound.Add(s.title, s);
+            }
+        }
+    }
+    private void Start()
+    {
+        List<AudioSource> ass=new List<AudioSource>();
+        GetComponents<AudioSource>(ass);
+        foreach(var a in ass)
+        {
+            ASs.Enqueue(a);
+        }
+
     }
 
-    //void Update()
-    //{
-    //    Volume.value = sounds[0].volume;
-    //}
 
     public void Play (string title)
     {
-        //using System to use Array
-        //look into sounds for sound which its "title" is "tile"
-        Sound s = Array.Find(sounds, sound => sound.title == title);
-        if (s == null)
+        Sound s;
+        if (HSound.TryGetValue(title, out s))
         {
-            Debug.LogWarning("Sound: " + title + "not found.");
-            return;
+            AudioSource a = ASs.Dequeue();
+            if (a.isPlaying)
+            {
+                ASs.Enqueue(a);
+                a = gameObject.AddComponent<AudioSource>();
+            }
+            ASs.Enqueue(a);
+            a.clip = s.clip;
+            a.volume = s.volume* Volume.value;
+            a.pitch = s.pitch;
+            a.loop = s.Loop;
+            a.Play();
         }
-        s.source.Play(); 
+
     }        
     public void playVolume()
     {
-        foreach (Sound s in sounds)
+        foreach (var a in ASs)
         {
-            s.source.volume = s.volume*Volume.value;
+            Sound s;
+            if(HSound.TryGetValue(a.clip.ToString(),out s))
+            {
+                a.volume = s.volume * Volume.value;
+            }
         }
+    }
+    public void PlayButton()
+    {
+        Play("Test");
     }
 }
 

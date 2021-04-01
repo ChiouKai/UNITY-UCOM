@@ -27,7 +27,7 @@ public class HumanAI : AI
         Enemies = RS.Aliens;
         Skills.AddRange(GetComponents<ISkill>());
         AIState = PlayerAI;
-        
+        SM= FindObjectOfType<SoundManager>();
     }
 
     // Update is called once per frame
@@ -37,7 +37,6 @@ public class HumanAI : AI
     }
     private void LateUpdate()
     {
-        
         if (PreAttack)
         {
             PreAttakeIdle();
@@ -56,7 +55,7 @@ public class HumanAI : AI
                     if (dis < MinDis)
                     {
                         MinDis = dis;
-                        enemy = EnCha.transform;
+                        enemy = EnCha;
                     }
                 }
             }
@@ -64,6 +63,10 @@ public class HumanAI : AI
             {
                 enemy = null;
             }
+        }
+        if (Target == null && !Moving)
+        {
+            Idle();
         }
     }
 

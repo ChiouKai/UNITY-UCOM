@@ -24,6 +24,7 @@ public class NPC_AI : AI
         Skills.AddRange(GetComponents<ISkill>());
         AIState = NpcAI;
         UI = UISystem.getInstance();
+        SM= FindObjectOfType<SoundManager>(); 
 
     }
 
@@ -37,17 +38,27 @@ public class NPC_AI : AI
         if (!Turn && !BeAimed)
         {
             float MinDis = 99f;
+            AI tmpEnemy=null;
             foreach (AI EnCha in Enemies)
             {
                 float dis = (EnCha.transform.position - transform.position).magnitude;
                 if (dis < MinDis)
                 {
                     MinDis = dis;
-                    enemy = EnCha.transform;
+                    tmpEnemy = EnCha;
                 }
             }
-            Ediv = (enemy.position - transform.position).normalized;
+            if (tmpEnemy != enemy)
+            {
+                enemy = tmpEnemy;
+                ChangEnemy = true;
+            }
         }
+        if (!Turn&&enemy.Moving|| ChangEnemy)
+        {
+            Idle();
+        }
+
     }
     private void LateUpdate()
     {

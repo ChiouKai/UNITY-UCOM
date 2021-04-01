@@ -18,6 +18,7 @@ public class createhp : MonoBehaviour
     Image[] LiHP_Tiles;
     Image[] LiEn_Tiles;
     public Sprite full_HP_Tile; //該格有血量時顯示
+    public Sprite full_EN_Tile;
     public Sprite empty_HP_Tile; //該格沒血時顯示
     // Start is called before the first frame update
     void Start()
@@ -74,7 +75,7 @@ public class createhp : MonoBehaviour
         {
             if (i < eng)
             {
-                LiEn_Tiles[i].sprite = full_HP_Tile;
+                LiEn_Tiles[i].sprite = full_EN_Tile;
             }
             else
             {
@@ -109,7 +110,7 @@ public class createhp : MonoBehaviour
                 int x = -40 + y * i + 10 * j; //血條位置
                 LiEn_Tiles[i] = Instantiate(hp_tiles, transform);
                 LiEn_Tiles[i].transform.position = transform.position + new Vector3(x, 25, 0);
-                LiEn_Tiles[i].sprite = full_HP_Tile;
+                LiEn_Tiles[i].sprite = full_EN_Tile;
                 //,new Vector3(x, -40, 0), Quaternion.Euler(0,0,0)
             }
         }

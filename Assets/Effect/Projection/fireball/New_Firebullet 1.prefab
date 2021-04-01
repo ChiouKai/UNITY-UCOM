@@ -23726,4 +23726,5 @@ MonoBehaviour:
     type: 3}
   AttackPoint: {x: 0, y: 0, z: 0}
   FirePoint: {x: 0, y: 0, z: 0}
-  Speed: 8
+  Speed: 12
+  Hit: 0

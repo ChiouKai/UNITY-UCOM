@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class Tile : MonoBehaviour
+public class Tile : MonoBehaviour, IPointerEnterHandler ,IPointerExitHandler,IPointerClickHandler
 {
     public bool walkable = true;
     public bool current = false;
@@ -37,14 +38,16 @@ public class Tile : MonoBehaviour
         UpdateCover();
     }
 
-
+    bool melee = false;
     public void MeleePos()
     {
+        melee = true;
         GetComponent<Renderer>().material = Resources.Load<Material>("MeleePos");
     }
 
     public void ChoMeleePos()
     {
+        melee = true;
         GetComponent<Renderer>().material = Resources.Load<Material>("ChoMeleePos");
     }
     public void MissionPos()
@@ -57,18 +60,10 @@ public class Tile : MonoBehaviour
     }
     public void Recover()
     {
+        melee = false;
         GetComponent<Renderer>().material = Resources.Load<Material>("Tile");
     }
 
-    private void OnMouseEnter()
-    {
-        UISystem.getInstance().MouseInTile(this);
-
-    }
-    private void OnMouseExit()
-    {
-        UISystem.getInstance().MouseOutTile(this);
-    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -221,5 +216,32 @@ public class Tile : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (!UISystem.getInstance().acting)
+            UISystem.getInstance().MouseInTile(this);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if(!UISystem.getInstance().acting)
+            UISystem.getInstance().MouseOutTile(this);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.pointerId == -1)
+            if (melee)
+            {
+                UISystem.getInstance().ClickMelee(this);
+            }
+            else
+            {
+                UISystem.getInstance().ThrowGrenade(this);
+            }
+        if (eventData.pointerId == -2)
+            UISystem.getInstance().CheckMouse2(this);
     }
 }

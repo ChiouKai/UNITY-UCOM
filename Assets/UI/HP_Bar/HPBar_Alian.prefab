@@ -91,7 +91,10 @@ MonoBehaviour:
     type: 3}
   MaxHP: 10
   HP: 10
+  MaxEng: 0
+  Eng: 0
   hp_tiles: {fileID: 6979785915370896631, guid: 252c6c50b26266343a540c4daae59ab1,
     type: 3}
   full_HP_Tile: {fileID: 21300000, guid: 4b8659e5fe1c2dc448d8d602c9039e6d, type: 3}
+  full_EN_Tile: {fileID: 21300000, guid: 8a8db398d8471c248ba0255c3fdc3baf, type: 3}
   empty_HP_Tile: {fileID: 21300000, guid: 8e443e90ea4eca44b8bd3e05aaed2682, type: 3}

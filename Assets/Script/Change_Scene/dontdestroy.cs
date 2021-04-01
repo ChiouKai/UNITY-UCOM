@@ -12,10 +12,8 @@ public class dontdestroy : MonoBehaviour
     {
         if (!isHaveClone)
         {
-
-                clone = (GameObject)GameObject.Instantiate(prefab);
-                isHaveClone = true;
-                GameObject.DontDestroyOnLoad(clone);
+            isHaveClone = true;
+                GameObject.DontDestroyOnLoad(gameObject);
         }
     }
 }

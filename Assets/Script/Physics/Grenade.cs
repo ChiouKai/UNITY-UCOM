@@ -31,7 +31,7 @@ public class Grenade : MonoBehaviour
         VelocityV -= Gravity * Time.deltaTime;
         if ((transform.position - TargetTile.transform.position).magnitude < 0.5f)
         {
-            FindObjectOfType<SoundManager>().Play("Grenade");
+            FindObjectOfType<SoundManager>().Play("explode_grenade");
             Explosion();
             UISystem.getInstance().AfterGrenade(TargetTile);
             Destroy(gameObject);
@@ -47,14 +47,6 @@ public class Grenade : MonoBehaviour
             cha = TargetTile.Cha;
             cha.BeDamaged(4);
             cha.Hurt(-TargetTile.Cha.transform.forward);
-            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(cha.BeAttakePoint.transform.position);
-            vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
-            GameObject go = Instantiate(UISystem.getInstance().status_UI[0]) as GameObject;
-            go.transform.GetChild(2).GetComponent<Text>().text = "4";
-            go.transform.position = vScreenPos;
-
-            go.transform.SetParent(UISystem.getInstance().HPCanvas.transform);
-            Destroy(go, 2f);
         }
         for(int i = 0; i < 8; ++i)
         {
@@ -63,15 +55,6 @@ public class Grenade : MonoBehaviour
                 cha = TargetTile.AdjList[i].Cha;
                 cha.BeDamaged(4);
                 cha.Hurt(TargetTile.AdjList[i].transform.position - TargetTile.transform.position);
-                Vector3 vScreenPos = Camera.main.WorldToScreenPoint(cha.BeAttakePoint.transform.position);
-                vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
-                GameObject go = Instantiate(UISystem.getInstance().status_UI[0]) as GameObject;
-                go.transform.GetChild(2).GetComponent<Text>().text = "4";
-                go.transform.position = vScreenPos;
-
-                go.transform.SetParent(UISystem.getInstance().HPCanvas.transform);
-                Destroy(go, 2f);
-
             }
         }
         Instantiate<GameObject>(Resources.Load<GameObject>("Explosion"),TargetTile.transform.position,Quaternion.identity);

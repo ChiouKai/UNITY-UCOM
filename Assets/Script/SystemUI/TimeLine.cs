@@ -56,8 +56,11 @@ public class TimeLine : MonoBehaviour
         while (Current != null)
         {
             logo = Current.Value;
-            logo.InsertLocation = new Vector2(-60, -50 - 110 * Count);
-            logo.LogoUpdate = logo.LogoMove;
+            if (!logo.Death)
+            {
+                logo.InsertLocation = new Vector2(-60, -50 - 110 * Count);
+                logo.LogoUpdate = logo.LogoMove;
+            }
             Current = Current.Next;
             ++Count;
         }
@@ -83,8 +86,11 @@ public class TimeLine : MonoBehaviour
         for (int i =0; i <Count; ++i)
         {
             logo = Current.Value;
-            logo.InsertLocation =Location - new Vector2(0, 110*(i));
-            logo.LogoUpdate = logo.LogoMove;
+            if (!logo.Death)
+            {
+                logo.InsertLocation = Location - new Vector2(0, 110 * (i));
+                logo.LogoUpdate = logo.LogoMove;
+            }
             Current = Current.Next;
         }
 
@@ -95,13 +101,18 @@ public class TimeLine : MonoBehaviour
         if (LogoDic.TryGetValue(Cha, out logo))
         {
             logo.LogoUpdate = logo.LogoDeath;
+            logo.Death = true;
             var Previous = LogoList.Find(logo);
             var Current = Previous.Next;
             while (Current != null)
             {
                 logo = Current.Value;
-                logo.InsertLocation += new Vector2(0, 110);
-                logo.LogoUpdate = logo.LogoMove;
+
+                if (!logo.Death)
+                {
+                    logo.InsertLocation += new Vector2(0, 110);
+                    logo.LogoUpdate = logo.LogoMove;
+                }
                 Current = Current.Next;
             }
         }

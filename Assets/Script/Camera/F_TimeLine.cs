@@ -6,7 +6,7 @@ public class F_TimeLine : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject Main_cam;
-    static public bool gamestart;
+
     public void Close_TimeLine()
     {
         Main_cam.SetActive(true);
@@ -15,8 +15,8 @@ public class F_TimeLine : MonoBehaviour
     public void Open_Main_camera()
     {
         Main_cam.SetActive(true);
-        this.gameObject.SetActive(false);
-        gamestart = true;
+        gameObject.SetActive(false);
+        UISystem.getInstance().GameStart = true;
     }
     public void Close_Main_camera()
     {

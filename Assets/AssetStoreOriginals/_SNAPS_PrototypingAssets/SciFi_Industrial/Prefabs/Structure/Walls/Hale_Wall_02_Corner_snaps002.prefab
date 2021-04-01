@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 4189708718966864}
   - component: {fileID: 33028826617234914}
   - component: {fileID: 23583749588929480}
-  - component: {fileID: 82246042703843233}
+  - component: {fileID: 7023779099008838597}
+  - component: {fileID: 5320190981250953305}
   m_Layer: 2
   m_Name: Hale_Wall_02_Corner_snaps002
   m_TagString: Wall
@@ -81,7 +82,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &82246042703843233
+--- !u!65 &7023779099008838597
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -89,8 +90,21 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1494476359483098}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 3.5000007, y: 6, z: 3.5}
-  m_Center: {x: 1.2499996, y: 3, z: 1.75}
+  m_Size: {x: 3.5000007, y: 6, z: 0.91701555}
+  m_Center: {x: 1.2499996, y: 3, z: 3.0414922}
+--- !u!65 &5320190981250953305
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494476359483098}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.8604477, y: 6, z: 3.5}
+  m_Center: {x: -0.06977698, y: 3, z: 1.75}

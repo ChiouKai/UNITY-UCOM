@@ -13,22 +13,22 @@ public class ThemePlayer : MonoBehaviour
     void Awake()
     {
         aSource = GetComponent<AudioSource>();
-        aSource.GetComponent<AudioSource>().clip = Themes[0];       
-        this.GetComponent<AudioSource>().Play();
+        aSource.clip = Themes[0];
+        aSource.Play();
         aSource.loop = true;
     }
 
     public void StopThemes(int i)
     {
         aSource.clip = Themes[i];
-        this.GetComponent<AudioSource>().Stop();
+        aSource.Stop();
     }
     
     public void PlayThemes(int i)
     {
         aSource.clip = Themes[i];        
         aSource.loop = true;
-        this.GetComponent<AudioSource>().Play();
+        aSource.Play();
     }
 
     public void PlayVolume()

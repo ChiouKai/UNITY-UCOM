@@ -6,27 +6,25 @@ using UnityEngine.UI;
 public class Button_text : MonoBehaviour
 {
     public Text mis_col;
-    public bool open;
     public bool fin;
-    bool textfin;
     public float speed;
     void Update()
     {
-        if (mis_col.color.a == 0) fin = true;
-        if (mis_col.color.a == 1) fin =false;
         if (fin) fadein(mis_col, speed);
-        if (!fin) fadeout(mis_col, speed);
+        else fadeout(mis_col, speed);
     }
     void fadein(Text text, float speed)
     {
         var a = text.color;
         a.a = Mathf.Min(a.a + Time.deltaTime * speed, 1);
         text.color = a;
+        if (a.a == 1) fin = false;
     }
     void fadeout(Text text, float speed)
     {
         var a = text.color;
         a.a = Mathf.Max(a.a - Time.deltaTime * speed, 0);
         text.color = a;
+        if (a.a == 0) fin = true;
     }
 }

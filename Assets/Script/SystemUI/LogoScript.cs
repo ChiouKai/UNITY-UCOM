@@ -9,6 +9,7 @@ public class LogoScript : MonoBehaviour
     public Vector2 InsertLocation, LeaveLocation;
     RectTransform RT;
     TimeLine TL;
+    public bool Death;
     private void Start()
     {
         RT = GetComponent<RectTransform>();
@@ -24,7 +25,7 @@ public class LogoScript : MonoBehaviour
     {
         if ((RT.anchoredPosition- InsertLocation).magnitude > 1f)
         {
-            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 0.06f);
+            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 6f*Time.deltaTime);
         }
         else
         {
@@ -40,7 +41,7 @@ public class LogoScript : MonoBehaviour
     {
         if ((RT.anchoredPosition - InsertLocation).magnitude >1f)
         {
-            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 0.03f);
+            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, InsertLocation, 3f*Time.deltaTime);
         }
         else
         {
@@ -54,7 +55,7 @@ public class LogoScript : MonoBehaviour
     {
         if ((RT.anchoredPosition - LeaveLocation).magnitude > 1f)
         {
-            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.06f);
+            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 6f*Time.deltaTime);
         }
         else
         {
@@ -66,7 +67,7 @@ public class LogoScript : MonoBehaviour
     {
         if ((RT.anchoredPosition - LeaveLocation).magnitude > 1f)
         {
-            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 0.06f);
+            RT.anchoredPosition = Vector2.Lerp(RT.anchoredPosition, LeaveLocation, 6f*Time.deltaTime);
         }
         else
         {

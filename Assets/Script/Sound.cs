@@ -11,7 +11,7 @@ public class Sound
 
     [Range(0f, 1f)]
     public float volume;
-    [Range(0.3f, 1f)]
+    [Range(0.3f, 2f)]
     public float pitch;
 
     [HideInInspector] //Hide so as to public this on the Awake() in Manager

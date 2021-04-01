@@ -24,6 +24,7 @@ public class BossAI : AI
         Skills.AddRange(GetComponents<ISkill>());
         AIState = NpcAI;
         UI = UISystem.getInstance();
+        SM = FindObjectOfType<SoundManager>();
     }
     
     // Update is called once per frame
@@ -36,16 +37,25 @@ public class BossAI : AI
         if (!Turn && !BeAimed)
         {
             float MinDis = 99f;
+            AI tmpEnemy = null;
             foreach (AI EnCha in Enemies)
             {
                 float dis = (EnCha.transform.position - transform.position).magnitude;
                 if (dis < MinDis)
                 {
                     MinDis = dis;
-                    enemy = EnCha.transform;
+                    tmpEnemy = EnCha;
                 }
             }
-            Ediv = (enemy.position - transform.position).normalized;
+            if (tmpEnemy != enemy)
+            {
+                enemy = tmpEnemy;
+                ChangEnemy = true;
+            }
+        }
+        if (!Turn && enemy.Moving || ChangEnemy)
+        {
+            Idle();
         }
     }
     private void LateUpdate()
@@ -68,22 +78,31 @@ public class BossAI : AI
         DoActing = null;
     }
 
-
+    public void ChargeLogo()
+    {
+        UI.status(1, "充能!", this);
+    }
     public void Charge()
     {
-        Cha.Energy += 3;
+        int tmp = (Cha.MaxEnergy - Cha.Energy) / 2;
+        if (tmp < 3)
+        {
+            tmp = 3;
+        }
+        Cha.Energy += tmp;
         if (Cha.Energy > Cha.MaxEnergy)
         {
             Cha.Energy = Cha.MaxEnergy;
         }
         if (!Shield.activeSelf)
         {
+            UI.status(1, "電能護盾!", this);
             Shield.SetActive(true);
         }
         UI.HpControl(this, Cha.HP);
 
         StartCoroutine(AfterCharge());
-    }//ui ConfirmAction2()
+    }
 
     public IEnumerator AfterCharge()
     {
@@ -162,55 +181,70 @@ public class BossAI : AI
         if (Cha.Energy <= 0)
         {
             Cha.HP += Cha.Energy;
-            Shield.SetActive(false);
             Cha.Energy = 0;
         }
-        UI.demage = damage;
+        Damage = damage;
+        hurt = true;
     }
 
-    public override void Hurt(Vector3 dir)
+    public override bool Hurt(Vector3 dir)
     {
+        if (!hurt)
+        {
+            return false;
+        }
         dir.y = 0;
+        UI.HpControl(this, Cha.HP);
+        UI.status(2, Damage.ToString(), this);
+        hurt = false;
         if (Cha.HP <= 0)
         {
             transform.forward = -dir;
-            UI.HpControl(this, Cha.HP);
-            Am.Play("Death");
+            SM.Play(Cha.die);
             AIDeath();
         }
         else
         {
-
-            UI.HpControl(this, Cha.HP);
             if (Cha.Energy == 0)
             {
+                Shield.SetActive(false);
                 ResetBool();
                 transform.forward = -dir;
                 Am.Play("Hurt");
             }
         }
+        return true;
     }
 
     public GameObject Chain;
     public GameObject Fall;
+    public GameObject effect;
     bool Hit = false;
+    public void LightingSound()
+    {
+        SM.Play("att_thunder1");
+    }
     public void Lightning()
     {
+
         GameObject go = Instantiate(Bullet, FirePoint.position, Quaternion.identity);
         GameObject go2;
         LineRenderer chain = Instantiate<GameObject>(Chain).GetComponent<LineRenderer>();
         chain.positionCount = 2;
         chain.SetPosition(0, FirePoint.position);
+        Cha.Energy -= 1;
+        UI.status(1, "消耗 1 能量!", this);
+        UI.HpControl(this, Cha.HP);
         if (Miss)
         {
-            UI.status("Miss", this);
+            UI.status(1,"未命中!", Target);
             chain.SetPosition(1, AttackPoint);
             go2 = Instantiate(Bullet, AttackPoint, Quaternion.identity);
         }
         else
         {
-            Hit = true;
-            UI.status("coma", this);
+            if(Target.Cha.HP>2)
+                Hit = true;
             Vector3 dir = Target.transform.position - transform.position;
             dir.y = 0;
             Target.Hurt2(dir);
@@ -260,11 +294,13 @@ public class BossAI : AI
         }
         Cha.Energy -= 3;
         UI.HpControl(this, Cha.HP);
-        //instiate
+        UI.status(1, "消耗 3 能量!", this);
+        Destroy(Instantiate<GameObject>(effect, transform), 2f);
         StartCoroutine(PreUltimate());
     }
     IEnumerator PreUltimate()
     {
+        yield return new WaitForSeconds(1f);
         foreach(AI target in Enemies)
         {
             Tile T = target.CurrentTile;
@@ -276,7 +312,7 @@ public class BossAI : AI
                 T.AdjList[i].DangerPos();
                 UI.JoinActionTile(T.AdjList[i]);
             }
-            CamAIList.Add((Instantiate<GameObject>(CamTarget).GetComponent<AI>()));
+            CamAIList.Add((Instantiate<GameObject>(CamTarget,T.transform.position,Quaternion.identity).GetComponent<AI>()));
             UI.MoveCam.ChaTurn(target);
             yield return new WaitForSeconds(1f);
         }
@@ -286,6 +322,7 @@ public class BossAI : AI
     {
         StartCoroutine(Ultimated());
     }
+
     public IEnumerator Ultimated()
     {
 
@@ -293,24 +330,16 @@ public class BossAI : AI
         {
             UI.LeaveActionTile(UltimateTile[i]);
             UltimateTile[i].Recover();
+            UI.MoveCam.ChaTurn(CamAIList[i]);
             AI cha;
-
+            Destroy(Instantiate<GameObject>(Fall, UltimateTile[i].transform.position,Quaternion.identity), 2f);
+            SM.Play("att_thunder2");
             if (UltimateTile[i].Cha != null && UltimateTile[i].Cha.name != "Boss")
             {
                 cha = UltimateTile[i].Cha;
                 cha.BeDamaged(4);
                 cha.Hurt(-UltimateTile[i].Cha.transform.forward);
-                Vector3 vScreenPos = Camera.main.WorldToScreenPoint(cha.BeAttakePoint.transform.position);
-                vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
-                GameObject go = Instantiate(UISystem.getInstance().status_UI[0]) as GameObject;
-                go.transform.GetChild(2).GetComponent<Text>().text = "4";
-                go.transform.position = vScreenPos;
-                go.transform.SetParent(UISystem.getInstance().HPCanvas.transform);
-                Destroy(go, 2f);
-
             }
-            UI.LeaveActionTile(UltimateTile[i]);
-            UltimateTile[i].Recover();
 
             for (int j = 0; j < 8; ++j)
             {
@@ -321,39 +350,30 @@ public class BossAI : AI
                     cha = UltimateTile[i].AdjList[j].Cha;
                     cha.BeDamaged(4);
                     cha.Hurt(UltimateTile[i].AdjList[j].transform.position - UltimateTile[i].transform.forward);
-                    Vector3 vScreenPos = Camera.main.WorldToScreenPoint(cha.BeAttakePoint.transform.position);
-                    vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
-                    GameObject go = Instantiate(UISystem.getInstance().status_UI[0]) as GameObject;
-                    go.transform.GetChild(2).GetComponent<Text>().text = "4";
-                    go.transform.position = vScreenPos;
-                    go.transform.SetParent(UISystem.getInstance().HPCanvas.transform);
-                    Destroy(go, 2f);
                 }
                 UI.LeaveActionTile(UltimateTile[i].AdjList[j]);
                 UltimateTile[i].AdjList[j].Recover();
             }
-            //UI.MoveCam.ChaTurn();
+
             yield return new WaitForSeconds(1f);
-
-
         }
 
 
-
-
-
+        foreach(var cam in CamAIList)
+        {
+            Destroy(cam.gameObject);
+        }
+        CamAIList.Clear();
         ConfirmAction();
         UI.MoveCam.ChaTurn(this);
     }
 
     public override void EndTurn()
     {
-        UI.MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
-        UI.per_but = false; //我方切換子彈預設為關
-        UI.MoveCam.att_cam_bool = false;
-        
-        if (Cha.Energy > 7 && Hit)
+        if (Cha.Energy > 6 && Hit)
         {
+            UI.MoveCam.att_cam_bool = false;
+            UI.MoveCam.ChaTurn(this);
             PreMindControl();
             Hit = false;
             return;

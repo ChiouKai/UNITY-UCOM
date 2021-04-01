@@ -22,6 +22,7 @@ public class CrabAI : AI
         Skills.AddRange(GetComponents<ISkill>());
         Idle = NoCover;
         UI = UISystem.getInstance();
+        SM= FindObjectOfType<SoundManager>();
     }
 
     // Update is called once per frame
@@ -29,11 +30,7 @@ public class CrabAI : AI
     {
         stateinfo = Am.GetCurrentAnimatorStateInfo(0);
 
-        if (!Turn)
-        {
-            Idle();
-        }
-        else if (Attack)
+        if (Attack)
         {
             Melee();
         }
@@ -51,23 +48,32 @@ public class CrabAI : AI
         if (!Turn && !BeAimed)
         {
             float MinDis = 99f;
+            AI tmpEnemy = null;
             foreach (AI EnCha in Enemies)
             {
                 float dis = (EnCha.transform.position - transform.position).magnitude;
                 if (dis < MinDis)
                 {
                     MinDis = dis;
-                    enemy = EnCha.transform;
+                    tmpEnemy = EnCha;
                 }
             }
-            Ediv = (enemy.position - transform.position).normalized;
+            if (tmpEnemy != enemy)
+            {
+                enemy = tmpEnemy;
+                ChangEnemy = true;
+            }
+        }
+        if (!Turn && enemy.Moving || ChangEnemy)
+        {
+            Idle();
         }
     }
     private void LateUpdate()
     {
         if (AmTurn && stateinfo.IsName("Turn"))
         {
-            Ediv = (enemy.position - transform.position).normalized;
+            Ediv = (enemy.transform.position - transform.position).normalized;
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Ediv), 0.05f);
             float FoB = Vector3.Dot(transform.forward, Ediv);
             if (FoB > 0.99f)
@@ -85,7 +91,7 @@ public class CrabAI : AI
     {
         if (!AmTurn && stateinfo.IsName("Idle"))
         {
-            Ediv = (enemy.position - transform.position).normalized;
+            Ediv = (enemy.transform.position - transform.position).normalized;
             float FoB = Vector3.Dot(transform.forward, Ediv);
 
             if (FoB > 1 / Mathf.Sqrt(2))   //判斷前後左右
@@ -138,10 +144,10 @@ public class CrabAI : AI
                     adjT.Parent = T;  //visited過的就被設為 parent
                     AddVisited(adjT);
 
-                    if (adjT.distance > Cha.Mobility * ap) //移動距離不會超過上限
-                    {
-                        continue;
-                    }
+                    //if (adjT.distance > Cha.Mobility * ap) //移動距離不會超過上限
+                    //{
+                    //    continue;
+                    //}
 
                     if (CalPointAction(adjT))
                     {
@@ -157,46 +163,60 @@ public class CrabAI : AI
 
     protected override bool CalPointAction(Tile T)
     {
-        float Point = 0;
+        //float Point = 0;
         Vector3 Location = T.transform.position;
 
-        float MinDis = 99;
-        if (Enemies == null)
-        {
-            Enemies = RoundSysytem.GetInstance().Humans;
-        }
-        foreach (AI enemy in Enemies)
-        {
-            Vector3 Edir = enemy.transform.position - Location;
+        //float MinDis = 99;
+        //if (Enemies == null)
+        //{
+        //    Enemies = RoundSysytem.GetInstance().Humans;
+        //}
+        //foreach (AI enemy in Enemies)
+        //{
+        //    Vector3 Edir = enemy.transform.position - Location;
 
-            if (MinDis > Edir.magnitude)
-            {
-                MinDis = Edir.magnitude;
-            }
-        }
-        float i = 32f / (MinDis + 1f);
-
-            Point += i;
+        //    if (MinDis > Edir.magnitude)
+        //    {
+        //        MinDis = Edir.magnitude;
+        //    }
+        //}
+        //float i = 32f / (MinDis + 1f);
+        //if (i > 32)
+        //{
+        //    i = 32f;
+        //}
+        //Point += i;
         //可用能力巡一遍，選擇得分高的能力 再拿出來加分
-        float SecPoint = 0;
+        //float SecPoint = 0;
         for (int j = 0; j < 4; ++j)
         {
             if (T.AdjList[j].Cha != null && EnemyLayer != T.AdjList[j].Cha.EnemyLayer)
             {
                 Target = T.AdjList[j].Cha;
-                SecPoint += 10;
+                //SecPoint += 100f;
                 break;
             }
         }
 
         //todo特殊能力 先確認CD 如果可以用 在計算命中 得分會比普通射擊高一些
-        Point += SecPoint;
-        if (Point > BestPoint)
+        //Point += SecPoint;
+        if (Target!=null)
         {
-            BestT = T;
-            BestPoint = Point;
-            if (Target != null)
+            //BestPoint = Point;
+            if (T.distance > Cha.Mobility * AP)
             {
+                Tile T2 = T.Parent;
+                while(T2.distance > Cha.Mobility * AP)
+                {
+                    T2 = T2.Parent;
+                }
+                BestT = T2;
+                Target = null;
+                return true;
+            }
+            else
+            {
+                BestT = T;
                 return true;
             }
         }
@@ -363,35 +383,40 @@ public class CrabAI : AI
     {
 
         yield return new WaitForSeconds(0.5f);
-        FindObjectOfType<SoundManager>().Play(Cha.affirmative);
+        SM.Play(Cha.affirmative);
         Target.BeDamaged(3);
         Target.Hurt(transform.forward);
-        UI.status("Demage", this);
         yield return new WaitForSeconds(1f);//
         RS.EndChecked = true;
         StartCoroutine(WaitNextAction());
     }
 
-    public override void Hurt(Vector3 dir)
+    public override bool Hurt(Vector3 dir)
     {
+        if (!hurt)
+        {
+            return false;
+        }
+        UI.HpControl(this, Cha.HP);
+        UI.status(2, Damage.ToString(), this);
+        hurt = false;
         dir.y = 0;
         if (Cha.HP <= 0)
         {
             transform.forward = -dir;
-            UI.HpControl(this, Cha.HP);
             AIDeath();
         }
         else
         {
             transform.forward = -dir;
-            UI.HpControl(this, Cha.HP);
             Am.SetBool("Turn", false);
             AmTurn = false;
             Am.Play("Hurt");
             FindObjectOfType<SoundManager>().Play(Cha.takeHit);
         }
+        return true;
     }
-    protected override void AIDeath()
+    public override void AIDeath()
     {
         OutCurrentTile();
         Am.Play("Death");
@@ -402,7 +427,6 @@ public class CrabAI : AI
         Destroy(GetComponent<EPOOutline.Outlinable>());
         Destroy(Cha);
         Idle = DeathIdle;
-        FindObjectOfType<SoundManager>().Play(Cha.die);
     }
     private void DeathIdle()
     {

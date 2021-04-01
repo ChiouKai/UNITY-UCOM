@@ -35,12 +35,7 @@ public class RoundSysytem
         Aliens = aliens;
         UI = ui;
         MoveCam = MC;
-        UI.per_but = false; //我方切換子彈預設為關
-        MoveCam.att_cam_bool = false;
-        UI.toggle[0].SetActive(true);
-        UI.toggle[1].SetActive(false);
-        UI.toggle[2].SetActive(false);
-        UI.explosion.SetActive(false);
+
         for (int i = 0; i < UI.toggle.Length; i++)
         {
             UI.toggle[i].transform.GetChild(1).GetComponent<Text>().color = Color.white;
@@ -87,20 +82,11 @@ public class RoundSysytem
             lock (TurnCha)
             {
                 UI.TurnCha = TurnCha;
+                TurnCha.Turn = true;
+                TurnCha.AP = 2;
+                TurnCha.CountCD();
+                UI.TurnRun = UI.PlayerStartTurn;
 
-                if (TurnCha.Cha.camp == 0)
-                {
-                    TurnCha.AP = 2;
-
-                    TurnCha.Turn = true;
-                    TurnCha.CountCD();
-                    UI.TurnRun = UI.PlayerStartTurn;
-                }
-                else
-                {
-                    TurnCha.Turn = true;
-                    UI.TurnRun = UI.EnemyStartTurn;
-                }
             }
 
             while (EC.ChaEnd!= true|| EndChecked!= true|| TimeLine.Instance.Moved != true)
@@ -168,17 +154,15 @@ public class RoundSysytem
         {
             EC.ChaEnd = false;
             EndChecked = false;
-            UI.type = 0;
-            UI.site = 0;
-            UI.TurnRun = UI.NewCome;
+            UI.TurnRun = ()=>{ UI.NewCome(0, 0); };
             Event = null;
         };
         EventList.Add(Event);
     }
-    int i = 0;
+
     public void NewEvent()
     {
-        ++i;
+
         if (UI.Bomb_Round == 7)
         {
             Action Event = () =>
@@ -198,16 +182,16 @@ public class RoundSysytem
                 Event = null;
             };
             EventList.Add(Event);
-            Action Event2 = () =>
-            {
-                EC.ChaEnd = false;
-                EndChecked = false;
-                UI.type = 2;
-                UI.site = 1;
-                UI.TurnRun = UI.NewCome;
-                Event = null;
-            };
-            EventList.Add(Event);
+            //Action Event2 = () =>
+            //{
+            //    EC.ChaEnd = false;
+            //    EndChecked = false;
+            //    UI.type = 2;
+            //    UI.site = 1;
+            //    UI.TurnRun = UI.NewCome;
+            //    Event = null;
+            //};
+            //EventList.Add(Event);
         }
 
         if (Aliens.Count < 3)
@@ -216,39 +200,34 @@ public class RoundSysytem
             {
                 EC.ChaEnd = false;
                 EndChecked = false;
-                UI.type = 0;
-                UI.site = 0;
-                UI.TurnRun = UI.NewCome;
+                UI.TurnRun = ()=> { UI.NewCome(0, 0); };
                 Event = null;
             };
             EventList.Add(Event);
         }
-        if (UI.Bomb_start && UI.Bomb_Round % 2 == 1)
+        if (UI.Bomb_start && UI.Bomb_Round  == 1)
         {
             Action Event = () =>
             {
                 EC.ChaEnd = false;
                 EndChecked = false;
-                UI.type = 0;
-                UI.site = 1;
-                UI.TurnRun = UI.NewCome;
+
+                UI.TurnRun = () => { UI.NewCome(4, 1); UI.themePlayer.PlayThemes(3); };
                 Event = null;
             };
             EventList.Add(Event);
         }
-        //if (UI.Bomb_Round > 3 && UI.Bomb_Round % 2 == 0)
-        //{
-        //    Action Event = () =>
-        //    {
-        //        EC.ChaEnd = false;
-        //        EndChecked = false;
-        //        UI.type = 0;
-        //        UI.site = 1;
-        //        UI.TurnRun = UI.NewCome;
-        //        Event = null;
-        //    };
-        //    EventList.Add(Event);
-        //}
+        if (UI.Bomb_Round > 3 && UI.Bomb_Round % 2 == 0)
+        {
+            Action Event = () =>
+            {
+                EC.ChaEnd = false;
+                EndChecked = false;
+                UI.TurnRun = () => { UI.NewCome(0, 1); };
+                Event = null;
+            };
+            EventList.Add(Event);
+        }
     }
 
 

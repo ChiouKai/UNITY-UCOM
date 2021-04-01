@@ -90,6 +90,9 @@ MonoBehaviour:
   followedTarget: {fileID: 0}
   MaxHP: 10
   HP: 10
+  MaxEng: 0
+  Eng: 0
   hp_tiles: {fileID: 833226775887037042, guid: 7ff90fd1085040942b743fd1bd79fc94, type: 3}
   full_HP_Tile: {fileID: 21300000, guid: 6d399b915f56fc347b699c63dc00ad7a, type: 3}
+  full_EN_Tile: {fileID: 21300000, guid: 8a8db398d8471c248ba0255c3fdc3baf, type: 3}
   empty_HP_Tile: {fileID: 21300000, guid: 8e443e90ea4eca44b8bd3e05aaed2682, type: 3}

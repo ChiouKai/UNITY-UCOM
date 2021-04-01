@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
 public class UISystem : MonoBehaviour
@@ -25,10 +24,9 @@ public class UISystem : MonoBehaviour
     public GameObject menuQuit;
     public GameObject menu_success;
     public Tile[] StartTile;
-    bool acting = false;
+    public bool acting = false;
+    SoundManager SoundM;
 
-
-    bool ssstart =false;
     public List<Tile> LeaveTile = new List<Tile>();
     public List<MeshRenderer> ActionTile = new List<MeshRenderer>();
 
@@ -65,58 +63,27 @@ public class UISystem : MonoBehaviour
                 continue;
             Aliens.Add(ai);
         }
-        /*將對話寫在這 對話完再執行*/
-        //m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
+        m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
         LRList = new List<GameObject>();
        
         RT = BelowButtonAndText.GetComponent<RectTransform>();
         JoinActionTile(BombSite);
-        Round = new System.Threading.Thread(m_Roundsystem.RoundStart);
+        Round = new Thread(m_Roundsystem.RoundStart);
         Round.IsBackground = true;
-        dialog_01.SetActive(false);
-        b_mission.SetActive(false);
-        dialog_02.SetActive(false);
-        
+        SoundM = FindObjectOfType<SoundManager>();
     }
-    float time;
-    float time2;
-    bool time_mis = true;
+
     public GameObject TimeLine_First;
     private void Update()
     {
-        time += Time.deltaTime;
-        if (time_mis)
-        {
-            if (time > 1.5f)
-                dialog_01.SetActive(true);
-            if (time > 2.5f)
-                b_mission.SetActive(true);
-        }
-        
-        if (Bomb_start)
-        {
-            time2 += Time.deltaTime;
-            dialog_02.SetActive(true);
-            if (time2 > 3.5f)
-            {
-                dialog_02.SetActive(false);
-            }
-        }
-        if (ssstart)
-        {
-            TimeLine_First.SetActive(true);
-            ssstart = false;
-        }
-        if (F_TimeLine.gamestart)
-        {
-            m_Roundsystem.RoundPrepare(Humans, Aliens, MoveCam, this);
-            F_TimeLine.gamestart = false;
-        }
         TurnRun?.Invoke();//控制角色UI
         RunUI?.Invoke();//控制UI
         onEscapeKeyed();  //退出選單
 
-
+        //if (Input.GetKeyDown(KeyCode.M))
+        //{
+        //    SoundM.Play(test);
+        //}
         if (Input.GetKeyDown(KeyCode.P))
         {
             Cheat();
@@ -130,7 +97,10 @@ public class UISystem : MonoBehaviour
         {
             UpdateActionTile();
         }
-
+        if (TurnCha!=null)
+        {
+            UpdateTurnChaLogo();
+        }
     }
     private void LateUpdate()
     {
@@ -159,19 +129,18 @@ public class UISystem : MonoBehaviour
     //press Esc button
     public void onEscapeKeyed()
     {        
-
         //if (Input.GetKeyDown(KeyCode.Escape) && missionDialogue.activeInHierarchy) { menu.SetActive(true); missionDialogue.SetActive(false); }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             menu.SetActive(!menu.activeInHierarchy );
-            if (menu.activeInHierarchy == true) PauseGame();
+            if (menu.activeInHierarchy) PauseGame();
             else
                 Time.timeScale = 1;
         }
         if (Input.GetKeyDown(KeyCode.Escape) && menuOption.activeInHierarchy) 
         { 
             menu.SetActive(true);
-            if (menu.activeInHierarchy == true) PauseGame();
+            if (!menu.activeInHierarchy) PauseGame();
             else
                 Time.timeScale = 1; 
             menuOption.SetActive(false); 
@@ -186,20 +155,9 @@ public class UISystem : MonoBehaviour
     //menu buttons
     public void onExitClicked()
     {
-        if (menu.activeInHierarchy)
-        {
-            menu.SetActive(false);
-            Time.timeScale = 1; 
-        }      
-        
-        else 
-        { 
-            menu.SetActive(true);
-            PauseGame();
-            
-        }
+        menu.SetActive(false);
+        Time.timeScale = 1;
     }
-
     public void QuitGame()
     {
         Round.Abort();
@@ -211,9 +169,10 @@ public class UISystem : MonoBehaviour
         Time.timeScale = 0;
     }
 
-    public void ResumeGame()
+    public void ReloadScene(string s)
     {
-        Time.timeScale = 1;
+        Round.Abort();
+        CSceneManager.m_Instance.change_scene(s);
     }
 
     public void ShowActionUI()
@@ -259,6 +218,10 @@ public class UISystem : MonoBehaviour
     {
         ActionTile.Add(T.GetComponent<MeshRenderer>());
     }
+    public void JoinActionTile(GameObject T)
+    {
+        ActionTile.Add(T.GetComponent<MeshRenderer>());
+    }
     public void LeaveActionTile(Tile T)
     {
         ActionTile.Remove(T.GetComponent<MeshRenderer>());
@@ -269,29 +232,20 @@ public class UISystem : MonoBehaviour
 
     public void MouseInTile(Tile T)
     {
-        if (acting)
-        {
-            return;
-        }
         MouseOnTile.transform.position = T.transform.position + Vector3.up * 0.1f;
-        
+
         if (Grenaded && (T.transform.position - TurnCha.transform.position).magnitude < 12f)
         {
-            T.DangerPos();
-            JoinActionTile(T);
-            for(int i = 0; i < 8; ++i)
-            {
-                T.AdjList[i].DangerPos();
-                JoinActionTile(T.AdjList[i]);
-            }
+            DangerTile.SetActive(true);
+            DangerTile.transform.position = T.transform.position + Vector3.up * 0.1f;
         }
         else if (T.selectable && TurnCha.Moving != true)
         {
             ShowPredictAttable(T);
             var path = TurnCha.MoveToTile(T);
-            if (T.distance > TurnCha.Cha.Mobility*(TurnCha.AP-1))
+            if (T.distance > TurnCha.Cha.Mobility * (TurnCha.AP - 1))
             {
-                DrawHeadingLine(path,Yellow);
+                DrawHeadingLine(path, Yellow);
             }
             else
             {
@@ -301,23 +255,30 @@ public class UISystem : MonoBehaviour
         }
         if (!T.walkable)
         {
-            return;
-        }
-        for (int i = 0; i < 4; ++i)
-        {
-            if (T.AdjCoverList[i] == Tile.Cover.FullC)
-            {
-                MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("FullCover");
-            }
-            else if(T.AdjCoverList[i] == Tile.Cover.HalfC)
-            {
-                MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("HalfCover");
-            }
-            else
+            for (int i = 0; i < 4; ++i)
             {
                 MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("NoCover");
             }
         }
+        else
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                if (T.AdjCoverList[i] == Tile.Cover.FullC)
+                {
+                    MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("FullCover");
+                }
+                else if (T.AdjCoverList[i] == Tile.Cover.HalfC)
+                {
+                    MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("HalfCover");
+                }
+                else
+                {
+                    MouseOnTile.transform.GetChild(i).GetComponent<MeshRenderer>().material = Resources.Load<Material>("NoCover");
+                }
+            }
+        }
+    
     }
     public void MouseOutTile(Tile T)
     {
@@ -325,15 +286,9 @@ public class UISystem : MonoBehaviour
         //MouseOnTile.GetComponent<Renderer>().enabled = false;
         if (Grenaded)
         {
-            LeaveActionTile(T);
-            T.Recover();
-            for (int i = 0; i < 8; ++i)
-            {
-                LeaveActionTile(T.AdjList[i]);
-                T.AdjList[i].Recover();
-            }
+            DangerTile.SetActive(false);
         }
-        else if (T.selectable && TurnCha.Moving != true)
+        if (T.selectable && TurnCha.Moving != true)
         {
             DestroyAPPImage();
             Destroy(GLR);
@@ -341,28 +296,50 @@ public class UISystem : MonoBehaviour
         }
     }
 
-    void CheckMouse()
+
+    public Transform TurnChaArrow;
+    public MeshRenderer TurnChaLogo;
+    float TCL_Time;
+    int i;
+    void UpdateTurnChaLogo()
     {
-        if (Input.GetMouseButtonDown(1)&& Prepera)
+        TurnChaLogo.transform.position = TurnCha.transform.position + Vector3.up * 0.05f;
+        TCL_Time += Time.deltaTime;
+        if (TCL_Time >= 1)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit);
-            if (hit.collider.tag == "tile")
+            TCL_Time = 0;
+            ++i;
+            if (i > 2) i = 0;
+            TurnChaLogo.material = Resources.Load<Material>(TurnCha.Cha.camp.ToString()+"Star"+i);
+        }
+    }
+
+
+
+
+    public void CheckMouse2(Tile T)
+    {
+        if (Prepera)
+        {
+            if (T.selectable)
             {
-                Tile T = hit.collider.GetComponent<Tile>();
-                if (T.selectable)
-                {
-                    AttPredictPanel.gameObject.SetActive(false);
-                    DestroyADPButton();
-                    DestroySkillButton();
-                    Prepera = false;
-                    LRDestory();
-                    TurnCha.PrepareMove(T);
-                    RunUI = null;
-                }
+                AttPredictPanel.gameObject.SetActive(false);
+                DestroyADPButton();
+                DestroySkillButton();
+                Prepera = false;
+                LRDestory();
+                TurnCha.PrepareMove(T);
+                RunUI = null;
             }
         }
+    }
+
+
+
+
+
+    void CheckMouse()
+    {
         if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
             AttPredictPanel.gameObject.SetActive(true);
@@ -391,9 +368,16 @@ public class UISystem : MonoBehaviour
     List<Button> SButtonList = new List<Button>();
     AI TrueTurnCha = null;
     public Transform Frame;
+    Action SkillCanceal;
 
     public void PlayerStartTurn()
     {
+        TurnChaLogo.transform.position = TurnCha.transform.position + Vector3.up * 0.05f;
+
+        TurnChaLogo.gameObject.SetActive(true);
+        TurnChaArrow.transform.position = TurnCha.transform.position + Vector3.up * 3f;
+        TurnChaArrow.transform.SetParent(TurnCha.transform);
+        TurnChaArrow.gameObject.SetActive(true);
         if (TurnCha.Coma)
         {
             TurnCha.WakeUp();
@@ -401,26 +385,23 @@ public class UISystem : MonoBehaviour
             StartCoroutine(TurnCha.WaitEndturn());
             TurnRun = null;
         }
+        else if (TurnCha.Cha.camp == Character.Camp.Human)
+        {
+            TurnCha.MoveRange();
+            TurnCha.AttakeableDetect();
+            ShowAttackableButton();
+            FindSkillButton();
+            RunUI = ShowActionUI;
+            TurnRun = CheckMouse;
+            MoveCam.ChaTurn(TurnCha);
+        }
         else
         {
-        TurnCha.MoveRange();
-        TurnCha.AttakeableDetect();
-        ShowAttackableButton();
-        FindSkillButton();
-        RunUI = ShowActionUI;
-        TurnRun = CheckMouse;
-        MoveCam.ChaTurn(TurnCha);
+            TurnCha.FindSelectableTiles(2);
+            TurnCha.ConfirmAction();
+            MoveCam.ChaTurn(TurnCha);
+            TurnRun = null;
         }
-    }
-    public void EnemyStartTurn()
-    {
-        TurnCha.Turn = true;
-        TurnCha.AP = 2;
-        TurnCha.CountCD();
-        TurnCha.FindSelectableTiles(2);
-        TurnCha.ConfirmAction();
-        MoveCam.ChaTurn(TurnCha);
-        TurnRun = null;
     }
     private void TurnChaSkip()
     {
@@ -445,6 +426,7 @@ public class UISystem : MonoBehaviour
 
     public void FindSkillButton()
     {
+        SkillCanceal = null;
         foreach (var skill in TurnCha.Skills)
         {
             AI target = null;
@@ -459,9 +441,7 @@ public class UISystem : MonoBehaviour
                 SButtonList.Add(go);
                 if (skill.CheckUseable(target))
                 {
-                    Type type = typeof(UISystem);
-                    MethodInfo method = type.GetMethod("Pre" + skill.Name);
-                    go.onClick.AddListener(() => method.Invoke(this, null));//todo CD
+                    go.onClick.AddListener(() => { SkillCanceal?.Invoke(); skill.GetAction().Invoke(); });//todo CD
                 }
                 else
                 {
@@ -479,16 +459,14 @@ public class UISystem : MonoBehaviour
                     Button go = Instantiate<GameObject>(Resources.Load<GameObject>(skill.Name)).GetComponent<Button>();
                     go.transform.SetParent(SkillsPanel);
                     SButtonList.Add(go);
-                    Type type = typeof(UISystem);
-                    MethodInfo method = type.GetMethod("Pre" + skill.Name);
-                    go.onClick.AddListener(() => method.Invoke(this, null));//todo CD
+                    go.onClick.AddListener(() => { SkillCanceal?.Invoke(); skill.GetAction().Invoke(); });//todo CD
                 }
             }
         }
         Button SB = Instantiate<GameObject>(Resources.Load<GameObject>("Standby")).GetComponent<Button>();
         SB.transform.SetParent(SkillsPanel);
         SButtonList.Add(SB);
-        SB.onClick.AddListener(() => PreStandby());//todo CD
+        SB.onClick.AddListener(() => { SkillCanceal?.Invoke(); PreStandby(); });//todo CD
     }
     public void DestroySkillButton()
     {
@@ -741,12 +719,12 @@ public class UISystem : MonoBehaviour
         {
             return;
         }
+        SoundM.Play("Test");
         LRs.gameObject.SetActive(false);
         acting = true;
         Prepera = false;
         Target = TurnCha.AttakeableList.First;
-        MoveCam.att_cam_bool = true;
-        per_but = true;
+        MoveCam.PlayerSetAtkCam(Target.Value.Item1);
         TurnCha.ChangePreAttackIdle();
         TurnCha.ChaChangeTarget(Target.Value.Item1);
         Index = 0;
@@ -767,6 +745,7 @@ public class UISystem : MonoBehaviour
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(()=>Fire());
         TurnRun = ChangeAttakeTarget;
+        SkillCanceal = CancealFire;
     }
     public void Fire()//button
     {
@@ -779,8 +758,9 @@ public class UISystem : MonoBehaviour
         TurnCha.Fire(Target.Value);
         DestroyADPButton();
         DestroySkillButton();
-        RunUI = CloseActionUI;
+        CloseActionUI();
         TurnRun = null;
+
     }
 
     void ChangeAttakeTarget()
@@ -797,10 +777,10 @@ public class UISystem : MonoBehaviour
             {
                 Index = 0;
             }
+            MoveCam.PlayerSetAtkCam(Target.Value.Item1);
             AimTarget.transform.GetChild(0).GetComponent<Text>().text = Target.Value.Item3 + "%";
             Frame.SetParent(ADPButtonList[Index].transform);
             Frame.localPosition = Vector3.zero;
-            MoveCam.att_cam_bool = true;
             Target.Value.Item1.BeAim(TurnCha);
             AimPos = Target.Value.Item1.BeAttakePoint;
             TurnCha.ChaChangeTarget(Target.Value.Item1);
@@ -809,21 +789,26 @@ public class UISystem : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(1))
         {
-            AimTarget.transform.GetChild(0).GetComponent<Text>().text = "";
-            AimTarget.SetActive(false);
-            RT.anchoredPosition3D = new Vector3(0, 240, 0);
-            TurnCha.PreAttack = false;
-            TurnCha.Am.SetBool("Aim", false);
-            TurnCha.Target = null;
-            MoveCam.att_cam_bool = false;
-            TurnRun = CheckMouse;
-            Destroy(Frame.gameObject);
-            //StartCoroutine(WaitMove());
-            per_but = false;
-            acting = false;
-            LRs.gameObject.SetActive(true);
+            CancealFire();
         }
     }
+    void CancealFire()
+    {
+        AimTarget.transform.GetChild(0).GetComponent<Text>().text = "";
+        AimTarget.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 240, 0);
+        TurnCha.PreAttack = false;
+        TurnCha.Am.SetBool("Aim", false);
+        TurnCha.Target = null;
+        MoveCam.EndCam();
+
+        TurnRun = CheckMouse;
+        Destroy(Frame.gameObject);
+        acting = false;
+        LRs.gameObject.SetActive(true);
+        SkillCanceal = null;
+    }
+
     public void ChangeAttakeTargetButton(AI ai)
     {
         Target = TurnCha.AttakeableList.First;
@@ -831,7 +816,9 @@ public class UISystem : MonoBehaviour
         {
             Target = Target.Next;
         }
-        Destroy(Frame.gameObject);
+        MoveCam.PlayerSetAtkCam(Target.Value.Item1);
+        if(Frame!=null)
+            Destroy(Frame.gameObject);
         AimPos = Target.Value.Item1.BeAttakePoint;
         TurnCha.ChaChangeTarget(Target.Value.Item1);
         LeftText.text = "傷害：" + TurnCha.Gun.Damage[0] + "~" + TurnCha.Gun.Damage[1];
@@ -841,6 +828,7 @@ public class UISystem : MonoBehaviour
 
     public void PreReload()
     {
+        SoundM.Play("Test");
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
         Prepera = false;
         ButtonText.text = "換彈";
@@ -850,23 +838,26 @@ public class UISystem : MonoBehaviour
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Reload());
         TurnRun = Canceal;
+        SkillCanceal = CancealSkill;
     }
     public void Reload()
     {
         TurnCha.Reload();
         DestroyADPButton();
         DestroySkillButton();
-        RunUI = CloseActionUI;
+        CloseActionUI();
         TurnRun = null;
     }
 
 
     public void PreMelee()
     {
+
         if (TurnCha.MeleeableList.Count == 0)
         {
             return;
         }
+        SoundM.Play("Test");
         Prepera = false;
         AttDectPanel.gameObject.SetActive(false);
         foreach (var T in TurnCha.MeleeableList)
@@ -876,7 +867,9 @@ public class UISystem : MonoBehaviour
         }
         MeleeTarget = TurnCha.MeleeableList.First;
         MeleeTarget.Value.Item2.ChoMeleePos();
+        MouseInTile(MeleeTarget.Value.Item2);
         MoveCam.ChaTurn(MeleeTarget.Value.Item1);
+        acting = true;
         AimTarget.SetActive(true);
         AimTarget.transform.GetChild(0).GetComponent<Text>().text ="90%";
         AimPos = MeleeTarget.Value.Item1.BeAttakePoint;
@@ -889,6 +882,7 @@ public class UISystem : MonoBehaviour
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Melee());
         TurnRun = ChangeMeleeTarget;
+        SkillCanceal = CancealMelee;
     }
 
     void ChangeMeleeTarget()
@@ -896,27 +890,21 @@ public class UISystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             MeleeTarget.Value.Item2.MeleePos();
+            MouseOutTile(MeleeTarget.Value.Item2);
             MeleeTarget = MeleeTarget.Next;
             if (MeleeTarget == null)
             {
                 MeleeTarget = TurnCha.MeleeableList.First;
             }
             MeleeTarget.Value.Item2.ChoMeleePos();
+            MouseInTile(MeleeTarget.Value.Item2);
             MoveCam.ChaTurn(MeleeTarget.Value.Item1);
             AimPos = MeleeTarget.Value.Item1.BeAttakePoint;
         }
         //ifcheckmouse
         if (Input.GetMouseButtonDown(1))
         {
-            foreach (var T in TurnCha.MeleeableList)
-            {
-                LeaveActionTile(T.Item2);
-            }
-            AimTarget.SetActive(false);
-            RT.anchoredPosition3D = new Vector3(0, 240, 0);
-            AttDectPanel.gameObject.SetActive(true);
-            TurnRun = CheckMouse;
-            MoveCam.ChaTurn(TurnCha);
+            CancealMelee();
         }
     }
 
@@ -929,15 +917,56 @@ public class UISystem : MonoBehaviour
             LeaveActionTile(T.Item2);
             current = current.Next;
         }
+        acting = false;
         AimTarget.SetActive(false);
         TurnCha.PreMelee(MeleeTarget);
         MoveCam.ChaTurn(TurnCha);
         DestroyADPButton();
         DestroySkillButton();
-        RunUI = CloseActionUI;
+        CloseActionUI();
         TurnRun = null;
     }
+    public void ClickMelee(Tile T)
+    {
+        Debug.Log(T.GetComponent<Renderer>().material.ToString());
+        if(T.GetComponent<Renderer>().material.ToString()== "ChoMeleePos (Instance) (UnityEngine.Material)")
+        {
+            Melee();
+        }
+        else
+        {
+            MeleeTarget.Value.Item2.MeleePos();
+            MouseOutTile(MeleeTarget.Value.Item2);
 
+
+            MeleeTarget= TurnCha.MeleeableList.First;
+            while (MeleeTarget.Value.Item2 != T)
+            {
+                MeleeTarget = MeleeTarget.Next;
+            }
+            
+            MeleeTarget.Value.Item2.ChoMeleePos();
+            MouseInTile(MeleeTarget.Value.Item2);
+            MoveCam.ChaTurn(MeleeTarget.Value.Item1);
+            AimPos = MeleeTarget.Value.Item1.BeAttakePoint;
+        }
+    }
+
+    void CancealMelee()
+    {
+        foreach (var T in TurnCha.MeleeableList)
+        {
+            LeaveActionTile(T.Item2);
+        }
+        MouseOutTile(MeleeTarget.Value.Item2);
+        acting = false ;
+        AimTarget.SetActive(false);
+        RT.anchoredPosition3D = new Vector3(0, 240, 0);
+        AttDectPanel.gameObject.SetActive(true);
+        TurnRun = CheckMouse;
+        MoveCam.ChaTurn(TurnCha);
+        SkillCanceal = null;
+    }
 
     public void PreHeal()//button
     {
@@ -945,6 +974,7 @@ public class UISystem : MonoBehaviour
         {
             return;
         }
+        SoundM.Play("Test");
         Prepera = false;
         HealTarget = TurnCha.HealList.First;
         MoveCam.ChaTurn(HealTarget.Value);
@@ -958,6 +988,7 @@ public class UISystem : MonoBehaviour
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Heal());
         TurnRun = ChangeHealTarget;
+        SkillCanceal = CancealSkill;
     }
 
     private void ChangeHealTarget()
@@ -980,9 +1011,10 @@ public class UISystem : MonoBehaviour
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
-        RunUI = CloseActionUI;
+        CloseActionUI();
         TurnRun = null;
     }
+
 
     public void PreCooperation()
     {
@@ -990,6 +1022,7 @@ public class UISystem : MonoBehaviour
         {
             return;
         }
+        SoundM.Play("Test");
         Prepera = false;
         Index= 0;
         AllyTarget = Humans[Index];
@@ -999,6 +1032,8 @@ public class UISystem : MonoBehaviour
         }
         AllyTarget = Humans[Index];
         MoveCam.ChaTurn(AllyTarget);
+        TurnChaArrow.transform.position = AllyTarget.transform.position + Vector3.up * 3f;
+        TurnChaArrow.transform.SetParent(AllyTarget.transform);
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
         //UI
@@ -1009,6 +1044,7 @@ public class UISystem : MonoBehaviour
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Cooperation());
         TurnRun = ChangeAllyTarget;
+        SkillCanceal = CancealSkill;
     }
 
     private void ChangeAllyTarget()
@@ -1032,8 +1068,15 @@ public class UISystem : MonoBehaviour
             }
             AllyTarget = Humans[Index];
             MoveCam.ChaTurn(AllyTarget);
+            TurnChaArrow.transform.position = AllyTarget.transform.position + Vector3.up * 3f;
+            TurnChaArrow.transform.SetParent(AllyTarget.transform);
         }
-        Canceal();
+        if (Input.GetMouseButtonDown(1))
+        {
+            CancealSkill();
+            TurnChaArrow.transform.position = TurnCha.transform.position + Vector3.up * 3f;
+            TurnChaArrow.transform.SetParent(TurnCha.transform);
+        }
     }
 
 
@@ -1047,7 +1090,7 @@ public class UISystem : MonoBehaviour
         TrueTurnCha = TurnCha;
         TurnCha.PreCooperation(AllyTarget);
         m_Roundsystem.EndChecked = false;
-        RunUI = CloseActionUI;
+        CloseActionUI();
         TurnRun = null;
     }
 
@@ -1059,10 +1102,11 @@ public class UISystem : MonoBehaviour
     public ThemePlayer themePlayer;
     public void CheckEvent()
     {
-        RunUI = CloseActionUI;
-        MoveCam.cam_dis = 20.0f;//一開始預設攝影機距離為20公尺
-        per_but = false; //我方切換子彈預設為關
-        MoveCam.att_cam_bool = false;
+        CloseActionUI();
+        TurnChaLogo.gameObject.SetActive(false);
+        TurnChaArrow.SetParent(null);
+        TurnChaArrow.gameObject.SetActive(false);
+        MoveCam.EndCam();
         acting = false;
 
         if (TrueTurnCha != null)//指揮技能有關，可無視
@@ -1129,13 +1173,31 @@ public class UISystem : MonoBehaviour
         CAM.SetActive(false);
         CAM_TIMELINE.SetActive(true);
         HPCanvas.gameObject.SetActive(false);
+        StartCoroutine(AllDie());
     }
-
+    IEnumerator AllDie()
+    {
+        yield return new WaitForSeconds(3f);
+        if (Aliens.Count > 0)
+        {
+            foreach(AI a in Aliens)
+            {
+                a.AIDeath();
+            }
+        }
+        if (Humans.Count > 0)
+        {
+            foreach(AI a in Humans)
+            {
+                a.AIDeath();
+            }
+        }
+    }
 
 
     public void PreBomb()
     {
-
+        SoundM.Play("Test");
         Prepera = false;
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
@@ -1147,6 +1209,7 @@ public class UISystem : MonoBehaviour
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Bomb());
         TurnRun = Canceal;
+        SkillCanceal = CancealSkill;
     }
     private void Bomb()
     {
@@ -1155,12 +1218,13 @@ public class UISystem : MonoBehaviour
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
-        RunUI = CloseActionUI;
+        CloseActionUI();
         TurnRun = null;
     }
 
     public void PreLeave()
     {
+        SoundM.Play("Test");
         Prepera = false;
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
@@ -1175,11 +1239,12 @@ public class UISystem : MonoBehaviour
     }
     private void Leave()
     {
+
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
         TurnRun = null;
-        RunUI = CloseActionUI;
+        CloseActionUI();
         TurnCha.Leave();
     }
 
@@ -1189,6 +1254,7 @@ public class UISystem : MonoBehaviour
         {
             return;
         }
+        SoundM.Play("Test");
         Prepera = false;
         HealTarget = TurnCha.ComaList.First;
         MoveCam.ChaTurn(HealTarget.Value);
@@ -1202,6 +1268,7 @@ public class UISystem : MonoBehaviour
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Wake());
         TurnRun = ChangeWakeTarget;
+        SkillCanceal = CancealSkill;
     }
     private void Wake()
     {
@@ -1209,7 +1276,7 @@ public class UISystem : MonoBehaviour
         DestroyADPButton();
         DestroySkillButton();
         LRDestory();
-        RunUI = CloseActionUI;
+        CloseActionUI();
         TurnRun = null;
     }
     private void ChangeWakeTarget()
@@ -1227,6 +1294,7 @@ public class UISystem : MonoBehaviour
     }
     public void PreStandby()
     {
+        SoundM.Play("Test");
         Prepera = false;
         AttPredictPanel.gameObject.SetActive(false);
         RT.anchoredPosition3D = new Vector3(0, 340, 0);
@@ -1238,11 +1306,12 @@ public class UISystem : MonoBehaviour
         ActionButton.onClick.RemoveAllListeners();
         ActionButton.onClick.AddListener(() => Standby());
         TurnRun = Canceal;
+        SkillCanceal = CancealSkill;
     }
     public void Standby()
     {
         TurnRun = null;
-        RunUI = CloseActionUI;
+        CloseActionUI();
         TurnChaSkip();
     }
 
@@ -1252,16 +1321,22 @@ public class UISystem : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            RT.anchoredPosition3D = new Vector3(0, 240, 0);
-            AttDectPanel.gameObject.SetActive(true);
-            MoveCam.ChaTurn(TurnCha);
-            
-            TurnRun = CheckMouse;
+            CancealSkill();
         }
+    }
+    void CancealSkill()
+    {
+        RT.anchoredPosition3D = new Vector3(0, 240, 0);
+        AttDectPanel.gameObject.SetActive(true);
+        MoveCam.ChaTurn(TurnCha);
+        TurnRun = CheckMouse;
+        SkillCanceal = null;
     }
 
 
     bool Grenaded;
+    GameObject DangerTile;
+    public GameObject EmptyTile;
     public void PreGrenade()
     {
         Prepera = false;
@@ -1272,66 +1347,63 @@ public class UISystem : MonoBehaviour
         LeftText.text = "傷害： 4 ";
         RightText.text = "";
         ActionButton.onClick.RemoveAllListeners();
-        Grenaded = true;
+        if (DangerTile == null)
+        {
+            DangerTile = new GameObject();
+            for (int i = -1; i < 2; ++i)
+            {
+                for (int j = -1; j < 2; ++j)
+                {
+                    GameObject go = Instantiate<GameObject>(EmptyTile, new Vector3(i * 0.67f, 0, j * 0.67f), EmptyTile.transform.rotation, DangerTile.transform);
+                    go.GetComponent<Renderer>().material = Resources.Load<Material>("DangerTile");
+                    JoinActionTile(go);
+                }
+            }
+        }
+        DangerTile.SetActive(false);
+
         Destroy(GLR);
+        Grenaded = true;
         TurnRun = Grenade;//
+        SkillCanceal = CancealGrenade;
+    }
+    public void ThrowGrenade(Tile T)
+    {
+        if (Grenaded && (T.transform.position - TurnCha.transform.position).magnitude < 12f)
+        {
+            Grenaded = false;
+            TurnCha.PreGrenade(T);
+            AttPredictPanel.gameObject.SetActive(false);
+            DestroyADPButton();
+            DestroySkillButton();
+            Prepera = false;
+
+            LRDestory();
+            RunUI = null;
+        }
     }
     public void Grenade()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit);
-            if (hit.collider.tag == "tile")
-            {
-                Grenaded = false;
-                Tile T = hit.collider.GetComponent<Tile>();
-                TurnCha.PreGrenade(T);
-                AttPredictPanel.gameObject.SetActive(false);
-                DestroyADPButton();
-                DestroySkillButton();
-                Prepera = false;
-                LRDestory();
-                RunUI = null;
-            }
-        }
         if (Input.GetMouseButtonDown(1))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit);
-            if (hit.collider.tag == "tile")
-            {
-                Tile T = hit.collider.GetComponent<Tile>();
-                LeaveActionTile(T);
-                T.Recover();
-                for (int i = 0; i < 8; ++i)
-                {
-                    LeaveActionTile(T.AdjList[i]);
-                    T.AdjList[i].Recover();
-                }
-            }
-            Grenaded = false;
-            RT.anchoredPosition3D = new Vector3(0, 240, 0);
-            AttDectPanel.gameObject.SetActive(true);
-            MoveCam.ChaTurn(TurnCha);
-
-            TurnRun = CheckMouse;
+            CancealGrenade();
         }
     }
     public void AfterGrenade(Tile T)
     {
-        LeaveActionTile(T);
-        T.Recover();
-        for (int i = 0; i < 8; ++i)
-        {
-            LeaveActionTile(T.AdjList[i]);
-            T.AdjList[i].Recover();
-        }
-        StartCoroutine(TurnCha.WaitEndturn());
+        DangerTile.SetActive(false);
+        StartCoroutine(TurnCha.AfterGrenade());
     }
-
+    void CancealGrenade()
+    {
+        DangerTile.SetActive(false);
+        Grenaded = false;
+        RT.anchoredPosition3D = new Vector3(0, 240, 0);
+        AttDectPanel.gameObject.SetActive(true);
+        MoveCam.ChaTurn(TurnCha);
+        SkillCanceal = null;
+        TurnRun = CheckMouse;
+    }
 
 
 
@@ -1350,8 +1422,10 @@ public class UISystem : MonoBehaviour
     public UIAnimation UIAnima;
     public TimeLine TLine;
     public int Count;
+    public bool GameStart = false;
     public IEnumerator PrepareTimeLine()
     {
+        yield return new WaitUntil(() => GameStart == true);
         var Cha = Sequence.First;
         for(int i = 0; i < Sequence.Count - 1; ++i)
         {
@@ -1369,8 +1443,8 @@ public class UISystem : MonoBehaviour
         }
         GameObject EndLogo = Resources.Load<GameObject>("EndLogo");
         TLine.NewLogo(Sequence.First.Value.Cha, EndLogo, Sequence.Count-1);
+
         Round.Start();
-        yield return 0;
     }
 
     public void ChaTurnEnd()
@@ -1402,29 +1476,27 @@ public class UISystem : MonoBehaviour
     }
 
 
-    internal int type;
-    internal int site;
     AI Newcome;
     List<ISkill> NewcomeSkills;
     public GameObject increase_text;
-    public void NewCome()
+    public void NewCome(int Type,int Site)
     {
-        if (type == 0)
+        if (Type == 0)
         {
-            type = Random.Range(1, 4);
+            Type = Random.Range(1, 4);
         }
-        AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy"+ type)).GetComponent<AI>();
+        AI Enemy = Instantiate<GameObject>(Resources.Load<GameObject>("Enemy"+ Type)).GetComponent<AI>();
         GameObject go =  Instantiate(increase_text,this.transform) as GameObject;
         go.SetActive(true);
         Destroy(go, 1.8f);
-        Enemy.name = "Enemy"+ type;
+        Enemy.name = "Enemy"+ Type;
         Newcome = Enemy;
         int i = m_Roundsystem.NewCome(Enemy);
         Aliens.Add(Enemy);
         GameObject ChaLogo = Resources.Load<GameObject>(Enemy.name + "Logo");
         TLine.NewComeLogo(Enemy, ChaLogo, i);
         CreateHP_Bar(Enemy, Enemy.Cha.MaxHP, Enemy.Cha.HP);
-        Enemy.InCurrentTile(StartTile[site]);
+        Enemy.InCurrentTile(StartTile[Site]);
         TurnRun = null;
         StartCoroutine(WaitInitialization());
     }
@@ -1438,6 +1510,7 @@ public class UISystem : MonoBehaviour
         NewcomeSkills = Newcome.Skills;
         Newcome.Skills = null;
         Newcome.Turn = true;
+        Newcome.AP = 1;
         Newcome.FindSelectableTiles(1);
         Newcome.ConfirmAction();
         MoveCam.ChaTurn(Newcome);
@@ -1515,100 +1588,99 @@ public class UISystem : MonoBehaviour
 
 
 
-    public bool per_but;
-    public GameObject[] camera_point;
-    float[] cam_dir = new float[9];
-    float max_dis;
-    bool change_point;
+    //public bool per_but;
+    //public GameObject[] camera_point;
+    //float[] cam_dir = new float[9];
+    //float max_dis;
 
-    public void Attack_camera()
-    {
-        Vector3 Target_position; //目標點
-        cam_dir[0] = 0.0f;
-        max_dis = 0;
-        if (TurnCha.Cha.tag == "Human" && per_but == true)
-        {
-            float dis = Vector3.Distance(TurnCha.Cha.transform.position, Target.Value.Item1.transform.position); //與目標的距離
-            Vector3 dir = (Target.Value.Item1.transform.position - TurnCha.Cha.transform.position).normalized; //到目標的方向
-            Target_position = TurnCha.Cha.transform.position + dir * dis / 2 + new Vector3(0, 1.2f, 0f); //目標點位置
-            if (dis > 50f)
-            {
+    //public void Attack_camera()
+    //{
+    //    Vector3 Target_position; //目標點
+    //    cam_dir[0] = 0.0f;
+    //    max_dis = 0;
+    //    if (TurnCha.Cha.tag == "Human" && per_but == true)
+    //    {
+    //        float dis = Vector3.Distance(TurnCha.Cha.transform.position, Target.Value.Item1.transform.position); //與目標的距離
+    //        Vector3 dir = (Target.Value.Item1.transform.position - TurnCha.Cha.transform.position).normalized; //到目標的方向
+    //        Target_position = TurnCha.Cha.transform.position + dir * dis / 2 + new Vector3(0, 1.2f, 0f); //目標點位置
+    //        if (dis > 50f)
+    //        {
 
-                MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
-                MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime);//標的物往目標點移動
-                float Gg = Vector3.Distance(MoveCam.transform.position, Target_position);//如果movecam與目標點距離小於0.02 位置直接等於目標點
-                if (Gg <= 0.05)
-                    MoveCam.transform.position = Target_position;
-                Vector3 scp = MoveCam.transform.position + -MoveCam.scene_camera.transform.forward * MoveCam.cam_dis;//攝影機位置往後
-                MoveCam.scene_camera.transform.position = Vector3.Lerp(scp, MoveCam.scene_camera.transform.position, 3f * Time.deltaTime); //攝影機滑順移動到指定距離
-                float mg = Vector3.Distance(MoveCam.scene_camera.transform.position, scp);
-                if (mg <= 0.05)
-                {
-                    MoveCam.scene_camera.transform.position = scp;
-                }
-            }
-            else
-            {
-                camera_point[0].transform.position = TurnCha.Cha.transform.position + new Vector3(0f, 1f, 0f); //攝影機八個位置
-                for (int i = 1; i < camera_point.Length; i++) //0為父物件 分別判斷1~8到目標點的距離
-                {
-                    cam_dir[i] = Vector3.Distance(camera_point[i].transform.position, Target_position);
-                }
-                for (int i = 1; i < cam_dir.Length; i++) //比大小 判斷1~8
-                {
-                    if (max_dis < cam_dir[i]) max_dis = cam_dir[i];
-                }
-                int f = Array.IndexOf(cam_dir, max_dis);
-                if (f != -1)
-                {
-                    RaycastHit hit;
-                    Vector3 eni_dir = (Target_position - camera_point[f].transform.position).normalized;
-                    MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime); //標的物到雙方中間
-                    Debug.DrawRay(camera_point[f].transform.position, eni_dir);
-                    if (Physics.Raycast(camera_point[f].transform.position, eni_dir, out hit, 1.5f, 1 << 11))
-                    {
-                        if (f == 1) f = 8;
-                        Debug.DrawRay(camera_point[f - 1].transform.position, Target_position - camera_point[f - 1].transform.position);
-                        if (Physics.Raycast(camera_point[f - 1].transform.position, Target_position - camera_point[f - 1].transform.position, out hit, 1.5f))
-                        {
-                            if (f == 8) f = 1;
-                            MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f + 1].transform.position, 5 * Time.deltaTime);
-                        }
-                        else
-                            MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f - 1].transform.position, 5 * Time.deltaTime);
-                    }
-                    else
-                        MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f].transform.position, 5 * Time.deltaTime);
-                    MoveCam.scene_camera.transform.LookAt(Target_position);
-                }
-            }
-        }
+    //            MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
+    //            MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime);//標的物往目標點移動
+    //            float Gg = Vector3.Distance(MoveCam.transform.position, Target_position);//如果movecam與目標點距離小於0.02 位置直接等於目標點
+    //            if (Gg <= 0.05)
+    //                MoveCam.transform.position = Target_position;
+    //            Vector3 scp = MoveCam.transform.position + -MoveCam.scene_camera.transform.forward * MoveCam.cam_dis;//攝影機位置往後
+    //            MoveCam.scene_camera.transform.position = Vector3.Lerp(scp, MoveCam.scene_camera.transform.position, 3f * Time.deltaTime); //攝影機滑順移動到指定距離
+    //            float mg = Vector3.Distance(MoveCam.scene_camera.transform.position, scp);
+    //            if (mg <= 0.05)
+    //            {
+    //                MoveCam.scene_camera.transform.position = scp;
+    //            }
+    //        }
+    //        else
+    //        {
+    //            camera_point[0].transform.position = TurnCha.Cha.transform.position + new Vector3(0f, 1f, 0f); //攝影機八個位置
+    //            for (int i = 1; i < camera_point.Length; i++) //0為父物件 分別判斷1~8到目標點的距離
+    //            {
+    //                cam_dir[i] = Vector3.Distance(camera_point[i].transform.position, Target_position);
+    //            }
+    //            for (int i = 1; i < cam_dir.Length; i++) //比大小 判斷1~8
+    //            {
+    //                if (max_dis < cam_dir[i]) max_dis = cam_dir[i];
+    //            }
+    //            int f = Array.IndexOf(cam_dir, max_dis);
+    //            if (f != -1)
+    //            {
+    //                RaycastHit hit;
+    //                Vector3 eni_dir = (Target_position - camera_point[f].transform.position).normalized;
+    //                MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 5 * Time.deltaTime); //標的物到雙方中間
+    //                Debug.DrawRay(camera_point[f].transform.position, eni_dir);
+    //                if (Physics.Raycast(camera_point[f].transform.position, eni_dir, out hit, 1.5f, 1 << 11))
+    //                {
+    //                    if (f == 1) f = 8;
+    //                    Debug.DrawRay(camera_point[f - 1].transform.position, Target_position - camera_point[f - 1].transform.position);
+    //                    if (Physics.Raycast(camera_point[f - 1].transform.position, Target_position - camera_point[f - 1].transform.position, out hit, 1.5f))
+    //                    {
+    //                        if (f == 8) f = 1;
+    //                        MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f + 1].transform.position, 5 * Time.deltaTime);
+    //                    }
+    //                    else
+    //                        MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f - 1].transform.position, 5 * Time.deltaTime);
+    //                }
+    //                else
+    //                    MoveCam.scene_camera.transform.position = Vector3.Lerp(MoveCam.scene_camera.transform.position, camera_point[f].transform.position, 5 * Time.deltaTime);
+    //                MoveCam.scene_camera.transform.LookAt(Target_position);
+    //            }
+    //        }
+    //    }
 
 
-        if (TurnCha.Cha.tag == "Alien" && TurnCha.NPC_Prefire == true)
-        {
-            MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
-            float dis = Vector3.Distance(TurnCha.Cha.transform.position, TurnCha.Target.transform.position); //與目標的距離
-            Vector3 dir = (TurnCha.Target.transform.position - TurnCha.Cha.transform.position).normalized; //到目標的方向
-            Target_position = TurnCha.Cha.transform.position + dir * dis / 2 + new Vector3(0, 1.2f, 0f); //目標位置
+    //    if (TurnCha.Cha.tag == "Alien" && TurnCha.NPC_Prefire == true)
+    //    {
+    //        MoveCam.cam_dis = 25f; //攝影機位置往後移動到25
+    //        float dis = Vector3.Distance(TurnCha.Cha.transform.position, TurnCha.Target.transform.position); //與目標的距離
+    //        Vector3 dir = (TurnCha.Target.transform.position - TurnCha.Cha.transform.position).normalized; //到目標的方向
+    //        Target_position = TurnCha.Cha.transform.position + dir * dis / 2 + new Vector3(0, 1.2f, 0f); //目標位置
 
-            MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 3 * Time.deltaTime);//攝影機往前目標移動
-            float Gg = Vector3.Distance(MoveCam.transform.position, Target_position);
+    //        MoveCam.transform.position = Vector3.Lerp(MoveCam.transform.position, Target_position, 3 * Time.deltaTime);//攝影機往前目標移動
+    //        float Gg = Vector3.Distance(MoveCam.transform.position, Target_position);
 
-            if (Gg <= 0.05)
-            {
-                MoveCam.transform.position = Target_position;
-            }
+    //        if (Gg <= 0.05)
+    //        {
+    //            MoveCam.transform.position = Target_position;
+    //        }
 
-            Vector3 scp = MoveCam.transform.position + -MoveCam.scene_camera.transform.forward * MoveCam.cam_dis;//攝影機為標的物加往後一個方向的距離                                                                                                                  
-            MoveCam.scene_camera.transform.position = Vector3.Lerp(scp, MoveCam.scene_camera.transform.position, 5 * Time.deltaTime);
-            float mg = Vector3.Distance(MoveCam.scene_camera.transform.position, scp);
-            if (mg <= 0.05)
-            {
-                MoveCam.scene_camera.transform.position = scp;
-            }
-        }
-    }
+    //        Vector3 scp = MoveCam.transform.position + -MoveCam.scene_camera.transform.forward * MoveCam.cam_dis;//攝影機為標的物加往後一個方向的距離                                                                                                                  
+    //        MoveCam.scene_camera.transform.position = Vector3.Lerp(scp, MoveCam.scene_camera.transform.position, 5 * Time.deltaTime);
+    //        float mg = Vector3.Distance(MoveCam.scene_camera.transform.position, scp);
+    //        if (mg <= 0.05)
+    //        {
+    //            MoveCam.scene_camera.transform.position = scp;
+    //        }
+    //    }
+    //}
 
     public bool Bomb_start;
     public bool Bomb_explosion;
@@ -1620,7 +1692,7 @@ public class UISystem : MonoBehaviour
     public GameObject[] toggle;
     public GameObject explosion;
     public Sprite[] mission_Images;
-    public void Bomb_button()
+    public IEnumerator Bomb_button()
     {
         LeaveActionTile(BombSite);
         Bomb_start = true;
@@ -1629,6 +1701,10 @@ public class UISystem : MonoBehaviour
         toggle[0].transform.GetChild(1).GetComponent<Text>().color = Color.green;
         toggle[0].transform.GetChild(0).GetComponent<Image>().sprite = mission_Images[1];
         explosion.SetActive(true);
+
+        dialog_02.SetActive(true);
+        yield return new WaitForSeconds(3.5f);
+        dialog_02.SetActive(false);
     }
     public GameObject dialog_03;
     public void StartLeave()
@@ -1655,57 +1731,63 @@ public class UISystem : MonoBehaviour
     public Tile BombSite;
     public GameObject[] status_UI;
     public bool status_bool;
-    public int demage;
 
-    public void status(string a,AI target)
+    public void status(int number, string word, AI target)
     {
-        int judge = 0;
-        if (a == "heal")
-        {
-            judge = 4;
-            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(target.Target.Cha.transform.position);
-            vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
-            GameObject go = Instantiate(status_UI[judge]) as GameObject;
-            go.transform.position = vScreenPos;
-
-            go.transform.SetParent(HPCanvas.transform);
-            Destroy(go, 2f);
-        }
-        if (TurnCha.Cha.tag == "Human" && judge!=4)
-        {
-            if (a == "Demage") judge = 0;
-            else if (a == "Miss") judge = 1;
-            else if (a == "MindControl") judge = 2;
-            else if (a == "coma") judge = 3;
-            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(target.Target.BeAttakePoint.transform.position);
-            vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
-            GameObject go = Instantiate(status_UI[judge]) as GameObject;
-            if (judge == 0)
-                go.transform.GetChild(2).GetComponent<Text>().text = demage.ToString();
-            go.transform.position = vScreenPos;
-
-            go.transform.SetParent(HPCanvas.transform);
-            Destroy(go, 2f);
-        }
-        if (TurnCha.Cha.tag == "Alien")
-        {
-            if (a == "Demage") judge = 0;
-            else if (a == "Miss") judge = 1;
-            else if (a == "MindControl") judge = 2;
-            else if (a == "coma") judge = 3;
-            Vector3 vScreenPos = Camera.main.WorldToScreenPoint(target.Target.transform.position);
-            vScreenPos += Vector3.right * -100 + Vector3.up * 150f;
-            GameObject go = Instantiate(status_UI[judge]) as GameObject;
-            go.transform.position = vScreenPos;
-            go.transform.SetParent(HPCanvas.transform);
-            if (judge == 0)
-                go.transform.GetChild(2).GetComponent<Text>().text = demage.ToString();
-            if (judge == 3)
-                go.transform.GetChild(3).GetComponent<Text>().text = demage.ToString();
-            Destroy(go, 2f);
-        }
-        status_bool = false;
+        Signal go = Instantiate(Resources.Load<GameObject>("Signal"+number)).GetComponent<Signal>();
+        go.SetTarget(target.BeAttakePoint.transform, word);
+        go.transform.SetParent(HPCanvas.transform);
     }
+
+    //public void status(string a,AI target)
+    //{
+    //    int judge = 0;
+    //    if (a == "heal")
+    //    {
+    //        judge = 4;
+    //        Vector3 vScreenPos = Camera.main.WorldToScreenPoint(target.Target.transform.position);
+    //        vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
+    //        GameObject go = Instantiate(status_UI[judge]) as GameObject;
+    //        go.transform.position = vScreenPos;
+
+    //        go.transform.SetParent(HPCanvas.transform);
+    //        Destroy(go, 2f);
+    //    }
+    //    if (TurnCha.Cha.tag == "Human" && judge!=4)
+    //    {
+    //        if (a == "Demage") judge = 0;
+    //        else if (a == "Miss") judge = 1;
+    //        else if (a == "MindControl") judge = 2;
+    //        else if (a == "coma") judge = 3;
+    //        Vector3 vScreenPos = Camera.main.WorldToScreenPoint(target.Target.BeAttakePoint.transform.position);
+    //        vScreenPos += Vector3.right * Random.Range(100, 200) + Vector3.up * 100f;
+    //        GameObject go = Instantiate(status_UI[judge]) as GameObject;
+    //        if (judge == 0)
+    //            go.transform.GetChild(2).GetComponent<Text>().text = demage.ToString();
+    //        go.transform.position = vScreenPos;
+
+    //        go.transform.SetParent(HPCanvas.transform);
+    //        Destroy(go, 2f);
+    //    }
+    //    if (TurnCha.Cha.tag == "Alien")
+    //    {
+    //        if (a == "Demage") judge = 0;
+    //        else if (a == "Miss") judge = 1;
+    //        else if (a == "MindControl") judge = 2;
+    //        else if (a == "coma") judge = 3;
+    //        Vector3 vScreenPos = Camera.main.WorldToScreenPoint(target.Target.transform.position);
+    //        vScreenPos += Vector3.right * -100 + Vector3.up * 150f;
+    //        GameObject go = Instantiate(status_UI[judge]) as GameObject;
+    //        go.transform.position = vScreenPos;
+    //        go.transform.SetParent(HPCanvas.transform);
+    //        if (judge == 0)
+    //            go.transform.GetChild(2).GetComponent<Text>().text = demage.ToString();
+    //        if (judge == 3)
+    //            go.transform.GetChild(3).GetComponent<Text>().text = demage.ToString();
+    //        Destroy(go, 2f);
+    //    }
+    //    status_bool = false;
+    //}
     public GameObject dialog_01;
     public GameObject b_mission;
     public GameObject dialog_02;
@@ -1713,8 +1795,7 @@ public class UISystem : MonoBehaviour
     {
         dialog_01.SetActive(false);
         b_mission.SetActive(false);
-        ssstart = true;
-        time_mis = false;
+        TimeLine_First.SetActive(true);
     }
     public GameObject option;
     public void b_option()
@@ -1723,12 +1804,10 @@ public class UISystem : MonoBehaviour
         option.SetActive(true);
     }
     public GameObject bulletnumber;
-    public Text Max_Bullet;
     public Text Now_Bullet;
     public void bulnum()
     {
         bulletnumber.SetActive(true);
-        Max_Bullet.text = TurnCha.Gun.MaxBullet.ToString();
-        Now_Bullet.text = TurnCha.Gun.bullet.ToString();
+        Now_Bullet.text = TurnCha.Gun.bullet.ToString()+"/"+TurnCha.Gun.MaxBullet.ToString();
     }
 }

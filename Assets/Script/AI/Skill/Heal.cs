@@ -77,7 +77,7 @@ public class Heal : MonoBehaviour ,ISkill
         }
         else
         {
-            return UISystem.getInstance().PreFire;
+            return UISystem.getInstance().PreHeal;
         }
     }
 

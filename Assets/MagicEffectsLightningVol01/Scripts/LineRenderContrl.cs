@@ -20,22 +20,23 @@ public class LineRenderContrl : MonoBehaviour {
   private int sheetIndex, texMoverVector = 1, texAutoDistDiv = 1;
 
 
-  void Awake() {
-    lineRer = GetComponent<LineRenderer>();
-    lineRer.SetVertexCount(2);
-    lineRer.SetPosition(0, Vector3.zero);
-    lineRer.useWorldSpace = false;
-    mat = lineRer.materials[0];
-    if (mat) {
-      sheetCoordinates = new float[TexSheetCount];
-      for (var i = 0; i < sheetCoordinates.Length; i++)
-        sheetCoordinates[i] = (i + 1f) / TexSheetCount;
-      mat.SetTextureScale("_MainTex", new Vector2(TexTilingVector, 1f / TexSheetCount));
-      lineRerTarget = new GameObject("lineRerTarget");
-      lineRerTarget.transform.parent = transform;
+    void Awake()
+    {
+        lineRer = GetComponent<LineRenderer>();
+        lineRer.SetVertexCount(2);
+        lineRer.SetPosition(0, Vector3.zero);
+        lineRer.useWorldSpace = false;
+        mat = lineRer.materials[0];
+        if (mat)
+        {
+            sheetCoordinates = new float[TexSheetCount];
+            for (var i = 0; i < sheetCoordinates.Length; i++)
+                sheetCoordinates[i] = (i + 1f) / TexSheetCount;
+            mat.SetTextureScale("_MainTex", new Vector2(TexTilingVector, 1f / TexSheetCount));
+            lineRerTarget = new GameObject("lineRerTarget");
+            lineRerTarget.transform.parent = transform;
+        }
     }
-
-  }
 
 
   void Update() {
